@@ -15,6 +15,12 @@ def limpar(parent: tk.Frame):
     """Remove tudo que estiver no parent (caso queira reutilizar)."""
     for w in parent.winfo_children():
         w.destroy()
+        
+# -------- CONFIGURAÇÕES BÁSICAS DE UI --------
+
+COR_TEXTO = "#FFFFFF"
+COR_CAMPO = "#FFFFFF"
+COR_FUNDO = "#0B1220"
 
 # --------------------------------------------------------
 # SALVA OS DADOS NO ARQUIVO CSV
@@ -68,10 +74,10 @@ def mostrar_formulario(parent: tk.Frame):
     limpar(parent)
 
     # Um container centralizado
-    container = tk.Frame(parent, bg="#FFFFFF")
+    container = tk.Frame(parent, bg="#1F2937")
     container.pack(expand=True, ipadx=30, ipady=20)
 
-    caixa = tk.Frame(container, bg="#F9FAFB", bd=1, relief="solid")
+    caixa = tk.Frame(container, bg=COR_FUNDO)
     caixa.pack(padx=40, pady=30, expand=True)
 
     # Título
@@ -79,8 +85,8 @@ def mostrar_formulario(parent: tk.Frame):
         caixa,
         text="Cadastro de Veículo",
         font=("Segoe UI", 16, "bold"),
-        bg="#FFFFFF",
-        fg="#111827"
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
     ).grid(row=0, column=0, columnspan=4, pady=(0, 10))
 
     # ------- CAMPOS -------
@@ -92,8 +98,8 @@ def mostrar_formulario(parent: tk.Frame):
             caixa,
             text=rotulo,
             font=("Segoe UI", 10, "bold"),
-            bg="#FFFFFF",
-            fg="#111827"
+            bg=COR_FUNDO,
+            fg=COR_TEXTO
         ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6)
         if rotulo == "Cor":
             entry = ttk.Combobox(caixa, values=[' ', 'Amarelo', 'Azul', 'Bege', 'Branco', 'Cinza', 
@@ -108,9 +114,13 @@ def mostrar_formulario(parent: tk.Frame):
                                                 'Combustão Gasolina', 'Híbrido', 'Elétrico'], width=largura, state="readonly")      
             entry.current(0)
         else:    
-            entry = ttk.Entry(
+            entry = tk.Entry(
                 caixa,
                 width=largura,
+                background=COR_CAMPO,
+                foreground=COR_TEXTO,
+                insertbackground=COR_TEXTO,
+                relief="flat"
             )
         entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
 
@@ -137,8 +147,8 @@ def mostrar_formulario(parent: tk.Frame):
         caixa,
         text="Observações",
         font=("Segoe UI", 10, "bold"),
-        bg="#FFFFFF",
-        fg="#111827"
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
     ).grid(row=6, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
 
     txt_obs = tk.Text(caixa, width=66, height=5, bd=1, relief="solid")
@@ -147,7 +157,7 @@ def mostrar_formulario(parent: tk.Frame):
     entradas["Nome"].focus()
     
     # Botões
-    botoes = tk.Frame(caixa, bg="#FFFFFF")
+    botoes = tk.Frame(caixa, bg=COR_FUNDO)
     botoes.grid(row=8, column=0, columnspan=4, pady=16)
 
     def on_salvar():

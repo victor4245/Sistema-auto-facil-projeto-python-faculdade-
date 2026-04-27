@@ -13,6 +13,11 @@ from datetime import datetime
 AGORA = datetime.now().strftime("%d/%m/%Y")
 CAMINHO_BD = os.getcwd() + "/BD_interno"
 PAGINA = 1
+# -------- CONFIGURAÇÕES BÁSICAS DE UI --------
+
+COR_TEXTO = "#FFFFFF"
+COR_CAMPO = "#1F2937"
+COR_FUNDO = "#0B1220"
 
 # ----------------------------------------------------------
 # Aumenta ou diminui a quantidade de pagina
@@ -69,21 +74,23 @@ def mostrar_formulario(parent):
         w.destroy()
 
     # Container central
-    container = tk.Frame(parent, bg="#FFFFFF")
+    container = tk.Frame(parent, bg=COR_FUNDO)
     container.pack(expand=True)
     # Ajuste de colunas
-    for c in range(2):
-        container.grid_columnconfigure(c, weight=1)
+    container.grid_columnconfigure(0, weight=1)
+    container.grid_columnconfigure(1, weight=1)
+
     # Título 
     tk.Label(
         container,
         text="Resumo geral da empresa",
         font=("Segoe UI", 18, "bold"),
-        bg="#FFFFFF"
-    ).grid(pady=15, padx=10, sticky="nsew", column=0, columnspan=3, row=0)
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(pady=15, padx=10, column=0, columnspan=4, row=0)
     # Botão de páginas
-    caixaB = tk.Frame(container, bg="#FFFFFF")
-    caixaB.grid(padx=30, pady=10, column=0, row=3, columnspan=3)
+    caixaB = tk.Frame(container, bg=COR_FUNDO)
+    caixaB.grid(padx=30, pady=10, column=0, row=3, columnspan=4)
     tk.Button(
         caixaB,
         text="<<",
@@ -114,68 +121,63 @@ def mostrar_formulario(parent):
     ).pack(side="left", padx=6)
     if (PAGINA == 1):
         # Caixas informativas
-        caixa1 = tk.Frame(container, bg="#F9FAFB", bd=1, relief="solid")
-        caixa1.grid(padx=30, pady=10, column=0, row=1, ipadx=70)
-        caixa2 = tk.Frame(container, bg="#F9FAFB", bd=1, relief="solid")
-        caixa2.grid(padx=30, pady=10, column=2, row=1, ipadx=70)
-        caixa3 = tk.Frame(container, bg="#F9FAFB", bd=1, relief="solid")
-        caixa3.grid(padx=30, pady=10, column=0, row=2, ipadx=70)
-        caixa4 = tk.Frame(container, bg="#F9FAFB", bd=1, relief="solid")
-        caixa4.grid(padx=30, pady=10, column=2, row=2)
+        def criador_caixas(caixa: str, coluna, linha):
+            caixas = {}
+            if caixa == "caixa4":
+                caixas[caixa] = tk.Frame(container, bg=COR_CAMPO, width=400, height=200)
+                caixas[caixa].grid(padx=30, pady=10, column=coluna, row=linha)
+                caixas[caixa].grid_propagate(False)
+                caixas[caixa].grid_columnconfigure(0, weight=1)
+            else:
+                caixas[caixa] = tk.Frame(container, bg=COR_CAMPO, width=400, height=200)
+                caixas[caixa].grid(padx=30, pady=10, column=coluna, row=linha)
+                caixas[caixa].grid_propagate(False)
+                caixas[caixa].grid_columnconfigure(0, weight=1)
+            return caixas[caixa]
+ 
+        caixa1 = criador_caixas("caixa1", coluna=0, linha=1)
+        caixa2 = criador_caixas("caixa2", coluna=1, linha=1)
+        caixa3 = criador_caixas("caixa3", coluna=0, linha=2)
+        caixa4 = criador_caixas("caixa4", coluna=1, linha=2)
+
+
+        def criador_info(texto, caixa, tfont):
+            info = {}
+            info[texto] = tk.Label(
+                caixa,
+                text=texto,
+                font=("Segoe UI", tfont, "bold"),
+                bg=COR_CAMPO,
+                fg=COR_TEXTO
+            )
+            info[texto].grid(pady=15, padx=10, sticky="nsew")
+            return info[texto]
         
-        # Ajuste de colunas
-        caixa1.grid_columnconfigure(0, weight=1)
-        caixa2.grid_columnconfigure(0, weight=1)
-        caixa3.grid_columnconfigure(0, weight=1)
-        caixa4.grid_columnconfigure(0, weight=1)
-            # ---------------- Caixa Cliente ----------------
-        tk.Label(
-            caixa1,
-            text="Clientes cadastrados",
-            font=("Segoe UI", 18, "bold"),
-            bg="#F9FAFB"
-        ).grid(pady=15, padx=10, sticky="nsew")
-        tk.Label(
-            caixa1,
-            text=f"{NUMCLI}",
-            font=("Segoe UI", 46, "bold"),
-            bg="#F9FAFB"
-        ).grid(pady=15, sticky="nsew")
+        # ---------------- Caixa Cliente ----------------
+        
+        criador_info("Clientes cadastrados", caixa1, tfont = 18)
+        criador_info(f"{NUMCLI}", caixa1, tfont = 46)
+        
         # ---------------- Caixa Funcionário ----------------
-        tk.Label(
-            caixa2,
-            text="Funcionários cadastrados",
-            font=("Segoe UI", 18, "bold"),
-            bg="#F9FAFB"
-        ).grid(pady=15, padx=10, sticky="nsew")
-        tk.Label(
-            caixa2,
-            text=f"{NUMFUNC}",
-            font=("Segoe UI", 46, "bold"),
-            bg="#F9FAFB"
-        ).grid(pady=15, sticky="nsew")
-        # ---------------- Caixa Veículos ----------------
-        tk.Label(
-            caixa3,
-            text="Veículos Disponíveis",
-            font=("Segoe UI", 18, "bold"),
-            bg="#F9FAFB"
-        ).grid(pady=15, padx=10, sticky="nsew")
-        tk.Label(
-            caixa3,
-            text=f"{NUMVEIC}",
-            font=("Segoe UI", 46, "bold"),
-            bg="#F9FAFB"
-        ).grid(pady=15, sticky="nsew")
+        
+        criador_info("Funcionários cadastrados", caixa2, tfont = 18)
+        criador_info(f"{NUMFUNC}", caixa2, tfont = 46)
+        
+        # ---------------- Caixa Veículos --------------------
+        
+        criador_info("Veículos Disponíveis", caixa3, tfont = 18)
+        criador_info(f"{NUMVEIC}", caixa3, tfont = 46)
+        
         # ---------------- Caixa Test drive ----------------
         tk.Label(
             caixa4,
             text="Test drives do dia",
             font=("Segoe UI", 18, "bold"),
-            bg="#F9FAFB"
-        ).grid(pady=15, sticky="nsew")
-        lista3 = tk.Listbox(caixa4, width=70, height=6)
-        lista3.grid( padx=15, pady=10, sticky="nsew")
+            bg=COR_CAMPO,
+            fg=COR_TEXTO
+        ).grid(pady=15, sticky="n")
+        lista3 = tk.Listbox(caixa4, width=70, height=6,bg=COR_CAMPO, fg=COR_TEXTO, borderwidth=0, highlightthickness=0, relief="flat", justify='center')
+        lista3.grid( padx=15, pady=10, sticky="n")
         tests = ler_test()
         lista3.delete(0, tk.END)
     
@@ -191,22 +193,34 @@ def mostrar_formulario(parent):
                 lista3.insert(tk.END, texto) 
     elif(PAGINA == 2):
         # Caixa informativas 2
-        caixa5 = tk.Frame(container, bg="#F9FAFB", bd=1, relief="solid")
-        caixa5.grid(padx=30, pady=10, column=0, row=1, ipadx=80)
+        def criador_caixas(caixa: str, coluna, linha):
+            caixas = {}
+            if caixa == "caixa4":
+                caixas[caixa] = tk.Frame(container, bg=COR_CAMPO, width=400, height=200)
+                caixas[caixa].grid(padx=30, pady=10, column=coluna, row=linha)
+                caixas[caixa].grid_propagate(False)
+                caixas[caixa].grid_columnconfigure(0, weight=1)
+            else:
+                caixas[caixa] = tk.Frame(container, bg=COR_CAMPO, width=400, height=200)
+                caixas[caixa].grid(padx=30, pady=10, column=coluna, row=linha)
+                caixas[caixa].grid_propagate(False)
+                caixas[caixa].grid_columnconfigure(0, weight=1)
+            return caixas[caixa]
+        caixa5 = criador_caixas("caixa5", coluna=0, linha=1)
         
-        # Ajuste de colunas
-        caixa5.grid_columnconfigure(0, weight=1)
+        def criador_info(texto, caixa, tfont):
+            info = {}
+            info[texto] = tk.Label(
+                caixa,
+                text=texto,
+                font=("Segoe UI", tfont, "bold"),
+                bg=COR_CAMPO,
+                fg=COR_TEXTO
+            )
+            info[texto].grid(pady=15, padx=10, sticky="nsew")
+            return info[texto]
 
         # ---------------- Caixa Veículos vendidos----------------
-        tk.Label(
-            caixa5,
-            text="Veículos Vendidos",
-            font=("Segoe UI", 18, "bold"),
-            bg="#F9FAFB"
-        ).grid(pady=15, padx=10, sticky="nsew")
-        tk.Label(
-            caixa5,
-            text="200",
-            font=("Segoe UI", 46, "bold"),
-            bg="#F9FAFB"
-        ).grid(pady=15, sticky="nsew")
+        
+        criador_info("Veículos Vendidos", caixa5, tfont = 18)
+        criador_info("200", caixa5, tfont = 46)

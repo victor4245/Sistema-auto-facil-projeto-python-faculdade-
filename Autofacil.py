@@ -28,7 +28,7 @@ except Exception:
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 CAMINHO_BD = os.getcwd() +"/BD_interno"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.5.0"
+VERSION = "v 0.6.0"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 

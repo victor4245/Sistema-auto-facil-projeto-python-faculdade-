@@ -9,6 +9,11 @@ from tkinter import messagebox
 # -------- CONFIGURAÇÕES BÁSICAS --------
 LOGIN_ADM = "admin"
 SENHA_ADM = "123"
+# -------- CONFIGURAÇÕES BÁSICAS DE UI --------
+
+COR_TEXTO = "#FFFFFF"
+COR_CAMPO = "#FFFFFF"
+COR_FUNDO = "#0B1220"
 
 def limpar(parent: tk.Frame):
     """Remove tudo que estiver no parent (caso queira reutilizar)."""
@@ -37,11 +42,11 @@ def mostrar_formulario(parent: tk.Frame):
     limpar(parent)
 
     # Um container centralizado
-    container = tk.Frame(parent, bg="#FFFFFF")
+    container = tk.Frame(parent, bg=COR_FUNDO)
     container.pack(expand=True, ipadx=5, ipady=5)
 
-    caixa = tk.Frame(container, bg="#0B1220")
-    caixa.pack(padx=40, pady=30, ipadx=10, ipady=10)
+    caixa = tk.Frame(container, bg=COR_FUNDO)
+    caixa.pack(padx=40, pady=30)
     for col in range(6):
         caixa.grid_columnconfigure(col, weight=1)
 

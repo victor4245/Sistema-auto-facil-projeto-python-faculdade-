@@ -9,6 +9,12 @@ import os
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_BD = os.getcwd() + "/BD_interno"
 
+# -------- CONFIGURAÇÕES BÁSICAS DE UI --------
+
+COR_TEXTO = "#FFFFFF"
+COR_CAMPO = "#FFFFFF"
+COR_FUNDO = "#0B1220"
+
 # ----------------------------------------------------------
 # Lê TODOS os clientes do CSV e retorna uma lista de dicts
 # ----------------------------------------------------------
@@ -46,10 +52,10 @@ def mostrar_formulario(parent):
         w.destroy()
 
     # Container central
-    container = tk.Frame(parent, bg="#FFFFFF")
+    container = tk.Frame(parent, bg="#1F2937")
     container.pack(expand=True)
 
-    caixa = tk.Frame(container, bg="#F9FAFB", bd=1, relief="solid")
+    caixa = tk.Frame(container, bg=COR_FUNDO)
     caixa.pack(padx=40, pady=30, fill="both", expand=True)
     # Ajuste de colunas
     for c in range(4):
@@ -60,7 +66,8 @@ def mostrar_formulario(parent):
         caixa,
         text="Pesquisa de Clientes",
         font=("Segoe UI", 16, "bold"),
-        bg="#F9FAFB"
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
     ).grid(row=0, column=0, columnspan=4, pady=15)
 
     # ---------------- ENTRADAS ----------------
@@ -71,13 +78,17 @@ def mostrar_formulario(parent):
             caixa,
             text=rotulo,
             font=("Segoe UI", 10, "bold"),
-            bg="#FFFFFF",
-            fg="#111827"
+            bg=COR_FUNDO,
+            fg=COR_TEXTO
         ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6)
 
-        entry = ttk.Entry(
+        entry = tk.Entry(
                 caixa,
                 width=largura,
+                background=COR_CAMPO,
+                foreground=COR_TEXTO,
+                insertbackground=COR_TEXTO,
+                relief="flat"
             )
         entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
         entrada_pesq[index] = entry
@@ -92,7 +103,7 @@ def mostrar_formulario(parent):
     
 
     # ---------------- LISTBOX (RESULTADOS) ----------------
-    lista = tk.Listbox(caixa, width=80, height=10)
+    lista = tk.Listbox(caixa, width=80, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
     lista.grid(row=4, column=0, columnspan=4, padx=10, pady=10)
 
     clientes = ler_clientes()
@@ -126,7 +137,7 @@ def mostrar_formulario(parent):
         entrada_pesq[i].bind("<KeyRelease>", ao_digitar)
 
     # ---------------- BOTÕES ----------------
-    botoes = tk.Frame(caixa, bg="#F9FAFB")
+    botoes = tk.Frame(caixa, bg=COR_FUNDO)
     botoes.grid(row=5, column=0, columnspan=4, pady=15)
 
     # -------- LISTAGEM COMPLETA --------

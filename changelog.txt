@@ -116,5 +116,6 @@ v 0.5.0:
 v 0.6.0:
 
 -Reformulação na UI/UX
+-Adicionada mensagem de confirmação no logout
 -Otimizações no código
 -Bugs menores corrigidos

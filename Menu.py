@@ -17,7 +17,7 @@ except Exception:
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.5.0"
+VERSION = "v 0.6.0"
 ARQUIVO_MAIN = "Autofacil.py"
 
 # -------------------- AÇÕES DIDÁTICAS -----------------------
@@ -61,17 +61,22 @@ def abrir_aba_nova(area_conteudo: tk.Frame, titulo:str):
         messagebox.showerror("Erro", f"Falha ao abrir a tela de {titulo}:\n{e}")
 
 def sair(raiz:tk.Tk):
-    import subprocess
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    caminho_main = os.path.join(base_dir, ARQUIVO_MAIN)
-    if not os.path.exists(caminho_main):
-        messagebox.showerror("Autofacil.py não encontrado",f"Coloque o arquivo '{ARQUIVO_MAIN}' no mesmo diretório deste script:\n{base_dir}")
+    # Mensagem de confirmação
+    confirma = tk.messagebox.askyesno("Logout", "Deseja sair do sistema?")
+    if confirma == True:
+        import subprocess
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        caminho_main = os.path.join(base_dir, ARQUIVO_MAIN)
+        if not os.path.exists(caminho_main):
+            messagebox.showerror("Autofacil.py não encontrado",f"Coloque o arquivo '{ARQUIVO_MAIN}' no mesmo diretório deste script:\n{base_dir}")
+            return
+        try:
+            subprocess.Popen([sys.executable, caminho_main])
+            raiz.destroy()
+        except Exception as e:
+            messagebox.showerror("Erro ao abrir a tela de inicio",f"Não foi possível abrir '{ARQUIVO_MAIN}':\n{e}")
+    else:
         return
-    try:
-        subprocess.Popen([sys.executable, caminho_main])
-        raiz.destroy()
-    except Exception as e:
-        messagebox.showerror("Erro ao abrir a tela de inicio",f"Não foi possível abrir '{ARQUIVO_MAIN}':\n{e}")
 # -------------------- ETAPA 1: JANELA + TOPO ----------------
 def criar_janela_principal() -> tk.Tk:
     """
@@ -255,11 +260,14 @@ if __name__ == "__main__":
     raiz = criar_janela_principal()
     area_menu = criar_sidebar(raiz)
 
-    conteudo = tk.Frame(raiz, bg="#FFFFFF")
+    conteudo = tk.Frame(raiz, bg="#1F2937")
     conteudo.grid(row=1, column=1, sticky="nsew")
     try:
         # Mensagem de saudação
         pessoa = sys.argv[1]
+        messagebox.showinfo("Bem-vindo", f"Seja Bem-vindo {pessoa}")
+    except:
+        pessoa = "Administrador"
         messagebox.showinfo("Bem-vindo", f"Seja Bem-vindo {pessoa}")
     finally:
         montar_menu(area_menu, conteudo)
