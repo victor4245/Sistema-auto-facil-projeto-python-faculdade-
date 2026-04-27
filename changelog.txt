@@ -1,0 +1,121 @@
+v 0.1.0:
+
+-Reformulção total do código inicial
+-Criação do changelog
+-Tela de cadastro de funcionário e frota corrigidos
+-Logo adicionada na UI
+-Bugs menores corrigidos
+
+v 0.2.0:
+
+-Tela de pesquisa de funcionários, clientes e frota
+-Erros de digitação e comentários corrigidos
+-Melhorias na UI/UX
+-Criação de log de login dos usuários
+-Novas cores de carro para seleção
+-Bugs menores corrigidos
+
+v 0.2.1:
+
+-Preparação para recebimento do BD
+-Melhorias na UI
+-Bugs menores corrigidos
+
+v 0.3.0:
+
+-Banco de dados local adicionado
+-Implementada a pesquisa de clientes
+-Atualizações nos comentários do código
+-Mudança no nome dos aquivos da frota
+-Bugs menores corrigidos
+
+v 0.3.1:
+
+-Cabeçalhos do BD corrigidos
+-Preparação para a pesquisa da frota e de funcionários
+-Bugs menores corrigidos
+
+v 0.3.2:
+
+-Adicionada verificação de Emails de funcionários no momento do login
+-Bugs menores corrigidos
+
+v 0.3.3:
+
+-Adicionada verificação de Senhas de funcionários no momento do login
+-Atualizações nos comentários do código
+-Bugs menores corrigidos
+
+v 0.3.4:
+
+-Implementada a pesquisa de funcionários e frota
+-Bugs menores corrigidos
+
+v 0.3.5:
+
+-Aba de pesquisa de clientes retrabalhada
+-Melhorias na UI/UX
+-Otimizações no código
+-Bugs menores corrigidos
+
+v 0.3.6:
+
+-Melhorias na UI/UX dos cadastros
+-Otimizações no código
+-Preparação para criação da aba administrativa
+-Bugs menores corrigidos
+
+v 0.4.0:
+
+-Melhoria geral na otimização do código
+-Aba de pesquisa de funcionários e frota retrabalhada
+-Atualizações nos comentários do código
+-Atualização no salvamento de dados no banco interno
+-Adicionada melhor verificação e tratamento de erros
+-Atualizada tela de login da aba administrativa
+-Bugs menores corrigidos
+
+v 0.4.1:
+
+-Pequenas correções na UI/UX
+-Otimização geral no código
+-Bugs menores corrigidos
+
+v 0.4.2:
+
+-Preparação para recebimento da aba de agendamentos
+-Otimizações no código
+-Bug do modo de edição da aba de pesquisa da frota e da aba funcionários corrigido
+
+v 0.4.3:
+
+-Criação da aba de agendamentos de test drive
+-Preparação para recebimento da aba de dashboard
+-Criação do banco de dados de agendamentos de test drives
+-Atualizações nos comentários do código
+-Bugs menores corrigidos
+
+v 0.4.4:
+
+-Melhorias na UI/UX
+-Expansão da aba dashboard
+-Criação dos botões de seleção de página na aba dashboard
+-Bugs menores corrigidos
+
+v 0.5.0:
+
+-Reformulação nos diretórios do programa
+-Tela de adição de senha de login de funcionário adicionado ao cadastro de funcionários
+-Adição da possibilidade de logar com o CPF
+-Melhoria nas mensagens de conclusão
+-Adicionado o botão de logout no menu
+-Mensagem de saudação ao logar adicionada
+-Otimizações no código
+-Bugs menores corrigidos
+
+v 0.6.0:
+
+-Reformulação na UI/UX
+-Adicionada mensagem de confirmação no logout
+-Otimizações no código
+-Bugs menores corrigidos
