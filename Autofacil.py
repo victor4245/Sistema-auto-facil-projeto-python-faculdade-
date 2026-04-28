@@ -9,26 +9,24 @@
 import os
 import sys
 import tkinter as tk
+from tkinter import messagebox
 import csv
 from datetime import datetime
-# -------- CONFIGURAÇÕES BÁSICAS --------
-
-AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
-
-
-from tkinter import messagebox
+import subprocess
+from datetime import datetime
 # Pillow é necessário para exibir a imagem de fundo
 try:
     from PIL import Image, ImageTk
-    PIL_OK = True
 except Exception:
-    PIL_OK = False
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
+    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'Pillow' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
 # -------- CONFIGURAÇÕES BÁSICAS --------
 
+AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 CAMINHO_BD = os.getcwd() +"/BD_interno"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.6.1"
+VERSION = "v 0.7.0"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 
@@ -82,9 +80,6 @@ def maximizar_janela(janela: tk.Tk):
         pass
 def carregar_imagem(caminho: str):
     """Carrega a imagem de fundo do disco. Retorna um objeto PIL.Image ou None se der erro."""
-    if not PIL_OK:
-        messagebox.showwarning("Pillow não encontrado", "Para exibir a imagem de fundo, instale a biblioteca Pillow:\n\npip install pillow")
-        return None
     if not os.path.exists(caminho):
         messagebox.showwarning("Imagem não encontrada",f"Não encontrei a imagem de fundo em:\n{caminho}\n\n""Verifique o caminho e o nome do arquivo.")
         return None
@@ -97,7 +92,7 @@ def atualizar_fundo(janela: tk.Tk, lbl_fundo: tk.Label, img_base):
     """Atualiza a imagem do fundo para cobrir toda a janela.
     - Faz um ajuste simples: redimensiona proporcionalmente para preencher a tela (estilo 'cover'), recortando as sobras se necessário.
     - Mantém a referência da imagem para não ser coletada pelo Python."""
-    if not PIL_OK or img_base is None:
+    if img_base is None:
         return
 # Tamanho atual da janela
     largura = max(1, janela.winfo_width())
@@ -261,15 +256,19 @@ def criar_janela():
         pady=4
     )
     lbl_versao.grid(row=0, column=0, sticky="w", padx=(0, 160))
-    
-    img_logo = Image.open(CAMINHO_IMAGENS + "/carro.png").convert("RGBA")
-    img_logo = img_logo.resize((200, 180))
-    img_logo = ImageTk.PhotoImage(img_logo)
-    lbl_logo = tk.Label(
-        cabecalho,
-        bg="#0B1220",
-        image = img_logo)
-    lbl_logo.grid(row=0, column=2, sticky="e", ipadx=0)
+    # Tratamento de erro caso a biblioteca pillow não esteja instalada
+    try:
+        img_logo = Image.open(CAMINHO_IMAGENS + "/carro.png").convert("RGBA")
+        img_logo = img_logo.resize((200, 180))
+        img_logo = ImageTk.PhotoImage(img_logo)
+        lbl_logo = tk.Label(
+            cabecalho,
+            bg="#0B1220",
+            image = img_logo)
+        lbl_logo.grid(row=0, column=2, sticky="e", ipadx=0)
+    except:
+        messagebox.showwarning("Ocorreu um erro", "Biblioteca pillow faltando. Fechando o programa")
+        raiz.destroy()
 
     # ----------------- RODAPÉ -----------------
     rodape = tk.Frame(raiz, bg="#0B1220")

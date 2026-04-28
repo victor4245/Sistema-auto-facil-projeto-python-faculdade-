@@ -30,11 +30,10 @@ def salvar(dados):
     # Verificação simples (iniciante)
     if dados["Nome"] == "" or dados["CPF/CNPJ"] == "":
         messagebox.showwarning(
-            "Campos obrigatórios",
+            "Campos obrigatórios faltando",
             "Preencha pelo menos o Nome e o CPF/CNPJ."
         )
         return
-
     caminho = CAMINHO_BD + "/CadCli.csv"
 
     # Verifica se o arquivo existe

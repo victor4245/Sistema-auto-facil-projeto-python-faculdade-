@@ -9,15 +9,16 @@ import sys
 import tkinter as tk
 from tkinter import messagebox
 import importlib
+import subprocess
 try:
     from PIL import Image, ImageTk
-    PIL_OK = True
 except Exception:
-    PIL_OK = False
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
+    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'Pillow' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.6.1"
+VERSION = "v 0.7.0"
 ARQUIVO_MAIN = "Autofacil.py"
 
 # -------------------- UTILITÁRIOS ---------------------------
@@ -207,11 +208,12 @@ def montar_menu(menu_container: tk.Frame, area_conteudo: tk.Frame):
         pai=menu_container,
         texto="Pesquisa",
         icone="\U0001F50D",
-        subitens=["Cliente", "Funcionário", "Frota"],
+        subitens=["Cliente", "Funcionário", "Frota", "Test Drive/Reunião"],
         acoes_subitens={
             "Cliente": lambda: abrir_aba_nova(area_conteudo, "Submenus.Pesquisa.PesCli"),
             "Funcionário": lambda: abrir_aba_nova(area_conteudo, "Submenus.Pesquisa.PesFun"),
-            "Frota": lambda: abrir_aba_nova(area_conteudo, "Submenus.Pesquisa.PesFro")
+            "Frota": lambda: abrir_aba_nova(area_conteudo, "Submenus.Pesquisa.PesFro"),
+            "Test Drive/Reunião": lambda: abrir_aba_nova(area_conteudo, "Submenus.Pesquisa.PesAgen")
         }
     )
 
@@ -219,10 +221,10 @@ def montar_menu(menu_container: tk.Frame, area_conteudo: tk.Frame):
         pai=menu_container,
         texto="Agendamento",
         icone="\U0001F4C6",
-        subitens=["Test Drive", "Visita"],
+        subitens=["Test Drive", "Reunião"],
         acoes_subitens={
             "Test Drive": lambda: abrir_aba_nova(area_conteudo, "Submenus.AgendaTD"),
-            "Visita": lambda: abrir_aba_nova(area_conteudo, "Submenus.AgendaVis")
+            "Reunião": lambda: abrir_aba_nova(area_conteudo, "Submenus.AgendaReu")
         }
     )
 

@@ -30,7 +30,7 @@ def salvar(dados):
     # Verificação simples (iniciante)
     if dados["Nome"] == "" or dados["Placa"] == "":
         messagebox.showwarning(
-            "Campos obrigatórios",
+            "Campos obrigatórios faltando",
             "Preencha pelo menos o Nome e a Placa."
         )
         return

@@ -12,7 +12,7 @@ SENHA_ADM = "123"
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
-COR_CAMPO = "#FFFFFF"
+COR_CAMPO = "#1F2937"
 COR_FUNDO = "#0B1220"
 
 def limpar(parent: tk.Frame):
@@ -36,8 +36,51 @@ def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
         return
     
     # Sem função por enquanto somente mensagem 
-    messagebox.showinfo("Bem-vindo", "Acesso concedido.")
+    mostrar_comandos(janela)
+def mostrar_comandos(janela: tk.Tk):
+    parent = janela
+    # Limpa a área central
+    for w in parent.winfo_children():
+        w.destroy()
 
+    # Container central
+    container = tk.Frame(parent, bg=COR_FUNDO)
+    container.pack(expand=True)
+    # Ajuste de colunas
+    container.grid_columnconfigure(0, weight=1)
+    container.grid_columnconfigure(1, weight=1)
+
+    # Título 
+    tk.Label(
+        container,
+        text="Comandos do administrador",
+        font=("Segoe UI", 18, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(pady=15, padx=10, column=0, columnspan=4, row=0)
+    # Criador de botoes
+    def criador_botoes(funcao: str, coluna, linha, comando=None):
+        funcoes = {}
+        
+        funcoes[funcao] = tk.Button(container, 
+                                    text=funcao, 
+                                    font=("Segoe UI", 16, "bold"), 
+                                    bg="#2563EB", fg=COR_TEXTO,
+                                    activebackground="#1E40AF",
+                                    activeforeground=COR_TEXTO,
+                                    relief="flat",
+                                    width=20,
+                                    command= comando,
+                                    cursor="hand2"
+                                    )
+        funcoes[funcao].grid(padx=30, pady=10, column=coluna, row=linha)
+        return funcoes[funcao]
+    criador_botoes("Gerenciar funcionários", coluna=0, linha=1)
+    criador_botoes("Apagar BD Clientes", coluna=1, linha=1)
+    criador_botoes("Apagar BD Funcionários", coluna=0, linha=2)
+    criador_botoes("Apagar BD Frota", coluna=1, linha=2)
+    criador_botoes("Apagar BD Reunião", coluna=0, linha=3)
+    criador_botoes("Apagar BD Reunião", coluna=1, linha=3)
 def mostrar_formulario(parent: tk.Frame):
     # Limpa qualquer conteúdo anterior
     limpar(parent)
@@ -46,17 +89,17 @@ def mostrar_formulario(parent: tk.Frame):
     container = tk.Frame(parent, bg=COR_FUNDO)
     container.pack(expand=True, ipadx=5, ipady=5)
 
-    caixa = tk.Frame(container, bg=COR_FUNDO)
-    caixa.pack(padx=40, pady=30)
+    funcao = tk.Frame(container, bg=COR_FUNDO)
+    funcao.pack(padx=40, pady=30)
     for col in range(6):
-        caixa.grid_columnconfigure(col, weight=1)
+        funcao.grid_columnconfigure(col, weight=1)
 
     cor_faixa = "#0B1220"
     cor_campo = "#1F2937"
     cor_texto = "#FFFFFF"
     # Título
     tk.Label(
-        caixa,
+        funcao,
         text="Login administrativo",
         font=("Segoe UI", 16, "bold"),
         bg="#0B1220",
@@ -64,12 +107,12 @@ def mostrar_formulario(parent: tk.Frame):
     ).grid(row=0, column=0, columnspan=4, pady=(0, 10))
 
     tk.Label(
-        caixa, text="Login:", font=("Segoe UI", 11, "bold"),
+        funcao, text="Login:", font=("Segoe UI", 11, "bold"),
         bg=cor_faixa, fg=cor_texto
     ).grid(row=1, column=0, sticky="", padx=(6, 6), pady=6)
 
     entrada_login = tk.Entry(
-        caixa, font=("Segoe UI", 11),
+        funcao, font=("Segoe UI", 11),
         bg=cor_campo, fg=cor_texto,
         insertbackground=cor_texto, relief="flat"
     )
@@ -78,12 +121,12 @@ def mostrar_formulario(parent: tk.Frame):
 
     # Senha
     tk.Label(
-        caixa, text="Senha:", font=("Segoe UI", 11, "bold"),
+        funcao, text="Senha:", font=("Segoe UI", 11, "bold"),
         bg=cor_faixa, fg=cor_texto
     ).grid(row=2, column=0, sticky="", padx=(6, 6), pady=6)
 
     entrada_senha = tk.Entry(
-        caixa, show="*",
+        funcao, show="*",
         font=("Segoe UI", 11),
         bg=cor_campo, fg=cor_texto,
         insertbackground=cor_texto, relief="flat"
@@ -92,7 +135,7 @@ def mostrar_formulario(parent: tk.Frame):
 
     # Botão Acessar
     btn_acessar = tk.Button(
-        caixa, text="Acessar",
+        funcao, text="Acessar",
         font=("Segoe UI", 10, "bold"),
         bg="#2563EB", fg="white",
         activebackground="#1E40AF",
@@ -105,7 +148,7 @@ def mostrar_formulario(parent: tk.Frame):
 
     # Botão Sair
     btn_sair = tk.Button(
-        caixa, text="Sair",
+        funcao, text="Sair",
         font=("Segoe UI", 10, "bold"),
         bg="#374151", fg="white",
         activebackground="#1F2937",

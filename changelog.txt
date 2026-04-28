@@ -127,3 +127,14 @@ v 0.6.1:
 -Otimizações no código
 -Controle de linhas do log adicionado
 -Bugs menores corrigidos
+
+v 0.7.0:
+
+-Atualizações nos comentários do código
+-Expansão da aba dashboard
+-Criação das abas de agendamento de reunião, pesquisa de reunião/tests drives
+-Criação do banco de dados de agendamentos de Reunião
+-Melhorias na UI/UX
+-Adicionado tratamento de erros caso algum biblioteca não esteja instalada
+-adicionada instalação automática das bibliotecas
+-Bugs menores corrigidos

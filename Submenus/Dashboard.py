@@ -7,6 +7,7 @@ import csv
 import os
 from datetime import datetime
 
+
 # -------- CONFIGURAÇÕES BÁSICAS --------
 
 AGORA = datetime.now().strftime("%d/%m/%Y")
@@ -46,7 +47,7 @@ with open(CAMINHO_BD + "/CadFun.csv", "r", encoding="utf-8") as arquivo:
     NUMFUNC = 0 + len(linhas) - 1
 
 # ----------------------------------------------------------
-# Lê TODOS os trst drives do CSV e retorna uma lista de dicts
+# Lê TODOS os test drives do CSV e retorna uma lista de dicts
 # ----------------------------------------------------------
 with open(CAMINHO_BD + "/AgenTD.csv", "r", encoding="utf-8") as arquivo:
     linhas = arquivo.readlines()
@@ -63,7 +64,24 @@ def ler_test():
 
     return test
 
-        
+# ----------------------------------------------------------
+# Lê TODOS as reuniões do CSV e retorna uma lista de dicts
+# ----------------------------------------------------------
+with open(CAMINHO_BD + "/AgenReu.csv", "r", encoding="utf-8") as arquivo:
+    linhas = arquivo.readlines()
+    NUMTD = 0 + len(linhas) - 1
+    
+def ler_reu():
+    caminho = CAMINHO_BD + "/AgenReu.csv"
+    reun = []
+
+    with open(caminho, "r", newline="", encoding="utf-8") as arquivo:
+        leitor = csv.DictReader(arquivo)
+        for linha in leitor:
+            reun.append(linha)
+
+    return reun
+
 # ----------------------------------------------------------
 # Tela principal da pesquisa
 # ----------------------------------------------------------
@@ -204,3 +222,21 @@ def mostrar_formulario(parent):
         
         criador_info("Veículos em manutenção", caixa3, tfont = 18)
         criador_info("0", caixa3, tfont = 46)
+        
+        # ---------------- Caixa reuniões do dia ----------------
+        
+        criador_info("Reuniões do dia", caixa4, tfont = 18)
+        lista4 = criador_lista("lista4", caixa4)
+        
+        # Atualiza a lista de Reuniões do dia automaticamente
+        reuns = ler_reu()
+        lista4.delete(0, tk.END)
+        controle2 = 0
+        for c in reuns:
+            controle2 = controle2 + 1
+            if (AGORA in c["Data"]):
+                texto = f"Cliente: {c['Cliente']}  |  Local: {c['Local']} | Horário: {c['Horario']}"
+                lista4.insert(tk.END, texto)
+            elif (controle2 == NUMTD):
+                texto = "NÃO HÁ REUNIÕES AGENDADAS PARA HOJE"
+                lista4.insert(tk.END, texto)

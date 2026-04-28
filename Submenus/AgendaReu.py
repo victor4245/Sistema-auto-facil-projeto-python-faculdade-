@@ -1,7 +1,7 @@
 # ========================================================
-# AgendaTD.py — Agendamento de Test Drive
+# AgendaReu.py — Agendamento de Reunião
 #
-# AgendaTD.mostrar_formulario(area_conteudo)
+# AgendaReu.mostrar_formulario(area_conteudo)
 # ========================================================
 
 import csv
@@ -22,7 +22,7 @@ except Exception:
 AGORA = datetime.now().strftime("%d/%m/%Y")
 CAMINHO_BD = os.getcwd() + "/BD_interno"
 # Criação de código automática
-with open(CAMINHO_BD + "/AgenTD.csv", "r", encoding="utf-8") as arquivo:
+with open(CAMINHO_BD + "/AgenReu.csv", "r", encoding="utf-8") as arquivo:
     linhas = arquivo.readlines()
     AUX = 0 + len(linhas)
 
@@ -48,21 +48,20 @@ def salvar(dados):
             "Preencha pelo menos a Data e o Cliente."
         )
         return
-
-    caminho = CAMINHO_BD + "/AgenTD.csv"
+    if datetime.strptime(dados["Data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
+        messagebox.showwarning(
+            "Data inválida",
+            "A data da reunião não pode ser anterior ao momento atual."
+        )
+        return
+    caminho = CAMINHO_BD + "/AgenReu.csv"
 
     # Verifica se o arquivo existe
     arquivo_existe = os.path.exists(caminho)
     if not arquivo_existe:
         messagebox.showwarning(
             "Banco de dados não encontrado",
-            "Procure o arquivo AgenTD.csv dentro da pasta BD_interno"
-        )
-        return
-    if datetime.strptime(dados["Data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
-        messagebox.showwarning(
-            "Data inválida",
-            "A data da reunião não pode ser anterior ao momento atual."
+            "Procure o arquivo AgenReu.csv dentro da pasta BD_interno"
         )
         return
 
@@ -80,7 +79,7 @@ def salvar(dados):
 
         messagebox.showinfo(
             "Sucesso",
-            "Test Drive salvo com sucesso!\n\nArquivo:\n/BD_interno/AgendaTD.csv"
+            "Reunião salva com sucesso!\n\nArquivo:\n/BD_interno/AgendaReu.csv"
         )
 
     except Exception as erro:
@@ -110,7 +109,7 @@ def mostrar_formulario(parent: tk.Frame):
     # Título
     tk.Label(
         caixa,
-        text="Agendamento de Test Drive",
+        text="Agendamento de Reunião",
         font=("Segoe UI", 16, "bold"),
         bg=COR_FUNDO,
         fg=COR_TEXTO
@@ -155,8 +154,8 @@ def mostrar_formulario(parent: tk.Frame):
     add_linha("Horário", linha=1, col_inicio=2, largura=24)
 
     # Linha 2
-    add_linha("Data", linha=2, col_inicio=0, largura=21)
-    add_linha("Veículo", linha=2, col_inicio=2, largura=24)
+    add_linha("Local", linha=2, col_inicio=0, largura=40)
+    add_linha("Data", linha=2, col_inicio=2, largura=21)
 
     # Observações
     tk.Label(

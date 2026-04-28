@@ -29,7 +29,7 @@ def salvar(dados: dict, senha:tk.Entry, adsenha:tk.Toplevel):
     # Verificação simples (iniciante)
     if dados["Nome"] == "" or dados["Carteira de Trabalho"] == "":
         messagebox.showwarning(
-            "Campos obrigatórios",
+            "Campos obrigatórios faltando",
             "Preencha pelo menos o Nome e a Carteira de Trabalho."
         )
         return
@@ -44,7 +44,7 @@ def salvar(dados: dict, senha:tk.Entry, adsenha:tk.Toplevel):
         dados["Senha"] = "*"
         messagebox.showwarning(
             "Campo de senha",
-            f"A senha não foi preenchida. Por padrão a senha foi definida como {dados["Senha"]}."
+            f"A senha não foi preenchida. Por padrão a senha foi definida como {dados['Senha']}."
         )
 
     caminho = CAMINHO_BD + "/CadFun.csv"
