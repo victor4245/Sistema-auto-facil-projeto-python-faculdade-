@@ -59,7 +59,7 @@ def salvar(dados: dict, senha:tk.Entry, adsenha:tk.Toplevel):
         return
     for f in dados:   
         if not dados[f] == dados["Senha"]:
-            dados[f] = dados[f].lower() # Transforma tudo em minusculo
+            dados[f] = dados[f].lower() # Transforma tudo menos a senha em minusculo
     
     try:
         with open(caminho, "a", newline="", encoding="utf-8") as arquivo:

@@ -118,7 +118,7 @@ def mostrar_formulario(parent: tk.Frame):
             entry.current(0)
         elif rotulo == "Motorização":
             entry = ttk.Combobox(caixa, values=[' ', 'Combustão Flex', 'Combustão Álcool', 
-                                                'Combustão Gasolina', 'Híbrido', 'Elétrico'], width=largura, state="readonly")      
+                                                'Combustão Gasolina', 'Combustão Diesel', 'Híbrido', 'Elétrico', 'Combustão GNV'], width=largura, state="readonly")      
             entry.current(0)
         else:    
             entry = tk.Entry(

@@ -1,2 +1,51 @@
 Nome,Marca,Modelo,Motorização,Condição,Placa,Cor,Ano,OBS
-uno,fiat,compacto,combustão álcool,usado,ocu-0800,amarelo,2011,limpo
+uno,fiat,compacto,Combustão Flex,usado,abc-1234,Branco,2013,esta pronto para venda
+palio,fiat,hatch,Combustão Álcool,usado,pal-4455,Azul,2007,precisa manutenção
+argo,fiat,hatch,Combustão Flex,seminovo,arg-7d88,Prata,2023,limpo
+toro,fiat,picape,Combustão Diesel,seminovo,tor-5k21,Preto,2024,revisado recentemente
+mobi,fiat,compacto,Combustão GNV,usado,mob-9911,Vermelho,2020,kit gnv regularizado
+gol,volkswagen,hatch,Combustão Flex,usado,gol-2233,Cinza,2016,sem observação
+polo,volkswagen,hatch,Combustão Flex,seminovo,pol-8u76,Branco,2022,esta pronto para venda
+amarok,volkswagen,picape,Combustão Diesel,usado,amr-5544,Prata,2019,precisa troca de óleo
+fusca,volkswagen,classico,Combustão Gasolina,usado,fsc-1976,Azul,1976,interior conservado
+nivus,volkswagen,suv,Combustão Flex,novo,nvs-4m32,Vermelho,2025,zero km
+onix,chevrolet,hatch,Combustão Flex,seminovo,onx-7h44,Branco,2023,limpo
+tracker,chevrolet,suv,Combustão Flex,novo,trk-2p11,Cinza,2025,sem detalhes
+s10,chevrolet,picape,Combustão Diesel,usado,sio-6655,Preto,2020,esta pronto para venda
+spin,chevrolet,minivan,Combustão GNV,usado,spn-8890,Bege,2018,kit gnv instalado
+cruze,chevrolet,sedan,Combustão Gasolina,usado,crz-5533,Prata,2019,revisado
+ka,ford,compacto,Combustão Flex,usado,fka-1144,Amarelo,2015,precisa alinhamento
+fusion,ford,sedan,Híbrido,usado,fsn-7n88,Preto,2020,bateria revisada
+ranger,ford,picape,Combustão Diesel,seminovo,ran-3c21,Branco,2023,limpo
+mustang mach-e,ford,suv,Elétrico,novo,mme-5x90,Azul,2025,zero km
+ecosport,ford,suv,Combustão Flex,usado,eco-7744,Vinho,2017,sem observação
+civic,honda,sedan,Combustão Gasolina,seminovo,cvc-8k45,Cinza,2022,esta pronto para venda
+fit,honda,hatch,Combustão Flex,usado,fit-3321,Verde,2016,precisa troca de pneus
+hr-v,honda,suv,Híbrido,seminovo,hrv-1w66,Branco,2024,revisado recentemente
+city,honda,sedan,Combustão Flex,seminovo,cty-9922,Prata,2023,limpo
+wr-v,honda,suv,Combustão GNV,usado,wrv-5566,Laranja,2021,kit gnv regularizado
+corolla,toyota,sedan,Híbrido,seminovo,cor-6v54,Prata,2024,sem detalhes
+hilux,toyota,picape,Combustão Diesel,usado,hlx-8877,Branco,2021,esta pronto para venda
+etios,toyota,hatch,Combustão Flex,usado,eti-1100,Bege,2017,precisa manutenção leve
+prius,toyota,hatch,Híbrido,usado,prs-3d90,Verde,2019,bateria em bom estado
+corolla cross,toyota,suv,Híbrido,novo,ccr-8j21,Preto,2025,zero km
+hb20,hyundai,hatch,Combustão Flex,usado,hb2-5544,Azul,2018,sem observação
+creta,hyundai,suv,Combustão Flex,novo,crt-9p87,Branco,2025,zero km
+kona,hyundai,suv,Elétrico,seminovo,knv-1q33,Cinza,2024,limpo
+ix35,hyundai,suv,Combustão Gasolina,usado,ixh-6632,Prata,2015,precisa revisão
+tucson,hyundai,suv,Combustão GNV,usado,tuc-4r11,Vermelho,2014,kit gnv instalado
+kwid,renault,compacto,Combustão Flex,usado,kwd-1122,Laranja,2020,esta pronto para venda
+sandero,renault,hatch,Combustão Flex,usado,sdr-7788,Prata,2018,limpo
+logan,renault,sedan,Combustão GNV,usado,lgn-5m65,Branco,2019,kit gnv regularizado
+zoe,renault,hatch,Elétrico,usado,zoe-9k12,Azul,2021,autonomia revisada
+duster,renault,suv,Combustão Flex,seminovo,dst-6644,Marrom,2023,sem observação
+208,peugeot,hatch,Combustão Flex,seminovo,pgt-4433,Amarelo,2023,revisado
+3008,peugeot,suv,Híbrido,seminovo,peo-1v76,Preto,2024,esta pronto para venda
+e-208,peugeot,hatch,Elétrico,novo,eso-8y21,Cinza,2025,zero km
+c3,citroen,hatch,Combustão Flex,usado,cex-7765,Vinho,2016,precisa manutenção elétrica
+aircross,citroen,suv,Combustão GNV,usado,air-2231,Fantasia,2017,kit gnv instalado
+dolphin,byd,hatch,Elétrico,novo,byd-7u54,Branco,2025,zero km
+seal,byd,sedan,Elétrico,seminovo,sel-3n90,Azul,2024,limpo
+song plus,byd,suv,Híbrido,seminovo,sng-6654,Cinza,2024,revisado recentemente
+ora,gwm,hatch,Elétrico,novo,orc-5p32,Verde,2025,sem detalhes
+haval h6,gwm,suv,Híbrido,seminovo,hvl-8821,Prata,2024,esta pronto para venda

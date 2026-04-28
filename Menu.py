@@ -18,7 +18,7 @@ except Exception:
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.7.0"
+VERSION = "v 0.7.1"
 ARQUIVO_MAIN = "Autofacil.py"
 
 # -------------------- UTILITÁRIOS ---------------------------
@@ -89,21 +89,6 @@ def criar_janela_principal() -> tk.Tk:
     raiz.grid_columnconfigure(0, minsize=220)  # sidebar fixa
     raiz.grid_columnconfigure(1, weight=1)     # área direita expande
     raiz.grid_rowconfigure(1, weight=1)        # linha do conteúdo expande
-
-    # Topo PRETO
-    topo = tk.Frame(raiz, bg="#0B1220", height=60)
-    topo.grid(row=0, column=1, sticky="nsew")
-    topo.grid_propagate(False)
-
-    # Título centralizado
-    lbl_titulo = tk.Label(
-        topo,
-        text="Sistema de Gerenciamento de Autos",
-        font=("Segoe UI", 18, "bold"),
-        bg="#0B1220",
-        fg="#1561a1"
-    )
-    lbl_titulo.pack(expand=True)
 
     return raiz
 

@@ -138,3 +138,11 @@ v 0.7.0:
 -Adicionado tratamento de erros caso algum biblioteca não esteja instalada
 -adicionada instalação automática das bibliotecas
 -Bugs menores corrigidos
+
+v 0.7.1:
+
+-Atualização dos exemplos no BD local 
+-Correção de alguns cabeçalhos do BD
+-Coreção no cadatro do nome dos clientes
+-Mudança na UI
+-Bugs menores corrigidos

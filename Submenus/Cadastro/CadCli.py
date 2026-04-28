@@ -46,7 +46,8 @@ def salvar(dados):
         return
 
     for f in dados:
-        dados[f] = dados[f].lower() # Transforma tudo em minusculo
+        if not dados[f] == dados["Nome"]:
+            dados[f] = dados[f].lower() # Transforma tudo menos o nome em minusculo
         
     try:
         with open(caminho, "a", newline="", encoding="utf-8") as arquivo:

@@ -26,7 +26,7 @@ AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 CAMINHO_BD = os.getcwd() +"/BD_interno"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.7.0"
+VERSION = "v 0.7.1"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 
