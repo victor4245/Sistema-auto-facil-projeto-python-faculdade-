@@ -9,4 +9,5 @@ venv/
 *.db
 
 .vscode/
-.idea/
+.idea/__pycache__/
+*.pyc
