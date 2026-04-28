@@ -119,3 +119,11 @@ v 0.6.0:
 -Adicionada mensagem de confirmação no logout
 -Otimizações no código
 -Bugs menores corrigidos
+
+v 0.6.1:
+
+-Expansão da aba dashboard
+-Melhorias na UI/UX
+-Otimizações no código
+-Controle de linhas do log adicionado
+-Bugs menores corrigidos

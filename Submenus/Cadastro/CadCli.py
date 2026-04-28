@@ -18,6 +18,7 @@ def limpar(parent: tk.Frame):
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
+COR_TEXTO2 = "#000000"
 COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
@@ -78,10 +79,15 @@ def mostrar_formulario(parent: tk.Frame):
 
     # Um container centralizado
     container = tk.Frame(parent, bg="#1F2937")
-    container.pack(expand=True, ipadx=30, ipady=30)
+    container.pack(fill="both", expand=True)
+    
+    # Um container redundante para melhor controle
+    container2 = tk.Frame(container, bg=COR_FUNDO, width=700, height=500)
+    container2.pack(expand=True)
+    container2.pack_propagate(False)
 
-    caixa = tk.Frame(container, bg=COR_FUNDO)
-    caixa.pack(padx=40, pady=30, expand=True)
+    caixa = tk.Frame(container2, bg=COR_FUNDO)
+    caixa.pack(expand=True)
 
     # Título
     tk.Label(
@@ -115,15 +121,14 @@ def mostrar_formulario(parent: tk.Frame):
                 caixa,
                 width=largura,
                 background=COR_CAMPO,
-                foreground=COR_TEXTO,
-                insertbackground=COR_TEXTO,
+                foreground=COR_TEXTO2,
+                insertbackground=COR_TEXTO2,
                 relief="flat"
             )
         entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
 
         entradas[rotulo] = entry
     
-
     # Linha 1
     add_linha("Nome", linha=1, col_inicio=0, largura=40)
     add_linha("CPF/CNPJ", linha=1, col_inicio=2, largura=24)
@@ -160,7 +165,7 @@ def mostrar_formulario(parent: tk.Frame):
     
     # Botões
     botoes = tk.Frame(caixa, bg=COR_FUNDO)
-    botoes.grid(row=8, column=0, columnspan=4, pady=16)
+    botoes.grid(row=8, column=0, columnspan=4, pady=(16, 0))
 
     def on_salvar():
         dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}
@@ -220,6 +225,3 @@ def mostrar_formulario(parent: tk.Frame):
         cursor="hand2"
     ).pack(side="left", padx=6)
 
-    # Ajuste de colunas
-    for c in range(4):
-        caixa.grid_columnconfigure(c, weight=0)

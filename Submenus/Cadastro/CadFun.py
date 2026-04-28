@@ -19,6 +19,7 @@ def limpar(parent: tk.Frame):
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
+COR_TEXTO2 = "#000000"
 COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
@@ -89,10 +90,15 @@ def mostrar_formulario(parent: tk.Frame):
 
     # Um container centralizado
     container = tk.Frame(parent, bg="#1F2937")
-    container.pack(expand=True, ipadx=30, ipady=20)
+    container.pack(fill="both", expand=True)
+    
+    # Um container redundante para melhor controle
+    container2 = tk.Frame(container, bg=COR_FUNDO, width=700, height=500)
+    container2.pack(expand=True)
+    container2.pack_propagate(False)
 
-    caixa = tk.Frame(container, bg=COR_FUNDO)
-    caixa.pack(padx=40, pady=30, expand=True)
+    caixa = tk.Frame(container2, bg=COR_FUNDO)
+    caixa.pack(expand=True)
 
     # Título
     tk.Label(
@@ -124,8 +130,8 @@ def mostrar_formulario(parent: tk.Frame):
                 caixa,
                 width=largura,
                 background=COR_CAMPO,
-                foreground=COR_TEXTO,
-                insertbackground=COR_TEXTO,
+                foreground=COR_TEXTO2,
+                insertbackground=COR_TEXTO2,
                 relief="flat"
             )
         entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
@@ -153,14 +159,14 @@ def mostrar_formulario(parent: tk.Frame):
         font=("Segoe UI", 10, "bold"),
         bg=COR_FUNDO,
         fg=COR_TEXTO
-    ).grid(row=6, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
+    ).grid(row=5, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
 
     txt_obs = tk.Text(caixa, width=66, height=5, background=COR_CAMPO,foreground=COR_TEXTO,insertbackground=COR_TEXTO, relief="flat")
-    txt_obs.grid(row=7, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
+    txt_obs.grid(row=6, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
 
     # Botões
     botoes = tk.Frame(caixa, bg=COR_FUNDO)
-    botoes.grid(row=8, column=0, columnspan=4, pady=16)
+    botoes.grid(row=7, column=0, columnspan=4, pady=(16, 0))
 
     def on_salvar():
         dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}

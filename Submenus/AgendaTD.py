@@ -4,7 +4,6 @@
 # AgendaTD.mostrar_formulario(area_conteudo)
 # ========================================================
 
-from logging import root
 import tkinter as tk
 from tkinter import messagebox, ttk
 # tkcalendar é necessário para o campo de data

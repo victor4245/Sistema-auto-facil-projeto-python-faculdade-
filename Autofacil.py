@@ -28,7 +28,7 @@ except Exception:
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 CAMINHO_BD = os.getcwd() +"/BD_interno"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.6.0"
+VERSION = "v 0.6.1"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 
@@ -127,9 +127,14 @@ def atualizar_fundo(janela: tk.Tk, lbl_fundo: tk.Label, img_base):
 
 # Log para conferir usuários logados anteriormente
 def log_login(login: str):
-
-    with open(CAMINHO_BD + "/log.txt", "a", encoding="utf-8") as log:
-        log.write(f"O usuário com o login {login} acessou o sistema as {AGORA}\n")
+    with open(CAMINHO_BD + "/log.txt", "r", encoding="utf-8") as log:
+        linhas = log.readlines()
+    if len(linhas) > 100:
+        with open(CAMINHO_BD + "/log.txt", "w", encoding="utf-8") as log:
+            log.write(f"O usuário com o login {login} acessou o sistema as {AGORA}\n")
+    else:
+        with open(CAMINHO_BD + "/log.txt", "a", encoding="utf-8") as log:
+            log.write(f"O usuário com o login {login} acessou o sistema as {AGORA}\n")
     return
 def abrir_menu(janela: tk.Tk, pessoa:str):
     """Fecha esta janela e abre o arquivo 'menu.py' (no mesmo diretório)."""

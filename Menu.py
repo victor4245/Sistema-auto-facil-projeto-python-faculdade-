@@ -17,13 +17,8 @@ except Exception:
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.6.0"
+VERSION = "v 0.6.1"
 ARQUIVO_MAIN = "Autofacil.py"
-
-# -------------------- AÇÕES DIDÁTICAS -----------------------
-def mostrar_mensagem(texto: str):
-    """Mostra um aviso simples; aqui você poderia abrir outra tela real."""
-    messagebox.showinfo("Ação", f"Você clicou em: {texto}")
 
 # -------------------- UTILITÁRIOS ---------------------------
 def maximizar_janela(janela: tk.Tk):
@@ -163,7 +158,7 @@ def criar_item_menu(pai: tk.Frame, texto: str, icone: str, subitens=None, acao=N
     btn.pack(fill="x", padx=12, pady=6)
 
     if not subitens:
-        btn.configure(command=lambda: acao() if acao else mostrar_mensagem(texto))
+        btn.configure(command=lambda: acao() if acao else print(texto))
         return
 
     submenu = tk.Frame(item, bg="#0B1220")
@@ -173,7 +168,7 @@ def criar_item_menu(pai: tk.Frame, texto: str, icone: str, subitens=None, acao=N
     for nome in subitens:
         acao_sub = (acoes_subitens or {}).get(
             nome,
-            lambda n=nome: mostrar_mensagem(f"{texto} › {n}")
+            lambda n=nome: tk.messagebox.showwarning("Botão ainda sem atribuição", f"O botão '{n}' ainda não tem uma ação definida.")
         )
 
         sub_btn = tk.Button(

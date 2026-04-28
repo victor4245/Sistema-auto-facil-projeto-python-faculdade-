@@ -3,7 +3,7 @@
 # =========================================================
 
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import messagebox
 import csv
 import os
 # -------- CONFIGURAÇÕES BÁSICAS --------
@@ -12,6 +12,7 @@ CAMINHO_BD = os.getcwd() + "/BD_interno"
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
+COR_TEXTO2 = "#000000"
 COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
@@ -53,13 +54,15 @@ def mostrar_formulario(parent):
 
     # Container central
     container = tk.Frame(parent, bg="#1F2937")
-    container.pack(expand=True)
+    container.pack(fill="both", expand=True)
+    
+    # Um container redundante para melhor controle
+    container2 = tk.Frame(container, bg=COR_FUNDO, width=700, height=500)
+    container2.pack(expand=True)
+    container2.pack_propagate(False)
 
-    caixa = tk.Frame(container, bg=COR_FUNDO)
-    caixa.pack(padx=40, pady=30, fill="both", expand=True)
-    # Ajuste de colunas
-    for c in range(4):
-        caixa.grid_columnconfigure(c, weight=0)
+    caixa = tk.Frame(container2, bg=COR_FUNDO)
+    caixa.pack(expand=True)
 
     # ---------------- TÍTULO ----------------
     tk.Label(
@@ -86,7 +89,7 @@ def mostrar_formulario(parent):
                 caixa,
                 width=largura,
                 background=COR_CAMPO,
-                foreground=COR_TEXTO,
+                foreground=COR_TEXTO2,
                 insertbackground=COR_TEXTO,
                 relief="flat"
             )
@@ -127,7 +130,7 @@ def mostrar_formulario(parent):
 
         for c in veiculos:
             if (filtro[0] in c["Nome"] or filtro[1] in c["Marca"] or filtro[2] in c["Modelo"] or filtro[3] in c["Motorização"]) or (filtro[4] in c["Condição"] or filtro[5] in c["Cor"] or filtro[6] in c["Ano"]):
-                texto = f"{c['Nome']}  |  Placa: {c['Placa']}"
+                texto = f"   {c['Nome']}  |  Placa: {c['Placa']}  |  Marca: {c['Marca']}  |  Condição: {c['Condição']}"
                 lista.insert(tk.END, texto)
                 veiculos_filtrados.append(c)
 
@@ -156,7 +159,7 @@ def mostrar_formulario(parent):
         veiculos_filtrados.clear()
 
         for c in veiculos:          
-            texto = f"{c['Nome']}  |  Placa: {c['Placa']}"
+            texto = f"   {c['Nome']}  |  Placa: {c['Placa']}  |  Marca: {c['Marca']}  |  Condição: {c['Condição']}"
             lista.insert(tk.END, texto)
             veiculos_filtrados.append(c)
 

@@ -35,6 +35,7 @@ def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
         messagebox.showerror("Acesso negado", "Login ou senha incorretos.")
         return
     
+    # Sem função por enquanto somente mensagem 
     messagebox.showinfo("Bem-vindo", "Acesso concedido.")
 
 def mostrar_formulario(parent: tk.Frame):

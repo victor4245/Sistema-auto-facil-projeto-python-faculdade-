@@ -3,7 +3,6 @@
 # =========================================================
 
 import tkinter as tk
-from tkinter import messagebox, ttk
 import csv
 import os
 from datetime import datetime
@@ -119,39 +118,43 @@ def mostrar_formulario(parent):
         command=lambda:[ajusta_pagina(2),mostrar_formulario(parent)],
         cursor="hand2"
     ).pack(side="left", padx=6)
+    
+    # Criador de caixas
+    def criador_caixas(caixa: str, coluna, linha):
+        caixas = {}
+        
+        caixas[caixa] = tk.Frame(container, bg=COR_CAMPO, width=400, height=200)
+        caixas[caixa].grid(padx=30, pady=10, column=coluna, row=linha)
+        caixas[caixa].grid_propagate(False)
+        caixas[caixa].grid_columnconfigure(0, weight=1)
+        return caixas[caixa]
+    # Aplicador de informações nas caixas
+    def criador_info(texto, caixa, tfont):
+        info = {}
+        
+        info[texto] = tk.Label(
+            caixa,
+            text=texto,
+            font=("Segoe UI", tfont, "bold"),
+            bg=COR_CAMPO,
+            fg=COR_TEXTO
+        )
+        info[texto].grid(pady=15, padx=10, sticky="nsew")
+        return info[texto]    
+    # Criador de listas
+    def criador_lista(nome, caixa):
+        lists = {}
+        
+        lists[nome] = tk.Listbox(caixa, width=70, height=30,bg=COR_CAMPO, fg=COR_TEXTO, borderwidth=0, highlightthickness=0, relief="flat", justify='center')
+        lists[nome].grid(pady=15, padx=10, sticky="nsew")
+        return lists[nome]
+    # Caixas informativas 
+    caixa1 = criador_caixas("caixa1", coluna=0, linha=1)
+    caixa2 = criador_caixas("caixa2", coluna=1, linha=1)
+    caixa3 = criador_caixas("caixa3", coluna=0, linha=2)
+    caixa4 = criador_caixas("caixa4", coluna=1, linha=2)
+    
     if (PAGINA == 1):
-        # Caixas informativas
-        def criador_caixas(caixa: str, coluna, linha):
-            caixas = {}
-            if caixa == "caixa4":
-                caixas[caixa] = tk.Frame(container, bg=COR_CAMPO, width=400, height=200)
-                caixas[caixa].grid(padx=30, pady=10, column=coluna, row=linha)
-                caixas[caixa].grid_propagate(False)
-                caixas[caixa].grid_columnconfigure(0, weight=1)
-            else:
-                caixas[caixa] = tk.Frame(container, bg=COR_CAMPO, width=400, height=200)
-                caixas[caixa].grid(padx=30, pady=10, column=coluna, row=linha)
-                caixas[caixa].grid_propagate(False)
-                caixas[caixa].grid_columnconfigure(0, weight=1)
-            return caixas[caixa]
- 
-        caixa1 = criador_caixas("caixa1", coluna=0, linha=1)
-        caixa2 = criador_caixas("caixa2", coluna=1, linha=1)
-        caixa3 = criador_caixas("caixa3", coluna=0, linha=2)
-        caixa4 = criador_caixas("caixa4", coluna=1, linha=2)
-
-
-        def criador_info(texto, caixa, tfont):
-            info = {}
-            info[texto] = tk.Label(
-                caixa,
-                text=texto,
-                font=("Segoe UI", tfont, "bold"),
-                bg=COR_CAMPO,
-                fg=COR_TEXTO
-            )
-            info[texto].grid(pady=15, padx=10, sticky="nsew")
-            return info[texto]
         
         # ---------------- Caixa Cliente ----------------
         
@@ -169,19 +172,13 @@ def mostrar_formulario(parent):
         criador_info(f"{NUMVEIC}", caixa3, tfont = 46)
         
         # ---------------- Caixa Test drive ----------------
-        tk.Label(
-            caixa4,
-            text="Test drives do dia",
-            font=("Segoe UI", 18, "bold"),
-            bg=COR_CAMPO,
-            fg=COR_TEXTO
-        ).grid(pady=15, sticky="n")
-        lista3 = tk.Listbox(caixa4, width=70, height=6,bg=COR_CAMPO, fg=COR_TEXTO, borderwidth=0, highlightthickness=0, relief="flat", justify='center')
-        lista3.grid( padx=15, pady=10, sticky="n")
+        
+        criador_info("Test drives do dia", caixa4, tfont = 18)
+        lista3 = criador_lista("lista3", caixa4)
+        
+        # Atualiza a lista de Test drives do dia automaticamente
         tests = ler_test()
         lista3.delete(0, tk.END)
-    
-        # Atualiza a lista de Test drives do dia automaticamente
         controle = 0
         for c in tests:
             controle = controle + 1
@@ -190,37 +187,20 @@ def mostrar_formulario(parent):
                 lista3.insert(tk.END, texto)
             elif (controle == NUMTD):
                 texto = "NÃO HÁ TEST DRIVES AGENDADOS PARA HOJE"
-                lista3.insert(tk.END, texto) 
+                lista3.insert(tk.END, texto)
     elif(PAGINA == 2):
-        # Caixa informativas 2
-        def criador_caixas(caixa: str, coluna, linha):
-            caixas = {}
-            if caixa == "caixa4":
-                caixas[caixa] = tk.Frame(container, bg=COR_CAMPO, width=400, height=200)
-                caixas[caixa].grid(padx=30, pady=10, column=coluna, row=linha)
-                caixas[caixa].grid_propagate(False)
-                caixas[caixa].grid_columnconfigure(0, weight=1)
-            else:
-                caixas[caixa] = tk.Frame(container, bg=COR_CAMPO, width=400, height=200)
-                caixas[caixa].grid(padx=30, pady=10, column=coluna, row=linha)
-                caixas[caixa].grid_propagate(False)
-                caixas[caixa].grid_columnconfigure(0, weight=1)
-            return caixas[caixa]
-        caixa5 = criador_caixas("caixa5", coluna=0, linha=1)
-        
-        def criador_info(texto, caixa, tfont):
-            info = {}
-            info[texto] = tk.Label(
-                caixa,
-                text=texto,
-                font=("Segoe UI", tfont, "bold"),
-                bg=COR_CAMPO,
-                fg=COR_TEXTO
-            )
-            info[texto].grid(pady=15, padx=10, sticky="nsew")
-            return info[texto]
 
-        # ---------------- Caixa Veículos vendidos----------------
+        # ---------------- Caixa Veículos vendidos ----------------
         
-        criador_info("Veículos Vendidos", caixa5, tfont = 18)
-        criador_info("200", caixa5, tfont = 46)
+        criador_info("Veículos Vendidos", caixa1, tfont = 18)
+        criador_info("200", caixa1, tfont = 46)
+        
+        # ---------------- Caixa Faturamento ----------------
+
+        criador_info("Faturamento do mês", caixa2, tfont = 18)
+        criador_info("R$ 1.000.000,00", caixa2, tfont = 32)
+        
+        # ---------------- Caixa veículos em manutenção ----------------
+        
+        criador_info("Veículos em manutenção", caixa3, tfont = 18)
+        criador_info("0", caixa3, tfont = 46)
