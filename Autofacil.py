@@ -26,7 +26,7 @@ AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 CAMINHO_BD = os.getcwd() +"/BD_interno"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.7.1"
+VERSION = "v 0.7.2"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 
@@ -43,7 +43,7 @@ with open(CAMINHO_BD + "/CadFun.csv", "r", newline="", encoding="utf-8") as arqu
 
 # Adição dos CPFs e Emails para verificação de login
 for i in range(len(login)):
-    LOGIN_CPF.append(login[i]["CPF"])
+    LOGIN_CPF.append(login[i]["CPF"].strip().replace(".", "").replace("-", "").strip())
 for i in range(len(login)):
     LOGIN_EMAIL.append(login[i]["Email"])
 # Captura dos nomes para saudação

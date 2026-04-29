@@ -110,8 +110,8 @@ def mostrar_formulario(parent):
     caixaB.grid(padx=30, pady=10, column=0, row=3, columnspan=4)
     tk.Button(
         caixaB,
-        text="<<",
-        font=("Segoe UI", 10, "bold"),
+        text="1",
+        font=("Segoe UI", 12, "bold"),
         bg="#2563EB",
         fg="white",
         activebackground="#1E40AF",
@@ -124,8 +124,8 @@ def mostrar_formulario(parent):
     ).pack(side="left", padx=6)
     tk.Button(
         caixaB,
-        text=">>",
-        font=("Segoe UI", 10, "bold"),
+        text="2",
+        font=("Segoe UI", 12, "bold"),
         bg="#2563EB",
         fg="white",
         activebackground="#1E40AF",

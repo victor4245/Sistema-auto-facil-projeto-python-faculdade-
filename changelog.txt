@@ -1,6 +1,6 @@
 v 0.1.0:
 
--Reformulção total do código inicial
+-Reformulação total do código inicial
 -Criação do changelog
 -Tela de cadastro de funcionário e frota corrigidos
 -Logo adicionada na UI
@@ -8,7 +8,7 @@ v 0.1.0:
 
 v 0.2.0:
 
--Tela de pesquisa de funcionários, clientes e frota
+-Adiconada aba de pesquisa de funcionários, clientes e frota
 -Erros de digitação e comentários corrigidos
 -Melhorias na UI/UX
 -Criação de log de login dos usuários
@@ -72,7 +72,7 @@ v 0.4.0:
 -Atualizações nos comentários do código
 -Atualização no salvamento de dados no banco interno
 -Adicionada melhor verificação e tratamento de erros
--Atualizada tela de login da aba administrativa
+-Atualizada a tela de login da aba administrativa
 -Bugs menores corrigidos
 
 v 0.4.1:
@@ -135,7 +135,7 @@ v 0.7.0:
 -Criação das abas de agendamento de reunião, pesquisa de reunião/tests drives
 -Criação do banco de dados de agendamentos de Reunião
 -Melhorias na UI/UX
--Adicionado tratamento de erros caso algum biblioteca não esteja instalada
+-Adicionado tratamento de erros caso alguma biblioteca não esteja instalada
 -adicionada instalação automática das bibliotecas
 -Bugs menores corrigidos
 
@@ -143,6 +143,13 @@ v 0.7.1:
 
 -Atualização dos exemplos no BD local 
 -Correção de alguns cabeçalhos do BD
--Coreção no cadatro do nome dos clientes
+-Correção no cadastro do nome dos clientes
 -Mudança na UI
+-Bugs menores corrigidos
+
+v 0.7.2: 
+
+-Erros no changelog corrigidos
+-Atualização dos exemplos no BD local 
+-Mudança dos botões de página do dashboard
 -Bugs menores corrigidos
