@@ -18,7 +18,7 @@ except Exception:
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.7.2"
+VERSION = "v 0.7.3"
 ARQUIVO_MAIN = "Autofacil.py"
 
 # -------------------- UTILITÁRIOS ---------------------------

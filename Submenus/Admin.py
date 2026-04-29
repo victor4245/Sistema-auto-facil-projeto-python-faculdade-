@@ -5,10 +5,15 @@
 # ========================================================
 
 import tkinter as tk
+import os
 from tkinter import messagebox
+
 # -------- CONFIGURAÇÕES BÁSICAS --------
+
 LOGIN_ADM = "admin"
 SENHA_ADM = "123"
+CAMINHO_BD = os.getcwd() + "/BD_interno"
+
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
@@ -19,6 +24,14 @@ def limpar(parent: tk.Frame):
     """Remove tudo que estiver no parent (caso queira reutilizar)."""
     for w in parent.winfo_children():
         w.destroy()
+        
+def abrir_bd(nome_arquivo: str):
+    try:
+        os.startfile(f"{CAMINHO_BD}/{nome_arquivo}")
+    except:
+        messagebox.showerror("Erro", f"Não foi possível abrir o arquivo {nome_arquivo}.\nVerifique se ele existe dentro da pasta BD_interno.")
+        return
+        
 def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
     """Ação do botão Acessar (e tecla Enter):
     - Verifica se os campos estão preenchidos
@@ -75,12 +88,11 @@ def mostrar_comandos(janela: tk.Tk):
                                     )
         funcoes[funcao].grid(padx=30, pady=10, column=coluna, row=linha)
         return funcoes[funcao]
-    criador_botoes("Gerenciar funcionários", coluna=0, linha=1)
-    criador_botoes("Apagar BD Clientes", coluna=1, linha=1)
-    criador_botoes("Apagar BD Funcionários", coluna=0, linha=2)
-    criador_botoes("Apagar BD Frota", coluna=1, linha=2)
-    criador_botoes("Apagar BD Reunião", coluna=0, linha=3)
-    criador_botoes("Apagar BD Reunião", coluna=1, linha=3)
+    criador_botoes("Abrir BD Clientes", coluna=0, linha=1, comando=lambda: abrir_bd("Cadcli.csv"))
+    criador_botoes("Abrir BD Funcionários", coluna=1, linha=1, comando=lambda: abrir_bd("CadFun.csv"))
+    criador_botoes("Abrir BD Frota", coluna=0, linha=2, comando=lambda: abrir_bd("CadFro.csv"))
+    criador_botoes("Abrir BD Reunião", coluna=1, linha=2, comando=lambda: abrir_bd("AgenReu.csv"))
+    criador_botoes("Abrir BD Test Drive", coluna=0, linha=3, comando=lambda: abrir_bd("AgenTD.csv"))
 def mostrar_formulario(parent: tk.Frame):
     # Limpa qualquer conteúdo anterior
     limpar(parent)

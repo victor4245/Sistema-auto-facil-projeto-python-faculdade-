@@ -7,7 +7,6 @@ import csv
 import os
 from datetime import datetime
 
-
 # -------- CONFIGURAÇÕES BÁSICAS --------
 
 AGORA = datetime.now().strftime("%d/%m/%Y")

@@ -7,10 +7,11 @@
 import csv
 import os
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import messagebox
 import subprocess
 import sys
 from datetime import datetime
+
 # tkcalendar é necessário para o campo de data
 try:
     from tkcalendar import DateEntry
@@ -62,7 +63,7 @@ def salvar(dados):
     if datetime.strptime(dados["Data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
         messagebox.showwarning(
             "Data inválida",
-            "A data da reunião não pode ser anterior ao momento atual."
+            "A data do test drive não pode ser anterior ao momento atual."
         )
         return
 
@@ -80,7 +81,7 @@ def salvar(dados):
 
         messagebox.showinfo(
             "Sucesso",
-            "Test Drive salvo com sucesso!\n\nArquivo:\n/BD_interno/AgendaTD.csv"
+            "Test Drive salvo com sucesso no banco de dados interno!"
         )
 
     except Exception as erro:
@@ -167,7 +168,7 @@ def mostrar_formulario(parent: tk.Frame):
         fg=COR_TEXTO
     ).grid(row=3, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
 
-    txt_obs = tk.Text(caixa, width=66, height=5, bd=1, relief="solid")
+    txt_obs = tk.Text(caixa, width=66, height=5, background=COR_CAMPO,foreground=COR_TEXTO2,insertbackground=COR_TEXTO2, relief="flat")
     txt_obs.grid(row=4, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
 
     # Botões
@@ -177,13 +178,13 @@ def mostrar_formulario(parent: tk.Frame):
     def on_salvar():
         dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}
         dados["Código"] = str(AUX)
-        dados["Observações"] = txt_obs.get("1.0", "end").strip()
+        dados["Observações"] = txt_obs.get("1.0", "end-1c").strip()
         salvar(dados)
 
     def on_limpar():
         for ent in entradas.values():
             ent.delete(0, "end")
-        txt_obs.delete("1.0", "end")
+        txt_obs.delete("1.0", "end-1c")
 
     def on_cancelar():
         limpar(parent)

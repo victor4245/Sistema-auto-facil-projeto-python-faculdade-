@@ -26,7 +26,7 @@ AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 CAMINHO_BD = os.getcwd() +"/BD_interno"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.7.2"
+VERSION = "v 0.7.3"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 
@@ -139,6 +139,7 @@ def abrir_menu(janela: tk.Tk, pessoa:str):
     if not os.path.exists(caminho_menu):
         messagebox.showerror("menu.py não encontrado",f"Coloque o arquivo '{ARQUIVO_MENU}' no mesmo diretório deste script:\n{base_dir}")
         return
+    # Abrindo o arquivo menu.py e passando o nome da pessoa que esta logando para ser usado na mensagem de boas vindas
     try:
         subprocess.Popen([sys.executable, caminho_menu, pessoa])
         janela.destroy()
@@ -220,11 +221,11 @@ def criar_janela():
     # ----------------- CABEÇALHO -----------------
     cabecalho = tk.Frame(raiz, bg="#0B1220")
     cabecalho.pack(side="top", fill="x")
-    cabecalho.grid_columnconfigure(0, weight=1)
+    cabecalho.grid_columnconfigure(0, weight=2)
     cabecalho.grid_columnconfigure(1, weight=1)
     cabecalho.grid_columnconfigure(2, weight=1)
     tit_fr = tk.Frame(cabecalho, bg="#0B1220")
-    tit_fr.grid(row=0, column=1, sticky="nsew", padx=5)
+    tit_fr.grid(row=0, column=1, sticky="nsew", pady=(30, 0))
     tit_fr.grid_columnconfigure(0, weight=1)
 
     lbl_titulo = tk.Label(
@@ -255,17 +256,17 @@ def criar_janela():
         fg="#E5E7EB",
         pady=4
     )
-    lbl_versao.grid(row=0, column=0, sticky="w", padx=(0, 160))
+    lbl_versao.grid(row=0, column=0, sticky="sw", pady=(30, 0))
     # Tratamento de erro caso a biblioteca pillow não esteja instalada
     try:
         img_logo = Image.open(CAMINHO_IMAGENS + "/carro.png").convert("RGBA")
-        img_logo = img_logo.resize((200, 180))
+        img_logo = img_logo.resize((220, 180))
         img_logo = ImageTk.PhotoImage(img_logo)
         lbl_logo = tk.Label(
             cabecalho,
             bg="#0B1220",
             image = img_logo)
-        lbl_logo.grid(row=0, column=2, sticky="e", ipadx=0)
+        lbl_logo.grid(row=0, column=2, sticky="e")
     except:
         messagebox.showwarning("Ocorreu um erro", "Biblioteca pillow faltando. Fechando o programa")
         raiz.destroy()
@@ -324,7 +325,7 @@ def criar_janela():
         command=lambda: ao_acessar(entrada_login, entrada_senha, raiz),
         cursor="hand2"
     )
-    btn_acessar.grid(row=3, column=1, sticky="es", padx=(0, 12), pady=(25, 0))
+    btn_acessar.grid(row=3, column=0, sticky="ws", padx=(12, 0), pady=(25, 0))
 
     # Botão Sair
     btn_sair = tk.Button(
@@ -337,7 +338,7 @@ def criar_janela():
         command=lambda: ao_sair(raiz),
         cursor="hand2"
     )
-    btn_sair.grid(row=3, column=0, sticky="ws", padx=(20, 0), pady=(25, 0))
+    btn_sair.grid(row=3, column=1, sticky="es", padx=(0, 20), pady=(25, 0))
 
     # ENTER aciona acessar
     raiz.bind("<Return>", lambda e: ao_acessar(entrada_login, entrada_senha, raiz))

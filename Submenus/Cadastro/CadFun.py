@@ -161,7 +161,7 @@ def mostrar_formulario(parent: tk.Frame):
         fg=COR_TEXTO
     ).grid(row=5, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
 
-    txt_obs = tk.Text(caixa, width=66, height=5, background=COR_CAMPO,foreground=COR_TEXTO,insertbackground=COR_TEXTO, relief="flat")
+    txt_obs = tk.Text(caixa, width=66, height=5, background=COR_CAMPO,foreground=COR_TEXTO2,insertbackground=COR_TEXTO2, relief="flat")
     txt_obs.grid(row=6, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
 
     # Botões
@@ -170,7 +170,7 @@ def mostrar_formulario(parent: tk.Frame):
 
     def on_salvar():
         dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}
-        dados["Observações"] = txt_obs.get("1.0", "end").strip()  
+        dados["Observações"] = txt_obs.get("1.0", "end-1c").strip()  
         dados["Senha"] = "*"
         ad_senha(dados)
 
@@ -178,7 +178,7 @@ def mostrar_formulario(parent: tk.Frame):
     def on_limpar():
         for ent in entradas.values():
             ent.delete(0, "end")
-        txt_obs.delete("1.0", "end")
+        txt_obs.delete("1.0", "end-1c")
 
     def on_cancelar():
         limpar(parent)
