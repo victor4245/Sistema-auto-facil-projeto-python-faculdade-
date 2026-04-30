@@ -120,16 +120,16 @@ def atualizar_fundo(janela: tk.Tk, lbl_fundo: tk.Label, img_base):
     lbl_fundo.configure(image=img_tk)
     lbl_fundo._img_ref = img_tk # mantém referência
 
-# Log para conferir usuários logados anteriormente
-def log_login(login: str):
+# Log para conferir funcionários logados anteriormente
+def log_login(pessoa: str):
     with open(CAMINHO_BD + "/log.txt", "r", encoding="utf-8") as log:
         linhas = log.readlines()
     if len(linhas) > 100:
         with open(CAMINHO_BD + "/log.txt", "w", encoding="utf-8") as log:
-            log.write(f"O usuário com o login {login} acessou o sistema as {AGORA}\n")
+            log.write(f"O funcionário {pessoa} acessou o sistema as {AGORA}\n")
     else:
         with open(CAMINHO_BD + "/log.txt", "a", encoding="utf-8") as log:
-            log.write(f"O usuário com o login {login} acessou o sistema as {AGORA}\n")
+            log.write(f"O funcionário {pessoa} acessou o sistema as {AGORA}\n")
     return
 def abrir_menu(janela: tk.Tk, pessoa:str):
     """Fecha esta janela e abre o arquivo 'menu.py' (no mesmo diretório)."""
@@ -163,7 +163,7 @@ def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
             if senha == SENHA_ESPERADA[i]:
                 login2 = True
                 pessoa = PESSOA[i]
-                log_login(login)
+                log_login(pessoa)
                 abrir_menu(janela, pessoa)
                 break
             else:

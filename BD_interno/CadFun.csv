@@ -1,8 +1,8 @@
 Nome,CPF,Email,Telefone,Cargo,Carteira de Trabalho,OBS,Senha
-admin,464.646.464-64,admin@email.com,(61) 94002-8922,administrador,464.646.464-64,sem observação,@a
-marcos silva,551.882.440-91,marcos.silva@email.com,(11) 98774-2201,gerente,551.882.440-91,sem observação,mk2026
-juliana costa,882.114.773-20,juliana.costa@email.com,(21) 99115-8874,vendedor,882.114.773-20,sem observação,jc#45
-pedro almeida,337.441.992-81,pedro.almeida@email.com,(31) 98872-4410,mecânico,337.441.992-81,sem observação,fixcar9
-camila rocha,992.773.118-00,camila.rocha@email.com,(41) 99654-1187,assistente administrativo,992.773.118-00,sem observação,adm202
-leonardo reis,771.882.334-19,leonardo.reis@email.com,(71) 98511-7720,lavador,771.882.334-19,sem observação,lav@123
-rafael mendes,118.220.773-41,rafael.mendes@email.com,(62) 99210-6644,vendedor,118.220.773-41,sem observação,rf2025
+Administrador,464.646.464-64,a,(61) 94002-8922,administrador,464.646.464-64,sem observação,@a
+Marcos Silva,551.882.440-91,marcos.silva@email.com,(11) 98774-2201,gerente,551.882.440-91,sem observação,mk2026
+Juliana Costa,882.114.773-20,juliana.costa@email.com,(21) 99115-8874,vendedor,882.114.773-20,sem observação,jc#45
+Pedro Almeida,337.441.992-81,pedro.almeida@email.com,(31) 98872-4410,mecânico,337.441.992-81,sem observação,fixcar9
+Camila Rocha,992.773.118-00,camila.rocha@email.com,(41) 99654-1187,assistente administrativo,992.773.118-00,sem observação,adm202
+Leonardo Reis,771.882.334-19,leonardo.reis@email.com,(71) 98511-7720,lavador,771.882.334-19,sem observação,lav@123
+Rafael Mendes,118.220.773-41,rafael.mendes@email.com,(62) 99210-6644,vendedor,118.220.773-41,sem observação,rf2025

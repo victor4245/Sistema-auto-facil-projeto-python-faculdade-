@@ -58,7 +58,7 @@ def salvar(dados: dict, senha:tk.Entry, adsenha:tk.Toplevel):
         )
         return
     for f in dados:   
-        if not dados[f] == dados["Senha"]:
+        if not dados[f] == dados["Senha"] or not dados[f] == dados["Nome"]:
             dados[f] = dados[f].lower() # Transforma tudo menos a senha em minusculo
     
     try:

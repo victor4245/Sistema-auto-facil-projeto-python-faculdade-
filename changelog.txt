@@ -1,163 +1,172 @@
 v 0.1.0:
 
--Reformulação total do código inicial
--Criação do changelog
--Tela de cadastro de funcionário e frota corrigidos
--Logo adicionada na UI
--Bugs menores corrigidos
+- Reformulação total do código inicial
+- Criação do changelog
+- Tela de cadastro de funcionário e frota corrigidos
+- Logo adicionada na UI
+- Bugs menores corrigidos
 
 v 0.2.0:
 
--Adiconada aba de pesquisa de funcionários, clientes e frota
--Erros de digitação e comentários corrigidos
--Melhorias na UI/UX
--Criação de log de login dos usuários
--Novas cores de carro para seleção
--Bugs menores corrigidos
+- Adiconada aba de pesquisa de funcionários, clientes e frota
+- Erros de digitação e comentários corrigidos
+- Melhorias na UI/UX
+- Criação de log de login dos usuários
+- Novas cores de carro para seleção
+- Bugs menores corrigidos
 
 v 0.2.1:
 
--Preparação para recebimento do BD
--Melhorias na UI
--Bugs menores corrigidos
+- Preparação para recebimento do BD
+- Melhorias na UI
+- Bugs menores corrigidos
 
 v 0.3.0:
 
--Banco de dados local adicionado
--Implementada a pesquisa de clientes
--Atualizações nos comentários do código
--Mudança no nome dos aquivos da frota
--Bugs menores corrigidos
+- Banco de dados local adicionado
+- Implementada a pesquisa de clientes
+- Atualizações nos comentários do código
+- Mudança no nome dos aquivos da frota
+- Bugs menores corrigidos
 
 v 0.3.1:
 
--Cabeçalhos do BD corrigidos
--Preparação para a pesquisa da frota e de funcionários
--Bugs menores corrigidos
+- Cabeçalhos do BD corrigidos
+- Preparação para a pesquisa da frota e de funcionários
+- Bugs menores corrigidos
 
 v 0.3.2:
 
--Adicionada verificação de Emails de funcionários no momento do login
--Bugs menores corrigidos
+- Adicionada verificação de Emails de funcionários no momento do login
+- Bugs menores corrigidos
 
 v 0.3.3:
 
--Adicionada verificação de Senhas de funcionários no momento do login
--Atualizações nos comentários do código
--Bugs menores corrigidos
+- Adicionada verificação de Senhas de funcionários no momento do login
+- Atualizações nos comentários do código
+- Bugs menores corrigidos
 
 v 0.3.4:
 
--Implementada a pesquisa de funcionários e frota
--Bugs menores corrigidos
+- Implementada a pesquisa de funcionários e frota
+- Bugs menores corrigidos
 
 v 0.3.5:
 
--Aba de pesquisa de clientes retrabalhada
--Melhorias na UI/UX
--Otimizações no código
--Bugs menores corrigidos
+- Aba de pesquisa de clientes retrabalhada
+- Melhorias na UI/UX
+- Otimizações no código
+- Bugs menores corrigidos
 
 v 0.3.6:
 
--Melhorias na UI/UX dos cadastros
--Otimizações no código
--Preparação para criação da aba administrativa
--Bugs menores corrigidos
+- Melhorias na UI/UX dos cadastros
+- Otimizações no código
+- Preparação para criação da aba administrativa
+- Bugs menores corrigidos
 
 v 0.4.0:
 
--Melhoria geral na otimização do código
--Aba de pesquisa de funcionários e frota retrabalhada
--Atualizações nos comentários do código
--Atualização no salvamento de dados no banco interno
--Adicionada melhor verificação e tratamento de erros
--Atualizada a tela de login da aba administrativa
--Bugs menores corrigidos
+- Melhoria geral na otimização do código
+- Aba de pesquisa de funcionários e frota retrabalhada
+- Atualizações nos comentários do código
+- Atualização no salvamento de dados no banco interno
+- Adicionada melhor verificação e tratamento de erros
+- Atualizada a tela de login da aba administrativa
+- Bugs menores corrigidos
 
 v 0.4.1:
 
--Pequenas correções na UI/UX
--Otimização geral no código
--Bugs menores corrigidos
+- Pequenas correções na UI/UX
+- Otimização geral no código
+- Bugs menores corrigidos
 
 v 0.4.2:
 
--Preparação para recebimento da aba de agendamentos
--Otimizações no código
--Bug do modo de edição da aba de pesquisa da frota e da aba funcionários corrigido
+- Preparação para recebimento da aba de agendamentos
+- Otimizações no código
+- Bug do modo de edição da aba de pesquisa da frota e da aba funcionários corrigido
 
 v 0.4.3:
 
--Criação da aba de agendamentos de test drive
--Preparação para recebimento da aba de dashboard
--Criação do banco de dados de agendamentos de test drives
--Atualizações nos comentários do código
--Bugs menores corrigidos
+- Criação da aba de agendamentos de test drive
+- Preparação para recebimento da aba de dashboard
+- Criação do banco de dados de agendamentos de test drives
+- Atualizações nos comentários do código
+- Bugs menores corrigidos
 
 v 0.4.4:
 
--Melhorias na UI/UX
--Expansão da aba dashboard
--Criação dos botões de seleção de página na aba dashboard
--Bugs menores corrigidos
+- Melhorias na UI/UX
+- Expansão da aba dashboard
+- Criação dos botões de seleção de página na aba dashboard
+- Bugs menores corrigidos
 
 v 0.5.0:
 
--Reformulação nos diretórios do programa
--Tela de adição de senha de login de funcionário adicionado ao cadastro de funcionários
--Adição da possibilidade de logar com o CPF
--Melhoria nas mensagens de conclusão
--Adicionado o botão de logout no menu
--Mensagem de saudação ao logar adicionada
--Otimizações no código
--Bugs menores corrigidos
+- Reformulação nos diretórios do programa
+- Tela de adição de senha de login de funcionário adicionado ao cadastro de funcionários
+- Adição da possibilidade de logar com o CPF
+- Melhoria nas mensagens de conclusão
+- Adicionado o botão de logout no menu
+- Mensagem de saudação ao logar adicionada
+- Otimizações no código
+- Bugs menores corrigidos
 
 v 0.6.0:
 
--Reformulação na UI/UX
--Adicionada mensagem de confirmação no logout
--Otimizações no código
--Bugs menores corrigidos
+- Reformulação na UI/UX
+- Adicionada mensagem de confirmação no logout
+- Otimizações no código
+- Bugs menores corrigidos
 
 v 0.6.1:
 
--Expansão da aba dashboard
--Melhorias na UI/UX
--Otimizações no código
--Controle de linhas do log adicionado
--Bugs menores corrigidos
+- Expansão da aba dashboard
+- Melhorias na UI/UX
+- Otimizações no código
+- Controle de linhas do log adicionado
+- Bugs menores corrigidos
 
 v 0.7.0:
 
--Atualizações nos comentários do código
--Expansão da aba dashboard
--Criação das abas de agendamento de reunião, pesquisa de reunião/tests drives
--Criação do banco de dados de agendamentos de Reunião
--Melhorias na UI/UX
--Adicionado tratamento de erros caso alguma biblioteca não esteja instalada
--adicionada instalação automática das bibliotecas
--Bugs menores corrigidos
+- Atualizações nos comentários do código
+- Expansão da aba dashboard
+- Criação das abas de agendamento de reunião, pesquisa de reunião/tests drives
+- Criação do banco de dados de agendamentos de Reunião
+- Melhorias na UI/UX
+- Adicionado tratamento de erros caso alguma biblioteca não esteja instalada
+- adicionada instalação automática das bibliotecas
+- Bugs menores corrigidos
 
 v 0.7.1:
 
--Atualização dos exemplos no BD local 
--Correção de alguns cabeçalhos do BD
--Correção no cadastro do nome dos clientes
--Mudança na UI
--Bugs menores corrigidos
+- Atualização dos exemplos no BD local 
+- Correção de alguns cabeçalhos do BD
+- Correção no cadastro do nome dos clientes
+- Mudança na UI
+- Bugs menores corrigidos
 
 v 0.7.2: 
 
--Erros no changelog corrigidos
--Atualização dos exemplos no BD local 
--Mudança dos botões de página do dashboard
--Bugs menores corrigidos
+- Erros no changelog corrigidos
+- Atualização dos exemplos no BD local 
+- Mudança dos botões de página do dashboard
+- Bugs menores corrigidos
 
 v 0.7.3:
 
--Mudanças na UI/UX
--Atualização da aba admin
--Otimizações no código
--Erros de digitação corrigidos
--Bugs menores corrigidos
+- Mudanças na UI/UX
+- Atualização da aba administrativa
+- Otimizações no código
+- Erros de digitação corrigidos
+- Bugs menores corrigidos
+
+v 0.7.4:
+
+- Mudança no salvamento do log
+- Alterado acesso para aba dashboard
+- Otimizações no código
+- Mudanças na UI/UX
+- Mudança no changelog
+- Bugs menores corrigidos

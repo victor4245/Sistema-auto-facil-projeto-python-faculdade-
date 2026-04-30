@@ -2,3 +2,4 @@ O usuário com o login a acessou o sistema as 21:03:26 27/04/2026
 O usuário com o login a acessou o sistema as 21:03:43 27/04/2026
 O usuário com o login a acessou o sistema as 08:58:29 28/04/2026
 O usuário com o login 46464646464 acessou o sistema as 20:57:44 28/04/2026
+O usuário com o login camila.rocha@email.com acessou o sistema as 21:10:34 29/04/2026

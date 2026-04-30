@@ -88,7 +88,12 @@ def mostrar_formulario(parent):
     # Limpa a área central
     for w in parent.winfo_children():
         w.destroy()
-
+    if PAGINA == 1:
+        COR_BOTAO = "#5C6883"
+        COR_BOTAO2 = "#2563EB"
+    elif PAGINA == 2:
+        COR_BOTAO2 = "#5C6883"
+        COR_BOTAO = "#2563EB"
     # Container central
     container = tk.Frame(parent, bg=COR_FUNDO)
     container.pack(expand=True)
@@ -111,7 +116,7 @@ def mostrar_formulario(parent):
         caixaB,
         text="1",
         font=("Segoe UI", 12, "bold"),
-        bg="#2563EB",
+        bg=COR_BOTAO,
         fg="white",
         activebackground="#1E40AF",
         activeforeground="white",
@@ -125,7 +130,7 @@ def mostrar_formulario(parent):
         caixaB,
         text="2",
         font=("Segoe UI", 12, "bold"),
-        bg="#2563EB",
+        bg=COR_BOTAO2,
         fg="white",
         activebackground="#1E40AF",
         activeforeground="white",
@@ -188,10 +193,29 @@ def mostrar_formulario(parent):
         criador_info("Veículos Disponíveis", caixa3, tfont = 18)
         criador_info(f"{NUMVEIC}", caixa3, tfont = 46)
         
+        
+        # ---------------- Caixa veículos em manutenção ----------------
+        
+        criador_info("Veículos em manutenção", caixa4, tfont = 18)
+        criador_info("0", caixa4, tfont = 46)
+        
+        
+    elif(PAGINA == 2):
+
+        # ---------------- Caixa Veículos vendidos ----------------
+        
+        criador_info("Veículos Vendidos/Meta(Anual)", caixa1, tfont = 18)
+        criador_info("200/500", caixa1, tfont = 46)
+        
+        # ---------------- Caixa Faturamento ----------------
+
+        criador_info("Faturamento do mês (bruto)", caixa2, tfont = 18)
+        criador_info("R$ 1.000.000,00", caixa2, tfont = 32)
+        
         # ---------------- Caixa Test drive ----------------
         
-        criador_info("Test drives do dia", caixa4, tfont = 18)
-        lista3 = criador_lista("lista3", caixa4)
+        criador_info("Test drives do dia", caixa3, tfont = 18)
+        lista3 = criador_lista("lista3", caixa3)
         
         # Atualiza a lista de Test drives do dia automaticamente
         tests = ler_test()
@@ -200,32 +224,18 @@ def mostrar_formulario(parent):
         for c in tests:
             controle = controle + 1
             if (AGORA in c["Data"]):
-                texto = f"Cliente: {c['Cliente']}  |  Veículo: {c['Veículo']} | Horário: {c['Horario']}"
+                texto = f"Cliente: {c['Cliente']}  |  Veículo: {c['Veículo']} | Horário: {c['Horário']}"
                 lista3.insert(tk.END, texto)
-            elif (controle == NUMTD):
+                TDconf = True
+            elif (controle == NUMTD and TDconf == False):
                 texto = "NÃO HÁ TEST DRIVES AGENDADOS PARA HOJE"
                 lista3.insert(tk.END, texto)
-    elif(PAGINA == 2):
-
-        # ---------------- Caixa Veículos vendidos ----------------
-        
-        criador_info("Veículos Vendidos", caixa1, tfont = 18)
-        criador_info("200", caixa1, tfont = 46)
-        
-        # ---------------- Caixa Faturamento ----------------
-
-        criador_info("Faturamento do mês", caixa2, tfont = 18)
-        criador_info("R$ 1.000.000,00", caixa2, tfont = 32)
-        
-        # ---------------- Caixa veículos em manutenção ----------------
-        
-        criador_info("Veículos em manutenção", caixa3, tfont = 18)
-        criador_info("0", caixa3, tfont = 46)
         
         # ---------------- Caixa reuniões do dia ----------------
         
         criador_info("Reuniões do dia", caixa4, tfont = 18)
         lista4 = criador_lista("lista4", caixa4)
+        
         
         # Atualiza a lista de Reuniões do dia automaticamente
         reuns = ler_reu()
@@ -234,8 +244,9 @@ def mostrar_formulario(parent):
         for c in reuns:
             controle2 = controle2 + 1
             if (AGORA in c["Data"]):
-                texto = f"Cliente: {c['Cliente']}  |  Local: {c['Local']} | Horário: {c['Horario']}"
+                texto = f"Cliente: {c['Cliente']}  |  Local: {c['Local']} | Horário: {c['Horário']}"
                 lista4.insert(tk.END, texto)
-            elif (controle2 == NUMTD):
+                Rconf = True
+            elif (controle2 == NUMTD and Rconf == False):
                 texto = "NÃO HÁ REUNIÕES AGENDADAS PARA HOJE"
                 lista4.insert(tk.END, texto)

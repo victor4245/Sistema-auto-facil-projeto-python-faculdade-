@@ -20,6 +20,7 @@ except Exception:
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 VERSION = "v 0.7.3"
 ARQUIVO_MAIN = "Autofacil.py"
+PERMITIDOS = ["Administrador", "Marcos Silva"]
 
 # -------------------- UTILITÁRIOS ---------------------------
 def maximizar_janela(janela: tk.Tk):
@@ -50,6 +51,10 @@ def limpar_area(area: tk.Frame):
 
 def abrir_aba_nova(area_conteudo: tk.Frame, titulo:str):
     limpar_area(area_conteudo)
+    if titulo == "Submenus.Dashboard" and not pessoa in PERMITIDOS:
+        messagebox.showwarning("Acesso Negado", "Você não tem permissão para acessar esta função.")
+        return
+
     try:
         modulo = importlib.import_module(titulo)
         modulo.mostrar_formulario(area_conteudo)
@@ -126,11 +131,11 @@ def criar_sidebar(raiz: tk.Tk) -> tk.Frame:
     return menu_container
 
 # --------- ETAPA 3: MENU + SUBMENUS -------------------------
-def criar_item_menu(pai: tk.Frame, texto: str, icone: str, subitens=None, acao=None, acoes_subitens=None):
+def criar_item_menu(texto: str, icone: str, subitens=None, acao=None, acoes_subitens=None):
     """
     Cria um item do menu.
     """
-    item = tk.Frame(pai, bg="#0B1220")
+    item = tk.Frame(area_menu, bg="#0B1220")
     item.pack(fill="x")
 
     btn = tk.Button(
@@ -144,7 +149,7 @@ def criar_item_menu(pai: tk.Frame, texto: str, icone: str, subitens=None, acao=N
     btn.pack(fill="x", padx=12, pady=6)
 
     if not subitens:
-        btn.configure(command=lambda: acao() if acao else print(texto))
+        btn.configure(command=lambda: acao())
         return
 
     submenu = tk.Frame(item, bg="#0B1220")
@@ -152,10 +157,7 @@ def criar_item_menu(pai: tk.Frame, texto: str, icone: str, subitens=None, acao=N
     submenu.pack_forget()
 
     for nome in subitens:
-        acao_sub = (acoes_subitens or {}).get(
-            nome,
-            lambda n=nome: tk.messagebox.showwarning("Botão ainda sem atribuição", f"O botão '{n}' ainda não tem uma ação definida.")
-        )
+        acao_sub = acoes_subitens.get(nome)
 
         sub_btn = tk.Button(
             submenu,
@@ -176,10 +178,9 @@ def criar_item_menu(pai: tk.Frame, texto: str, icone: str, subitens=None, acao=N
 
     btn.configure(command=alternar_submenu)
 
-def montar_menu(menu_container: tk.Frame, area_conteudo: tk.Frame):
+def montar_menu(area_conteudo: tk.Frame):
     """Monta os itens do menu lateral com suas ações."""
     criar_item_menu(
-        pai=menu_container,
         texto="Cadastro",
         icone="\U0001F4CB",
         subitens=["Cliente", "Veículo", "Funcionário"],
@@ -190,7 +191,6 @@ def montar_menu(menu_container: tk.Frame, area_conteudo: tk.Frame):
         }
     )
     criar_item_menu(
-        pai=menu_container,
         texto="Pesquisa",
         icone="\U0001F50D",
         subitens=["Cliente", "Funcionário", "Frota", "Test Drive/Reunião"],
@@ -203,7 +203,6 @@ def montar_menu(menu_container: tk.Frame, area_conteudo: tk.Frame):
     )
 
     criar_item_menu(
-        pai=menu_container,
         texto="Agendamento",
         icone="\U0001F4C6",
         subitens=["Test Drive", "Reunião"],
@@ -214,7 +213,6 @@ def montar_menu(menu_container: tk.Frame, area_conteudo: tk.Frame):
     )
 
     criar_item_menu(
-        pai=menu_container,
         texto="Dashboard",
         icone="\U0001F4CA",
         subitens=None,
@@ -222,7 +220,6 @@ def montar_menu(menu_container: tk.Frame, area_conteudo: tk.Frame):
     )
 
     criar_item_menu(
-        pai=menu_container,
         texto="ADM",
         icone="\U0001F9F0",
         subitens=None,
@@ -230,7 +227,6 @@ def montar_menu(menu_container: tk.Frame, area_conteudo: tk.Frame):
     )
     
     criar_item_menu(
-        pai=menu_container,
         texto="Logout",
         icone="\U0001F3C3",
         subitens=None,
@@ -252,6 +248,6 @@ if __name__ == "__main__":
         pessoa = "Administrador"
         messagebox.showinfo("Bem-vindo", f"Seja Bem-vindo {pessoa}")
     finally:
-        montar_menu(area_menu, conteudo)
+        montar_menu(conteudo)
 
         raiz.mainloop()
