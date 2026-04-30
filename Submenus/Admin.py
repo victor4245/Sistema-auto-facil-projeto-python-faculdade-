@@ -13,6 +13,7 @@ from tkinter import messagebox
 LOGIN_ADM = "admin"
 SENHA_ADM = "123"
 CAMINHO_BD = os.getcwd() + "/BD_interno"
+PERMITIDOS = ["Administrador", "Marcos Silva"]
 
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -31,8 +32,18 @@ def abrir_bd(nome_arquivo: str):
     except:
         messagebox.showerror("Erro", f"Não foi possível abrir o arquivo {nome_arquivo}.\nVerifique se ele existe dentro da pasta BD_interno.")
         return
-        
-def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
+
+def limpar_log():
+    resposta = messagebox.askyesno("Confirmação", "Tem certeza que deseja limpar o log? Esta ação não pode ser desfeita.")
+    if resposta:
+
+        with open(f"{CAMINHO_BD}/Log.txt", "w") as f:
+            f.write("")
+        messagebox.showinfo("Sucesso", "Log limpo com sucesso.")
+    else:
+        return        
+    
+def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Frame):
     """Ação do botão Acessar (e tecla Enter):
     - Verifica se os campos estão preenchidos
     - Valida credenciais
@@ -48,13 +59,11 @@ def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
         messagebox.showerror("Acesso negado", "Login ou senha incorretos.")
         return
     
-    # Sem função por enquanto somente mensagem 
     mostrar_comandos(janela)
-def mostrar_comandos(janela: tk.Tk):
+def mostrar_comandos(janela: tk.Frame):
     parent = janela
     # Limpa a área central
-    for w in parent.winfo_children():
-        w.destroy()
+    limpar(parent)
 
     # Container central
     container = tk.Frame(parent, bg=COR_FUNDO)
@@ -93,80 +102,84 @@ def mostrar_comandos(janela: tk.Tk):
     criador_botoes("Abrir BD Frota", coluna=0, linha=2, comando=lambda: abrir_bd("CadFro.csv"))
     criador_botoes("Abrir BD Reunião", coluna=1, linha=2, comando=lambda: abrir_bd("AgenReu.csv"))
     criador_botoes("Abrir BD Test Drive", coluna=0, linha=3, comando=lambda: abrir_bd("AgenTD.csv"))
-def mostrar_formulario(parent: tk.Frame):
-    # Limpa qualquer conteúdo anterior
-    limpar(parent)
+    criador_botoes("Limpar Logs", coluna=1, linha=3, comando=lambda: limpar_log())
+def mostrar_formulario(parent: tk.Frame, pessoa = None):
+    if pessoa in PERMITIDOS:
+        mostrar_comandos(parent)
+    else:
+        # Limpa qualquer conteúdo anterior
+        limpar(parent)
 
-    # Um container centralizado
-    container = tk.Frame(parent, bg=COR_FUNDO)
-    container.pack(expand=True, ipadx=5, ipady=5)
+        # Um container centralizado
+        container = tk.Frame(parent, bg=COR_FUNDO)
+        container.pack(expand=True, ipadx=5, ipady=5)
 
-    funcao = tk.Frame(container, bg=COR_FUNDO)
-    funcao.pack(padx=40, pady=30)
-    for col in range(6):
-        funcao.grid_columnconfigure(col, weight=1)
+        funcao = tk.Frame(container, bg=COR_FUNDO)
+        funcao.pack(padx=15, pady=15)
+        for col in range(6):
+            funcao.grid_columnconfigure(col, weight=1)
 
-    cor_faixa = "#0B1220"
-    cor_campo = "#1F2937"
-    cor_texto = "#FFFFFF"
-    # Título
-    tk.Label(
-        funcao,
-        text="Login administrativo",
-        font=("Segoe UI", 16, "bold"),
-        bg="#0B1220",
-        fg=cor_texto
-    ).grid(row=0, column=0, columnspan=4, pady=(0, 10))
+        cor_faixa = "#0B1220"
+        cor_campo = "#1F2937"
+        cor_texto = "#FFFFFF"
+        # Título
+        tk.Label(
+            funcao,
+            text="Login administrativo",
+            font=("Segoe UI", 16, "bold"),
+            bg="#0B1220",
+            fg=cor_texto
+        ).grid(row=0, column=0, columnspan=4, pady=(0, 10))
 
-    tk.Label(
-        funcao, text="Login:", font=("Segoe UI", 11, "bold"),
-        bg=cor_faixa, fg=cor_texto
-    ).grid(row=1, column=0, sticky="", padx=(6, 6), pady=6)
+        tk.Label(
+            funcao, text="Login:", font=("Segoe UI", 11, "bold"),
+            bg=cor_faixa, fg=cor_texto
+        ).grid(row=1, column=0, sticky="", padx=(6, 6), pady=6)
 
-    entrada_login = tk.Entry(
-        funcao, font=("Segoe UI", 11),
-        bg=cor_campo, fg=cor_texto,
-        insertbackground=cor_texto, relief="flat"
-    )
-    entrada_login.grid(row=1, column=1, sticky="", padx=(0, 12), pady=6)
-    entrada_login.focus()
+        entrada_login = tk.Entry(
+            funcao, font=("Segoe UI", 11),
+            bg=cor_campo, fg=cor_texto,
+            insertbackground=cor_texto, relief="flat"
+        )
+        entrada_login.grid(row=1, column=1, sticky="", padx=(0, 12), pady=6)
+        entrada_login.focus()
 
-    # Senha
-    tk.Label(
-        funcao, text="Senha:", font=("Segoe UI", 11, "bold"),
-        bg=cor_faixa, fg=cor_texto
-    ).grid(row=2, column=0, sticky="", padx=(6, 6), pady=6)
+        # Senha
+        tk.Label(
+            funcao, text="Senha:", font=("Segoe UI", 11, "bold"),
+            bg=cor_faixa, fg=cor_texto
+        ).grid(row=2, column=0, sticky="", padx=(6, 6), pady=6)
 
-    entrada_senha = tk.Entry(
-        funcao, show="*",
-        font=("Segoe UI", 11),
-        bg=cor_campo, fg=cor_texto,
-        insertbackground=cor_texto, relief="flat"
-    )
-    entrada_senha.grid(row=2, column=1, sticky="", padx=(0, 12), pady=6)
+        entrada_senha = tk.Entry(
+            funcao, show="*",
+            font=("Segoe UI", 11),
+            bg=cor_campo, fg=cor_texto,
+            insertbackground=cor_texto, relief="flat"
+        )
+        entrada_senha.grid(row=2, column=1, sticky="", padx=(0, 12), pady=6)
 
-    # Botão Acessar
-    btn_acessar = tk.Button(
-        funcao, text="Acessar",
-        font=("Segoe UI", 10, "bold"),
-        bg="#2563EB", fg="white",
-        activebackground="#1E40AF",
-        activeforeground="white",
-        relief="flat", padx=16, pady=8,
-        command=lambda: ao_acessar(entrada_login, entrada_senha, parent),
-        cursor="hand2"
-    )
-    btn_acessar.grid(row=3, column=1, sticky="es", padx=(0, 14), pady=(25, 0))
+        # Botão Acessar
+        btn_acessar = tk.Button(
+            funcao, text="Acessar",
+            font=("Segoe UI", 10, "bold"),
+            bg="#2563EB", fg="white",
+            activebackground="#1E40AF",
+            activeforeground="white",
+            relief="flat", padx=16, pady=8,
+            command=lambda: ao_acessar(entrada_login, entrada_senha, parent),
+            cursor="hand2"
+        )
+        btn_acessar.grid(row=3, column=0, sticky="ws", padx=(20, 0), pady=(25, 0))
 
-    # Botão Sair
-    btn_sair = tk.Button(
-        funcao, text="Sair",
-        font=("Segoe UI", 10, "bold"),
-        bg="#374151", fg="white",
-        activebackground="#1F2937",
-        activeforeground="white",
-        relief="flat", padx=16, pady=8,
-        #command=lambda: ao_sair(raiz),
-        cursor="hand2"
-    )
-    btn_sair.grid(row=3, column=0, sticky="s", padx=(14, 0), pady=(25, 0))
+        # Botão Cancelar
+        btn_cancelar = tk.Button(
+            funcao, text="Cancelar",
+            font=("Segoe UI", 10, "bold"),
+            bg="#374151", fg="white",
+            activebackground="#1F2937",
+            activeforeground="white",
+            relief="flat", padx=16, pady=8,
+            command=lambda: limpar(parent),
+            cursor="hand2"
+        )
+        btn_cancelar.grid(row=3, column=1, sticky="es", padx=(0, 20), pady=(25, 0))

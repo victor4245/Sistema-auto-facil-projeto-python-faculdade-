@@ -170,3 +170,10 @@ v 0.7.4:
 - Mudanças na UI/UX
 - Mudança no changelog
 - Bugs menores corrigidos
+
+v 0.7.5:
+
+- Mudanças na UI/UX
+- Nova função na aba administrativa
+- Otimizações no código
+- Bugs menores corrigidos

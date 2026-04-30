@@ -13,7 +13,6 @@ from tkinter import messagebox
 import csv
 from datetime import datetime
 import subprocess
-from datetime import datetime
 # Pillow é necessário para exibir a imagem de fundo
 try:
     from PIL import Image, ImageTk
@@ -26,7 +25,7 @@ AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 CAMINHO_BD = os.getcwd() +"/BD_interno"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.7.3"
+VERSION = "v 0.7.5"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 

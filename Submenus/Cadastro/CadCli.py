@@ -11,10 +11,6 @@ import os
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_BD = os.getcwd() + "/BD_interno"
 
-def limpar(parent: tk.Frame):
-    """Remove tudo que estiver no parent (caso queira reutilizar)."""
-    for w in parent.winfo_children():
-        w.destroy()
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
@@ -22,7 +18,10 @@ COR_TEXTO2 = "#000000"
 COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
-
+def limpar(parent: tk.Frame):
+    """Remove tudo que estiver no parent (caso queira reutilizar)."""
+    for w in parent.winfo_children():
+        w.destroy()
 # --------------------------------------------------------
 # SALVA OS DADOS NO ARQUIVO CSV
 # --------------------------------------------------------
@@ -68,7 +67,6 @@ def salvar(dados):
     except Exception as erro:
         messagebox.showerror("Erro", str(erro))
     
-
 def mostrar_formulario(parent: tk.Frame):
     """
     Constrói o formulário de Cliente dentro do 'parent' (área central).
