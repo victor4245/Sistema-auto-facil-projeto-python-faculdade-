@@ -1,7 +1,7 @@
 #=======================================================
 # SISTEMA: Menu Principal (layout estilo "sistema web" com sidebar)
 # Tecnologias: Python 3.x + Tkinter (somente biblioteca padrão)
-# menu.py
+# Menu.py
 # ========================================================
 
 import os
@@ -18,9 +18,9 @@ except Exception:
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.7.5"
+VERSION = "v 0.8.0"
 ARQUIVO_MAIN = "Autofacil.py"
-PERMITIDOS = ["Administrador", "Marcos Silva"]
+PERMITIDOS = ["Administrador", "Gerente"]
 
 # -------------------- UTILITÁRIOS ---------------------------
 def maximizar_janela(janela: tk.Tk):
@@ -32,7 +32,7 @@ def maximizar_janela(janela: tk.Tk):
         except Exception:
             pass
         try:
-            janela.attributes("-zoomed", True)  # alguns Linux
+            janela.attributes("-zoomed", True)  # Linux
         except Exception:
             pass
         try:
@@ -51,14 +51,14 @@ def limpar_area(area: tk.Frame):
 
 def abrir_aba_nova(area_conteudo: tk.Frame, titulo:str):
     limpar_area(area_conteudo)
-    if titulo == "Submenus.Dashboard" and not pessoa in PERMITIDOS:
+    if titulo == "Submenus.Dashboard" and not cargo in PERMITIDOS:
         messagebox.showwarning("Acesso Negado", "Você não tem permissão para acessar esta função.")
         return
 
     try:
         modulo = importlib.import_module(titulo)
         if titulo == "Submenus.Admin":
-            modulo.mostrar_formulario(area_conteudo, pessoa)
+            modulo.mostrar_formulario(area_conteudo, cargo)
         else:
             modulo.mostrar_formulario(area_conteudo)
     except Exception as e:
@@ -100,10 +100,10 @@ def criar_janela_principal() -> tk.Tk:
 
     return raiz
 
-# ------------- ETAPA 2: SIDEBAR (preta) + MENU --------------
+# ------------- ETAPA 2: SIDEBAR (azul) + MENU --------------
 def criar_sidebar(raiz: tk.Tk) -> tk.Frame:
     """
-    Cria a faixa lateral esquerda preta e retorna o container do menu.
+    Cria a faixa lateral esquerda azul e retorna o container do menu.
     """
     sidebar = tk.Frame(raiz, bg="#0B1220")
     sidebar.grid(row=0, column=0, rowspan=2, sticky="nsew")
@@ -246,11 +246,13 @@ if __name__ == "__main__":
     try:
         # Mensagem de saudação
         pessoa = sys.argv[1]
+        # Controle de acesso
+        cargo = sys.argv[2]
         messagebox.showinfo("Bem-vindo", f"Seja Bem-vindo {pessoa}")
     except:
         pessoa = "Administrador"
+        cargo = "Administrador"
         messagebox.showinfo("Bem-vindo", f"Seja Bem-vindo {pessoa}")
     finally:
         montar_menu(conteudo)
-
         raiz.mainloop()

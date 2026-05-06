@@ -21,8 +21,6 @@ def ajusta_pagina(valor):
     global PAGINA
     PAGINA = valor
 
-        
-
 # ----------------------------------------------------------
 # Lê TODAS as reuniões do CSV e retorna uma lista de dicts
 # ----------------------------------------------------------
@@ -84,11 +82,13 @@ def salvar_TD(TD):
 # ----------------------------------------------------------
 def mostrar_formulario(parent):
     if PAGINA == 1:
-        NOME = "reuniões"
+        NOME = "Reuniões"
+        NOME2 = "Reunião"
         LISTA = ler_reun()
         cab = "Local"
     elif PAGINA == 2:
-        NOME = "test drives"
+        NOME = "Tests Drive"
+        NOME2 = "Test Drive"
         LISTA = ler_TD()
         cab = "Veículo"
     # Limpa a área central
@@ -145,7 +145,7 @@ def mostrar_formulario(parent):
 
     
     # ---------------- LISTBOX (RESULTADOS) ----------------
-    lista = tk.Listbox(caixa, width=80, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
+    lista = tk.Listbox(caixa, width=90, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
     lista.grid(row=2, column=0, columnspan=4, padx=10, pady=10)
 
     lista_filtrada = []
@@ -216,7 +216,7 @@ def mostrar_formulario(parent):
         indice = lista.curselection()[0]
         lis = lista_filtrada[indice]
 
-        abrir_edicao(lis, NOME)
+        abrir_edicao(lis, NOME2)
 
     # -------- FECHAR --------
     def fechar():
@@ -308,9 +308,9 @@ def mostrar_formulario(parent):
     ).pack(side="left", padx=6)
 
 # ----------------------------------------------------------
-# Tela de EDIÇÃO da reunião
+# Tela de EDIÇÃO de agendamento
 # ----------------------------------------------------------
-def abrir_edicao(reunioes, NOME):
+def abrir_edicao(agendamento, NOME):
     
     janela = tk.Toplevel()
     janela.title(f"Editar {NOME}")
@@ -326,8 +326,8 @@ def abrir_edicao(reunioes, NOME):
         entradas[texto] = e
 
     linha = 0
-    for k in reunioes:
-        campo(k, linha, reunioes[k])
+    for k in agendamento:
+        campo(k, linha, agendamento[k])
         linha += 1
 
     def salvar():
@@ -337,11 +337,11 @@ def abrir_edicao(reunioes, NOME):
             reus = ler_TD()
 
         for c in reus:
-            if c["Cliente"] == reunioes["Cliente"]:
+            if c["Código"] == agendamento["Código"]:
                 for k in entradas:
                     c[k] = entradas[k].get()
         if datetime.strptime(c["Data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
-            messagebox.showwarning("Data inválida", "A data da reunião não pode ser anterior ao momento atual.")
+            messagebox.showwarning("Data inválida", "A data do agendamento não pode ser anterior ao momento atual.")
             return
         if PAGINA == 1:
             reus = salvar_reun(reus)

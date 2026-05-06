@@ -114,7 +114,7 @@ def mostrar_formulario(parent):
 
     
     # ---------------- LISTBOX (RESULTADOS) ----------------
-    lista = tk.Listbox(caixa, width=80, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
+    lista = tk.Listbox(caixa, width=90, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
     lista.grid(row=5, column=0, columnspan=4, padx=10, pady=10)
 
     veiculos = ler_veiculos()

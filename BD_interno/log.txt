@@ -3,3 +3,11 @@ O usuário com o login a acessou o sistema as 21:03:43 27/04/2026
 O usuário com o login a acessou o sistema as 08:58:29 28/04/2026
 O usuário com o login 46464646464 acessou o sistema as 20:57:44 28/04/2026
 O usuário com o login camila.rocha@email.com acessou o sistema as 21:10:34 29/04/2026
+O funcionário Juliana Costa acessou o sistema as 20:18:47 05/05/2026
+O funcionário Juliana Costa acessou o sistema as 20:18:47 05/05/2026
+O funcionário Juliana Costa acessou o sistema as 20:18:47 05/05/2026
+O funcionário Juliana Costa acessou o sistema as 20:21:22 05/05/2026
+O funcionário Juliana Costa acessou o sistema as 20:22:34 05/05/2026
+O funcionário Juliana Costa acessou o sistema as 20:24:21 05/05/2026
+O funcionário Juliana Costa acessou o sistema as 20:26:47 05/05/2026
+O funcionário Administrador acessou o sistema as 21:16:55 05/05/2026

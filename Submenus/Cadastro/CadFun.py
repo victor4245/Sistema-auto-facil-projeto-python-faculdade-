@@ -148,7 +148,6 @@ def mostrar_formulario(parent: tk.Frame):
 
     # Linha 3
     add_linha("Cargo", linha=4, col_inicio=0, largura=24)
-    add_linha("Carteira de Trabalho", linha=4, col_inicio=2, largura=24)
 
     entradas["Nome"].focus()
     
@@ -170,6 +169,7 @@ def mostrar_formulario(parent: tk.Frame):
 
     def on_salvar():
         dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}
+        dados["ID da empresa"] = dados["CPF"] # O ID sera definido como CPF temporariamente servindo somente como um exemplo
         dados["Observações"] = txt_obs.get("1.0", "end-1c").strip()  
         dados["Senha"] = "*"
         ad_senha(dados)

@@ -106,7 +106,7 @@ def mostrar_formulario(parent):
     
 
     # ---------------- LISTBOX (RESULTADOS) ----------------
-    lista = tk.Listbox(caixa, width=80, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
+    lista = tk.Listbox(caixa, width=90, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
     lista.grid(row=4, column=0, columnspan=4, padx=10, pady=10)
 
     clientes = ler_clientes()
@@ -116,12 +116,13 @@ def mostrar_formulario(parent):
     def atualizar_lista(filtro):
         lista.delete(0, tk.END)
         clientes_filtrados.clear()
-        
+        cpf_cnpj = []
         for f in range(len(filtro)):
             filtro[f] = filtro[f].lower() # Transforma tudo em minusculo
 
         for c in clientes:
-            if (filtro[0] in c["Nome"] or filtro[1] in c["CPF/CNPJ"] or filtro[2] in c["Email"] or filtro[3] in c["Telefone"]):
+            cpf_cnpj = c["CPF/CNPJ"].replace(".", "").replace("-", "").replace("/", "") # Remove caracteres de formatação do CPF/CNPJ
+            if (filtro[0] in c["Nome"] or filtro[1] in cpf_cnpj or filtro[1] in c["CPF/CNPJ"] or filtro[2] in c["Email"] or filtro[3] in c["Telefone"]):
                 texto = f"   {c['Nome']}  |  CPF/CNPJ: {c['CPF/CNPJ']}  |  E-mail: {c['Email']}"
                 lista.insert(tk.END, texto)
                 clientes_filtrados.append(c)

@@ -12,6 +12,8 @@ from datetime import datetime
 AGORA = datetime.now().strftime("%d/%m/%Y")
 CAMINHO_BD = os.getcwd() + "/BD_interno"
 PAGINA = 1
+NUMMAN = 0
+
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
@@ -32,11 +34,15 @@ with open(CAMINHO_BD + "/CadCli.csv", "r", encoding="utf-8") as arquivo:
     NUMCLI = 0 + len(linhas) - 1
     
 # ----------------------------------------------------------
-# Lê TODOS os Veículos do CSV e retorna a quantidade
+# Lê TODOS os Veículos do CSV e retorna a quantidade e a quantidade dos que precisam de manutenção
 # ----------------------------------------------------------
 with open(CAMINHO_BD + "/CadFro.csv", "r", encoding="utf-8") as arquivo:
     linhas = arquivo.readlines()
     NUMVEIC = 0 + len(linhas) - 1
+    leitor = csv.DictReader(arquivo)
+    for linha in leitor:
+        if "precisa de manutenção" in linha["OBS"].lower():
+            NUMMAN = NUMMAN + 1
     
 # ----------------------------------------------------------
 # Lê TODOS os funcionários do CSV e retorna a quantidade
@@ -44,7 +50,7 @@ with open(CAMINHO_BD + "/CadFro.csv", "r", encoding="utf-8") as arquivo:
 with open(CAMINHO_BD + "/CadFun.csv", "r", encoding="utf-8") as arquivo:
     linhas = arquivo.readlines()
     NUMFUNC = 0 + len(linhas) - 1
-
+    
 # ----------------------------------------------------------
 # Lê TODOS os test drives do CSV e retorna uma lista de dicts
 # ----------------------------------------------------------
@@ -197,7 +203,7 @@ def mostrar_formulario(parent):
         # ---------------- Caixa veículos em manutenção ----------------
         
         criador_info("Veículos em manutenção", caixa4, tfont = 18)
-        criador_info("0", caixa4, tfont = 46)
+        criador_info(f"{NUMMAN}", caixa4, tfont = 46)
         
         
     elif(PAGINA == 2):

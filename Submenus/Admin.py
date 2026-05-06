@@ -13,7 +13,7 @@ from tkinter import messagebox
 LOGIN_ADM = "admin"
 SENHA_ADM = "123"
 CAMINHO_BD = os.getcwd() + "/BD_interno"
-PERMITIDOS = ["Administrador", "Marcos Silva"]
+PERMITIDOS = ["Administrador", "Gerente"]
 
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -103,8 +103,8 @@ def mostrar_comandos(janela: tk.Frame):
     criador_botoes("Abrir BD Reunião", coluna=1, linha=2, comando=lambda: abrir_bd("AgenReu.csv"))
     criador_botoes("Abrir BD Test Drive", coluna=0, linha=3, comando=lambda: abrir_bd("AgenTD.csv"))
     criador_botoes("Limpar Logs", coluna=1, linha=3, comando=lambda: limpar_log())
-def mostrar_formulario(parent: tk.Frame, pessoa = None):
-    if pessoa in PERMITIDOS:
+def mostrar_formulario(parent: tk.Frame, cargo = None):
+    if cargo in PERMITIDOS:
         mostrar_comandos(parent)
     else:
         # Limpa qualquer conteúdo anterior

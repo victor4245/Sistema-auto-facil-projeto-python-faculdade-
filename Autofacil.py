@@ -25,14 +25,16 @@ AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 CAMINHO_BD = os.getcwd() +"/BD_interno"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.7.5"
+VERSION = "v 0.8.0"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 
 login = []
 LOGIN_EMAIL = []
 LOGIN_CPF = []
+LOGIN_ID = []
 PESSOA = []
+CARGO = []
 SENHA_ESPERADA = []
 
 with open(CAMINHO_BD + "/CadFun.csv", "r", newline="", encoding="utf-8") as arquivo:
@@ -40,18 +42,17 @@ with open(CAMINHO_BD + "/CadFun.csv", "r", newline="", encoding="utf-8") as arqu
     for linha in leitor:
         login.append(linha) 
 
-# Adição dos CPFs e Emails para verificação de login
 for i in range(len(login)):
-    LOGIN_CPF.append(login[i]["CPF"].strip().replace(".", "").replace("-", "").strip())
-for i in range(len(login)):
+    # Adição dos CPFs e Emails para verificação de login
+    LOGIN_CPF.append(login[i]["CPF"].replace(".", "").replace("-", "").strip())
     LOGIN_EMAIL.append(login[i]["Email"])
-# Captura dos nomes para saudação
-for i in range(len(login)):
+    LOGIN_ID.append(login[i]["ID da empresa"].replace(".", "").replace("-", "").strip())
+    # Captura dos nomes para saudação
     PESSOA.append(login[i]["Nome"])
-# Adição das senhas para verificação de login
-for i in range(len(login)):
+    # Captura dos cargos para uso posterior no menu.py
+    CARGO.append(login[i]["Cargo"])
+    # Adição das senhas para verificação de login
     SENHA_ESPERADA.append(login[i]["Senha"])
-
 
 # =======================================================
 # FUNÇÕES (nomes simples, em português)
@@ -130,7 +131,7 @@ def log_login(pessoa: str):
         with open(CAMINHO_BD + "/log.txt", "a", encoding="utf-8") as log:
             log.write(f"O funcionário {pessoa} acessou o sistema as {AGORA}\n")
     return
-def abrir_menu(janela: tk.Tk, pessoa:str):
+def abrir_menu(janela: tk.Tk, pessoa:str, cargo:str):
     """Fecha esta janela e abre o arquivo 'menu.py' (no mesmo diretório)."""
     import subprocess
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -138,9 +139,9 @@ def abrir_menu(janela: tk.Tk, pessoa:str):
     if not os.path.exists(caminho_menu):
         messagebox.showerror("menu.py não encontrado",f"Coloque o arquivo '{ARQUIVO_MENU}' no mesmo diretório deste script:\n{base_dir}")
         return
-    # Abrindo o arquivo menu.py e passando o nome da pessoa que esta logando para ser usado na mensagem de boas vindas
+    # Abrindo o arquivo menu.py e passando o nome da pessoa que esta logando para ser usado na mensagem de boas vindas juntamento do cargo para controle de acesso a algumas abas do menu
     try:
-        subprocess.Popen([sys.executable, caminho_menu, pessoa])
+        subprocess.Popen([sys.executable, caminho_menu, pessoa, cargo])
         janela.destroy()
     except Exception as e:
         messagebox.showerror("Erro ao abrir o menu",f"Não foi possível abrir '{ARQUIVO_MENU}':\n{e}")
@@ -150,20 +151,23 @@ def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
     - Valida credenciais
     - Se ok, abre o menu"""
     login = campo_login.get().strip()
+    if len(login) == 14:
+        login = login.replace(".", "").replace("-", "")
     senha = campo_senha.get().strip()
     if not login or not senha:
         messagebox.showwarning("Campos obrigatórios", "Informe login e senha.")
         return
     
-    # Validação de Emails e senhas
+    # Validação de Login e senha
     i = 0
     while (i < len(LOGIN_EMAIL)):
-        if login == LOGIN_EMAIL[i] or login == LOGIN_CPF[i]:
+        if login == LOGIN_EMAIL[i] or login == LOGIN_CPF[i] or login == LOGIN_ID[i]:
             if senha == SENHA_ESPERADA[i]:
                 login2 = True
                 pessoa = PESSOA[i]
+                cargo = CARGO[i]
                 log_login(pessoa)
-                abrir_menu(janela, pessoa)
+                abrir_menu(janela, pessoa, cargo)
                 break
             else:
                 login2 = False

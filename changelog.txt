@@ -61,8 +61,8 @@ v 0.3.5:
 v 0.3.6:
 
 - Melhorias na UI/UX dos cadastros
-- Otimizações no código
 - Preparação para criação da aba administrativa
+- Otimizações no código
 - Bugs menores corrigidos
 
 v 0.4.0:
@@ -78,7 +78,7 @@ v 0.4.0:
 v 0.4.1:
 
 - Pequenas correções na UI/UX
-- Otimização geral no código
+- Otimizações no código
 - Bugs menores corrigidos
 
 v 0.4.2:
@@ -124,8 +124,8 @@ v 0.6.1:
 
 - Expansão da aba dashboard
 - Melhorias na UI/UX
-- Otimizações no código
 - Controle de linhas do log adicionado
+- Otimizações no código
 - Bugs menores corrigidos
 
 v 0.7.0:
@@ -158,22 +158,36 @@ v 0.7.3:
 
 - Mudanças na UI/UX
 - Atualização da aba administrativa
-- Otimizações no código
 - Erros de digitação corrigidos
+- Otimizações no código
 - Bugs menores corrigidos
 
 v 0.7.4:
 
 - Mudança no salvamento do log
 - Alterado acesso para aba dashboard
-- Otimizações no código
 - Mudanças na UI/UX
 - Mudança no changelog
+- Otimizações no código
 - Bugs menores corrigidos
 
 v 0.7.5:
 
 - Mudanças na UI/UX
 - Nova função na aba administrativa
+- Otimizações no código
+- Bugs menores corrigidos
+
+v 0.8.0:
+
+- Adicionada possibilidade de login com CPF usando a formatação comum
+- Adicionada possibilidade de login com o ID da empresa
+- Melhor gerenciamento de acesso de abas e de login administrativo baseado em cargos
+- Atualizações nos comentários do código
+- Mudança na primary key usada na edição de um agendamento
+- Adicionada possibilidade de pesquisa com CPF/CNPJ usando a formatação comum
+- Trocado campo de carteira de trabalho do funcionário para ID da empresa que sera implementado no futuro
+- Automatizada verificação de carros em manutenção
+- Mudanças na UI/UX
 - Otimizações no código
 - Bugs menores corrigidos

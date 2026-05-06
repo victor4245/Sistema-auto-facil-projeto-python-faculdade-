@@ -106,11 +106,11 @@ def mostrar_formulario(parent):
 
     # Linha 3
     add_linha("Cargo", linha=4, col_inicio=0, largura=24, index=4)
-    add_linha("Carteira de Trabalho", linha=4, col_inicio=2, largura=24, index=5)
+    add_linha("ID da empresa", linha=4, col_inicio=2, largura=24, index=5)
     
 
     # ---------------- LISTBOX (RESULTADOS) ----------------
-    lista = tk.Listbox(caixa, width=80, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
+    lista = tk.Listbox(caixa, width=90, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
     lista.grid(row=5, column=0, columnspan=4, padx=10, pady=10)
 
     funcionarios = ler_Funcionarios()
@@ -120,13 +120,14 @@ def mostrar_formulario(parent):
     def atualizar_lista(filtro=""):
         lista.delete(0, tk.END)
         funcionarios_filtrados.clear()
-        
+        ID = []
         for f in range(len(filtro)):
             filtro[f] = filtro[f].lower() # Transforma tudo em minusculo
 
         for c in funcionarios:
-            if (filtro[0] in c["Nome"] or filtro[1] in c["CPF"] or filtro[2] in c["Email"] or filtro[3] in c["Telefone"] or filtro[4] in c["Cargo"] or filtro[5] in c["Carteira de Trabalho"]):
-                texto = f"   {c['Nome']}  |  Carteira de Trabalho: {c['Carteira de Trabalho']}  |  Cargo: {c['Cargo']}"
+            ID = c["ID da empresa"].replace(".", "").replace("-", "") # Remove pontos e traços do ID para facilitar a busca
+            if (filtro[0] in c["Nome"] or filtro[1] in c["CPF"] or filtro[2] in c["Email"] or filtro[3] in c["Telefone"] or filtro[4] in c["Cargo"] or filtro[5] in c["ID da empresa"] or filtro[5] in ID):
+                texto = f"   {c['Nome']}  |  ID da empresa: {c['ID da empresa']}  |  Cargo: {c['Cargo']}"
                 lista.insert(tk.END, texto)
                 funcionarios_filtrados.append(c)
 
@@ -155,7 +156,7 @@ def mostrar_formulario(parent):
         funcionarios_filtrados.clear()
 
         for c in funcionarios:          
-            texto = f"   {c['Nome']}  |  Carteira de Trabalho: {c['Carteira de Trabalho']}  |  Cargo: {c['Cargo']}"
+            texto = f"   {c['Nome']}  |  ID da empresa: {c['ID da empresa']}  |  Cargo: {c['Cargo']}"
             lista.insert(tk.END, texto)
             funcionarios_filtrados.append(c)
 
