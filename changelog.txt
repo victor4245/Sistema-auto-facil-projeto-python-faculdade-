@@ -191,3 +191,13 @@ v 0.8.0:
 - Mudanças na UI/UX
 - Otimizações no código
 - Bugs menores corrigidos
+
+v 0.9.0:
+
+- Criação de um BD externo
+- Movida localizção do log de login
+- Mudança na formatação do ID da empresa
+- Preparação para mover todo o BD interno para o BD externo
+- Adicionada a utilização do BD externo pela pesquisa de clientes e da frota
+- Otimizações no código
+- Bugs menores corrigidos

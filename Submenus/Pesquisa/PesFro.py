@@ -4,10 +4,20 @@
 
 import tkinter as tk
 from tkinter import messagebox
-import csv
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_BD = os.getcwd() + "/BD_interno"
+
+# Conexão com o BD
+conn = psycopg2.connect(
+    host="db.gipxlyvlobazrwuhxzep.supabase.co",
+    database="postgres",
+    user="postgres",
+    password="S3nh4_DB@12",
+    port="5432"
+)
 
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -17,32 +27,19 @@ COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
 # ----------------------------------------------------------
-# Lê TODOS os Veículos do CSV e retorna uma lista de dicts
+# Lê TODOS os Veículos do BD e retorna uma lista de dicts
 # ----------------------------------------------------------
 def ler_veiculos():
-    caminho = CAMINHO_BD + "/CadFro.csv"
     veiculos = []
 
-    with open(caminho, "r", newline="", encoding="utf-8", errors='ignore') as arquivo:
-        leitor = csv.DictReader(arquivo)
-        for linha in leitor:
-            veiculos.append(linha)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("SELECT * FROM frota")
+
+    veiculos = cursor.fetchall()
 
     return veiculos
 
-# ----------------------------------------------------------
-# Salva TODOS os veículos novamente no CSV (usado no Editar)
-# ----------------------------------------------------------
-def salvar_todos(veiculos):
-    if not veiculos:
-        return
-
-    caminho = CAMINHO_BD + "/CadFro.csv"
-
-    with open(caminho, "w", newline="", encoding="utf-8", errors='ignore') as arquivo:
-        escritor = csv.DictWriter(arquivo, fieldnames=veiculos[0].keys())
-        escritor.writeheader()
-        escritor.writerows(veiculos)
 
 # ----------------------------------------------------------
 # Tela principal da pesquisa
@@ -127,12 +124,29 @@ def mostrar_formulario(parent):
         
         for f in range(len(filtro)):
             filtro[f] = filtro[f].lower() # Transforma tudo em minusculo
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("""
+        SELECT *
+        FROM frota
+        WHERE
+            nome ILIKE %s
+            OR placa ILIKE %s
+            OR marca ILIKE %s
+            OR modelo ILIKE %s
+            OR motorizacao ILIKE %s
+        """, (
+            f"%{filtro[0]}%",
+            f"%{filtro[1]}%",
+            f"%{filtro[2]}%",
+            f"%{filtro[3]}%",
+            f"%{filtro[4]}%"
+        ))
 
+        veiculos = cursor.fetchall()
         for c in veiculos:
-            if (filtro[0] in c["Nome"] or filtro[1] in c["Marca"] or filtro[2] in c["Modelo"] or filtro[3] in c["Motorização"]) or (filtro[4] in c["Condição"] or filtro[5] in c["Cor"] or filtro[6] in c["Ano"]):
-                texto = f"   {c['Nome']}  |  Placa: {c['Placa']}  |  Marca: {c['Marca']}  |  Condição: {c['Condição']}"
-                lista.insert(tk.END, texto)
-                veiculos_filtrados.append(c)
+            texto = f"   {c['nome']}  |  Placa: {c['placa']}  |  Marca: {c['marca']}  |  Condição: {c['condicao']}"
+            lista.insert(tk.END, texto)
+            veiculos_filtrados.append(c)
 
     # Pesquisa dinâmica (a cada tecla)
     def ao_digitar(event):
@@ -159,7 +173,7 @@ def mostrar_formulario(parent):
         veiculos_filtrados.clear()
 
         for c in veiculos:          
-            texto = f"   {c['Nome']}  |  Placa: {c['Placa']}  |  Marca: {c['Marca']}  |  Condição: {c['Condição']}"
+            texto = f"   {c['nome']}  |  Placa: {c['placa']}  |  Marca: {c['marca']}  |  Condição: {c['condicao']}"
             lista.insert(tk.END, texto)
             veiculos_filtrados.append(c)
 
@@ -272,11 +286,37 @@ def abrir_edicao(veiculo):
         veiculos = ler_veiculos()
 
         for c in veiculos:
-            if c["Placa"] == veiculo["Placa"]:
-                for k in entradas:
-                    c[k] = entradas[k].get()
+            for k in entradas:
+                c[k] = entradas[k].get()
+            cursor = conn.cursor()
 
-        salvar_todos(veiculos)
+            cursor.execute("""
+            UPDATE FROTA
+            SET nome = %s,
+                marca = %s,
+                modelo = %s,
+                motorizacao = %s,
+                condicao = %s,
+                cor = %s,
+                ano = %s,
+                obs = %s
+            
+            WHERE placa = %s
+            """, (
+                c['nome'],
+                c['marca'],
+                c['modelo'],
+                c['motorizacao'],
+                c['condicao'],
+                c['cor'],
+                c['ano'],
+                c['obs'],
+                c["placa"]
+            ))
+
+        conn.commit()
+
+        conn.close()
         messagebox.showinfo("Sucesso", "Dados atualizados.")
         janela.destroy()
 

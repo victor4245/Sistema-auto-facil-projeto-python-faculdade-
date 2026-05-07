@@ -4,10 +4,21 @@
 
 import tkinter as tk
 from tkinter import messagebox
-import csv
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_BD = os.getcwd() + "/BD_interno"
+
+# Conexão com o BD
+conn = psycopg2.connect(
+    host="db.gipxlyvlobazrwuhxzep.supabase.co",
+    database="postgres",
+    user="postgres",
+    password="S3nh4_DB@12",
+    port="5432"
+)
 
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -17,32 +28,18 @@ COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
 # ----------------------------------------------------------
-# Lê TODOS os clientes do CSV e retorna uma lista de dicts
+# Lê TODOS os clientes do BD e retorna uma lista de dicts
 # ----------------------------------------------------------
 def ler_clientes():
-    caminho = CAMINHO_BD + "/CadCli.csv"
     clientes = []
 
-    with open(caminho, "r", newline="", encoding="utf-8") as arquivo:
-        leitor = csv.DictReader(arquivo)
-        for linha in leitor:
-            clientes.append(linha)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("SELECT * FROM clientes")
+
+    clientes = cursor.fetchall()
 
     return clientes
-
-# ----------------------------------------------------------
-# Salva TODOS os clientes novamente no CSV (usado no Editar)
-# ----------------------------------------------------------
-def salvar_todos(clientes):
-    if not clientes:
-        return
-
-    caminho = CAMINHO_BD + "/CadCli.csv"
-
-    with open(caminho, "w", newline="", encoding="utf-8") as arquivo:
-        escritor = csv.DictWriter(arquivo, fieldnames=clientes[0].keys())
-        escritor.writeheader()
-        escritor.writerows(clientes)
 
 # ----------------------------------------------------------
 # Tela principal da pesquisa
@@ -116,16 +113,33 @@ def mostrar_formulario(parent):
     def atualizar_lista(filtro):
         lista.delete(0, tk.END)
         clientes_filtrados.clear()
-        cpf_cnpj = []
         for f in range(len(filtro)):
             filtro[f] = filtro[f].lower() # Transforma tudo em minusculo
 
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("""
+        SELECT *
+        FROM clientes
+        WHERE
+            nome ILIKE %s
+            OR cpf_cnpj ILIKE %s
+            OR REPLACE(REPLACE(REPLACE(cpf_cnpj, '.', ''), '-', ''), '/', '') ILIKE %s
+            OR email ILIKE %s
+            OR telefone ILIKE %s
+        """, (
+            f"%{filtro[0]}%",
+            f"%{filtro[1]}%",
+            f"%{filtro[1]}%",
+            f"%{filtro[2]}%",
+            f"%{filtro[3]}%"
+        ))
+
+        clientes = cursor.fetchall()
+        
         for c in clientes:
-            cpf_cnpj = c["CPF/CNPJ"].replace(".", "").replace("-", "").replace("/", "") # Remove caracteres de formatação do CPF/CNPJ
-            if (filtro[0] in c["Nome"] or filtro[1] in cpf_cnpj or filtro[1] in c["CPF/CNPJ"] or filtro[2] in c["Email"] or filtro[3] in c["Telefone"]):
-                texto = f"   {c['Nome']}  |  CPF/CNPJ: {c['CPF/CNPJ']}  |  E-mail: {c['Email']}"
-                lista.insert(tk.END, texto)
-                clientes_filtrados.append(c)
+            texto = f"   {c['nome']}  |  CPF/CNPJ: {c['cpf_cnpj']}  |  E-mail: {c['email']}"
+            lista.insert(tk.END, texto)
+            clientes_filtrados.append(c)
 
     # Pesquisa dinâmica (a cada tecla)
     def ao_digitar(event):
@@ -152,7 +166,7 @@ def mostrar_formulario(parent):
         clientes_filtrados.clear()
 
         for c in clientes:          
-            texto = f"   {c['Nome']}  |  CPF/CNPJ: {c['CPF/CNPJ']}  |  E-mail: {c['Email']}"
+            texto = f"   {c['nome']}  |  CPF/CNPJ: {c['cpf_cnpj']}  |  E-mail: {c['email']}"
             lista.insert(tk.END, texto)
             clientes_filtrados.append(c)
 
@@ -266,16 +280,43 @@ def abrir_edicao(cliente):
         clientes = ler_clientes()
 
         for c in clientes:
-            # Verifica se o CPF/CNPJ que foi editado é igual a algum dentro do dicionário clientes
-            if c["CPF/CNPJ"] == cliente["CPF/CNPJ"]:
-                for k in entradas:
-                    # Pega o valor que foi capturado na entrada e salva no dicionário clientes
-                    c[k] = entradas[k].get()
+            for k in entradas:
+                # Pega o valor que foi capturado na entrada e salva no dicionário clientes
+                c[k] = entradas[k].get()
+            cursor = conn.cursor()
 
-        salvar_todos(clientes)
+            cursor.execute("""
+            UPDATE clientes
+            SET nome = %s,
+                email = %s,
+                telefone = %s,
+                uf = %s,
+                cidade = %s,
+                bairro = %s,
+                endereco = %s,
+                numero = %s,
+                obs = %s
+            
+            WHERE cpf_cnpj = %s
+            """, (
+                c['nome'],
+                c['email'],
+                c['telefone'],
+                c['uf'],
+                c['cidade'],
+                c['bairro'],
+                c['endereco'],
+                c['numero'],
+                c['obs'],
+                c["cpf_cnpj"]
+            ))
+
+        conn.commit()
+
+        conn.close()
+
         messagebox.showinfo("Sucesso", "Dados atualizados.")
         janela.destroy()
 
     tk.Button(janela, text="Salvar", command=salvar).grid(row=linha, column=0, columnspan=2, pady=10)
-    
     

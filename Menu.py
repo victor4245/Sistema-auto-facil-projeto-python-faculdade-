@@ -15,10 +15,15 @@ try:
 except Exception:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
     messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'Pillow' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
+try:
+    import psycopg2
+except:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "psycopg2"])
+    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'psycopg2' teve que ser instalada para conectar ao banco de dados.\nPor favor abra o programa novamente.")
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.8.0"
+VERSION = "v 0.9.0"
 ARQUIVO_MAIN = "Autofacil.py"
 PERMITIDOS = ["Administrador", "Gerente"]
 
