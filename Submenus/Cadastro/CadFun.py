@@ -6,10 +6,20 @@
 
 import tkinter as tk
 from tkinter import messagebox, ttk
-import csv
-import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 # -------- CONFIGURAÇÕES BÁSICAS --------
-CAMINHO_BD = os.getcwd() + "/BD_interno"
+# Conexão com o BD
+try:
+    conn = psycopg2.connect(
+        host="db.gipxlyvlobazrwuhxzep.supabase.co",
+        database="postgres",
+        user="postgres",
+        password="S3nh4_DB@12",
+        port="5432"
+    )
+except:
+    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 
 def limpar(parent: tk.Frame):
     """Remove tudo que estiver no parent (caso queira reutilizar)."""
@@ -23,62 +33,45 @@ COR_TEXTO2 = "#000000"
 COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
+# --------------------------------------------------------
+# SALVA OS DADOS NO BD
+# --------------------------------------------------------
 def salvar(dados: dict, senha:tk.Entry, adsenha:tk.Toplevel):
-    dados["Senha"] = senha.get().strip()
+    dados["senha"] = senha.get().strip()
     adsenha.destroy()
     # Verificação simples (iniciante)
-    if dados["Nome"] == "" or dados["Carteira de Trabalho"] == "":
-        messagebox.showwarning(
-            "Campos obrigatórios faltando",
-            "Preencha pelo menos o Nome e a Carteira de Trabalho."
-        )
-        return
-    if dados["Email"] == "":
-        messagebox.showwarning(
-            "Campos obrigatórios",
-            "Preencha o email que sera usado para o login."
-        )
-        return
+    for data in dados:
+        if dados[data] == "" and not dados["obs"]:
+            messagebox.showwarning(
+                "Campos obrigatórios faltando",
+                "Preencha todos os campos para salvar o cliente."
+            )
+            return
     # Definição de senha para * caso o campo esteja vazio com redundancia de código por garantia
-    if dados["Senha"] == "" or dados[senha] == "*":
-        dados["Senha"] = "*"
+    if dados["senha"] == "" or dados[senha] == "*":
+        dados["senha"] = "*"
         messagebox.showwarning(
             "Campo de senha",
-            f"A senha não foi preenchida. Por padrão a senha foi definida como {dados['Senha']}."
+            f"A senha não foi preenchida. Por padrão a senha foi definida como {dados['senha']}."
         )
-
-    caminho = CAMINHO_BD + "/CadFun.csv"
-
-    # Verifica se o arquivo existe
-    arquivo_existe = os.path.exists(caminho)
-    if not arquivo_existe:
-        messagebox.showwarning(
-            "Banco de dados não encontrado",
-            "Procure o arquivo CadFun.csv dentro da pasta BD_interno"
-        )
-        return
-    for f in dados:   
-        if not dados[f] == dados["Senha"] or not dados[f] == dados["Nome"]:
-            dados[f] = dados[f].lower() # Transforma tudo menos a senha em minusculo
     
     try:
-        with open(caminho, "a", newline="", encoding="utf-8") as arquivo:
-            escritor = csv.writer(arquivo, delimiter=",")
-
-            # Se o arquivo NÃO existir, escreve o cabeçalho
-            if not arquivo_existe:
-                escritor.writerow(dados.keys())
-
-            # Escreve os dados do cliente
-            escritor.writerow(dados.values())
-
-        messagebox.showinfo(
-            "Sucesso",
-            "Funcionário salvo com sucesso no banco de dados interno!"
-        )
-
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("""INSERT INTO funcionarios (nome,cpf,email,telefone,cargo,id_empresa,obs,senha)
+                       VALUES(%s,%s,%s,%s,%s,%s,%s,%s)
+                       """,(
+                        dados['nome'],
+                        dados['cpf'],
+                        dados['email'],
+                        dados['telefone'],
+                        dados['cargo'],
+                        dados['id_empresa'],
+                        dados['obs'],
+                        dados['senha']
+                       ))
+        conn.commit()
     except Exception as erro:
-        messagebox.showerror("Erro", str(erro))
+        messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
 
 def mostrar_formulario(parent: tk.Frame):
     """
@@ -112,7 +105,7 @@ def mostrar_formulario(parent: tk.Frame):
     # ------- CAMPOS -------
     entradas = {}
 
-    def add_linha(rotulo, linha, col_inicio, largura=40):
+    def add_linha(rotulo, rotuloBD, linha, col_inicio, largura=40):
         """Cria um par Label + Entry numa posição da grade."""
         tk.Label(
             caixa,
@@ -135,21 +128,21 @@ def mostrar_formulario(parent: tk.Frame):
                 relief="flat"
             )
         entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
-
-        entradas[rotulo] = entry
+        # rotuloBD somente para trabalhar melhor com o dicionário no futuro
+        entradas[rotuloBD] = entry
 
     # Linha 1
-    add_linha("Nome", linha=1, col_inicio=0, largura=40)
-    add_linha("CPF", linha=1, col_inicio=2, largura=24)
+    add_linha("Nome", "nome", linha=1, col_inicio=0, largura=40)
+    add_linha("CPF", "cpf", linha=1, col_inicio=2, largura=24)
 
     # Linha 2
-    add_linha("E-mail", linha=2, col_inicio=0, largura=40)
-    add_linha("Telefone", linha=2, col_inicio=2, largura=24)
+    add_linha("E-mail", "email", linha=2, col_inicio=0, largura=40)
+    add_linha("Telefone", "telefone", linha=2, col_inicio=2, largura=24)
 
     # Linha 3
-    add_linha("Cargo", linha=4, col_inicio=0, largura=24)
+    add_linha("Cargo", "cargo", linha=4, col_inicio=0, largura=24)
 
-    entradas["Nome"].focus()
+    entradas["nome"].focus()
     
     # Observações
     tk.Label(
@@ -169,9 +162,9 @@ def mostrar_formulario(parent: tk.Frame):
 
     def on_salvar():
         dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}
-        dados["ID da empresa"] = dados["CPF"] # O ID sera definido como CPF temporariamente servindo somente como um exemplo
-        dados["Observações"] = txt_obs.get("1.0", "end-1c").strip()  
-        dados["Senha"] = "*"
+        dados["id_empresa"] = dados["cpf"].replace("-", "").replace(".", "") # O ID sera definido como CPF temporariamente servindo somente como um exemplo
+        dados["obs"] = txt_obs.get("1.0", "end-1c").strip()  
+        dados["senha"] = "*"
         ad_senha(dados)
 
 

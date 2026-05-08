@@ -1,16 +1,26 @@
 # =========================================================
-# Dashboard.py — Visão geral do negócio (CSV)
+# Dashboard.py — Visão geral do negócio (BD)
 # =========================================================
 
 import tkinter as tk
-import csv
 import os
 from datetime import datetime
-
+from tkinter import messagebox
+import psycopg2
+from psycopg2.extras import RealDictCursor
 # -------- CONFIGURAÇÕES BÁSICAS --------
-
+# Conexão com o BD
+try:
+    conn = psycopg2.connect(
+        host="db.gipxlyvlobazrwuhxzep.supabase.co",
+        database="postgres",
+        user="postgres",
+        password="S3nh4_DB@12",
+        port="5432"
+    )
+except:
+    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%d/%m/%Y")
-CAMINHO_BD = os.getcwd() + "/BD_interno"
 PAGINA = 1
 NUMMAN = 0
 
@@ -27,63 +37,59 @@ def ajusta_pagina(valor):
     global PAGINA
     PAGINA = valor
 # ----------------------------------------------------------
-# Lê TODOS os clientes do CSV e retorna a quantidade
+# Lê TODOS os clientes do BD e retorna a quantidade
 # ----------------------------------------------------------
-with open(CAMINHO_BD + "/CadCli.csv", "r", encoding="utf-8") as arquivo:
-    linhas = arquivo.readlines()
-    NUMCLI = 0 + len(linhas) - 1
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+cursor.execute("""SELECT * FROM clientes""")
+clientes = cursor.fetchall()
+NUMCLI = len(clientes)
     
 # ----------------------------------------------------------
-# Lê TODOS os Veículos do CSV e retorna a quantidade e a quantidade dos que precisam de manutenção
+# Lê TODOS os Veículos do BD e retorna a quantidade e a quantidade dos que precisam de manutenção
 # ----------------------------------------------------------
-with open(CAMINHO_BD + "/CadFro.csv", "r", encoding="utf-8") as arquivo:
-    linhas = arquivo.readlines()
-    NUMVEIC = 0 + len(linhas) - 1
-    leitor = csv.DictReader(arquivo)
-    for linha in leitor:
-        if "precisa de manutenção" in linha["OBS"].lower():
-            NUMMAN = NUMMAN + 1
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+cursor.execute("""SELECT * FROM frota""")
+veiculos = cursor.fetchall()
+NUMVEIC = len(veiculos)
+for linha in veiculos:
+    if "precisa de manutenção" in linha["obs"].lower():
+        NUMMAN = NUMMAN + 1
     
 # ----------------------------------------------------------
-# Lê TODOS os funcionários do CSV e retorna a quantidade
+# Lê TODOS os funcionários do BD e retorna a quantidade
 # ----------------------------------------------------------
-with open(CAMINHO_BD + "/CadFun.csv", "r", encoding="utf-8") as arquivo:
-    linhas = arquivo.readlines()
-    NUMFUNC = 0 + len(linhas) - 1
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+cursor.execute("""SELECT * FROM funcionarios""")
+funcionarios = cursor.fetchall()
+NUMFUNC = len(funcionarios)
     
 # ----------------------------------------------------------
-# Lê TODOS os test drives do CSV e retorna uma lista de dicts
+# Lê TODOS os test drives do BD e retorna uma lista de dicts
 # ----------------------------------------------------------
-with open(CAMINHO_BD + "/AgenTD.csv", "r", encoding="utf-8") as arquivo:
-    linhas = arquivo.readlines()
-    NUMTD = 0 + len(linhas) - 1
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+cursor.execute("""SELECT * FROM agentd""")
+tests = cursor.fetchall()
+NUMTD = 0 + len(tests) - 1
     
 def ler_test():
-    caminho = CAMINHO_BD + "/AgenTD.csv"
     test = []
-
-    with open(caminho, "r", newline="", encoding="utf-8") as arquivo:
-        leitor = csv.DictReader(arquivo)
-        for linha in leitor:
-            test.append(linha)
+    for linha in tests:
+        test.append(linha)
 
     return test
 
 # ----------------------------------------------------------
-# Lê TODOS as reuniões do CSV e retorna uma lista de dicts
+# Lê TODOS as reuniões do BD e retorna uma lista de dicts
 # ----------------------------------------------------------
-with open(CAMINHO_BD + "/AgenReu.csv", "r", encoding="utf-8") as arquivo:
-    linhas = arquivo.readlines()
-    NUMTD = 0 + len(linhas) - 1
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+cursor.execute("""SELECT * FROM agenreu""")
+reunioes = cursor.fetchall()
+NUMREU = 0 + len(reunioes) - 1
     
 def ler_reu():
-    caminho = CAMINHO_BD + "/AgenReu.csv"
     reun = []
-
-    with open(caminho, "r", newline="", encoding="utf-8") as arquivo:
-        leitor = csv.DictReader(arquivo)
-        for linha in leitor:
-            reun.append(linha)
+    for linha in reunioes:
+        reun.append(linha)
 
     return reun
 
@@ -229,9 +235,15 @@ def mostrar_formulario(parent):
         controle = 0
         for c in tests:
             controle = controle + 1
-            if (AGORA in c["Data"]):
-                texto = f"Cliente: {c['Cliente']}  |  Veículo: {c['Veículo']} | Horário: {c['Horário']}"
-                lista3.insert(tk.END, texto)
+            if (AGORA in c["data"]):
+                texto = f"Cliente: {c['cliente']}  |  Veículo: {c['veiculo']} | Horário: {c['horario']}"
+                if len(texto) > 60:
+                    texto = f"Cliente: {c['cliente']}  |  Veículo: {c['veiculo']}" 
+                    texto2 = f"Horário: {c['horario']}"
+                    lista3.insert(tk.END, texto)
+                    lista3.insert(tk.END, texto2)
+                else:
+                    lista3.insert(tk.END, texto)
                 TDconf = True
             elif (controle == NUMTD and TDconf == False):
                 texto = "NÃO HÁ TEST DRIVES AGENDADOS PARA HOJE"
@@ -249,10 +261,16 @@ def mostrar_formulario(parent):
         controle2 = 0
         for c in reuns:
             controle2 = controle2 + 1
-            if (AGORA in c["Data"]):
-                texto = f"Cliente: {c['Cliente']}  |  Local: {c['Local']} | Horário: {c['Horário']}"
-                lista4.insert(tk.END, texto)
+            if (AGORA in c["data"]):
+                texto = f"Cliente: {c['cliente']}  |  Local: {c['local']} | Horário: {c['horario']}"
+                if len(texto) > 60:
+                    texto = f"Cliente: {c['cliente']}  |  Local: {c['local']}" 
+                    texto2 = f"Horário: {c['horario']}"
+                    lista4.insert(tk.END, texto)
+                    lista4.insert(tk.END, texto2)
+                else:
+                    lista4.insert(tk.END, texto)
                 Rconf = True
-            elif (controle2 == NUMTD and Rconf == False):
+            elif (controle2 == NUMREU and Rconf == False):
                 texto = "NÃO HÁ REUNIÕES AGENDADAS PARA HOJE"
                 lista4.insert(tk.END, texto)

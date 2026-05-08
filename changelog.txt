@@ -195,9 +195,12 @@ v 0.8.0:
 v 0.9.0:
 
 - Criação de um BD externo
-- Movida localizção do log de login
+- Mudança na localizção do log de login
+- Aba admin removida
 - Mudança na formatação do ID da empresa
 - Preparação para mover todo o BD interno para o BD externo
-- Adicionada a utilização do BD externo pela pesquisa de clientes e da frota
+- Adicionada a utilização do BD externo
+- Adicionado melhor tratamento de erros
+- Atualizações nos comentários do código
 - Otimizações no código
 - Bugs menores corrigidos

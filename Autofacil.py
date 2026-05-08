@@ -10,20 +10,33 @@ import os
 import sys
 import tkinter as tk
 from tkinter import messagebox
-import csv
 from datetime import datetime
 import subprocess
-# Pillow é necessário para exibir a imagem de fundo
+try:
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+except:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "psycopg2"])
+    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'psycopg2' teve que ser instalada para conectar ao banco de dados.\nPor favor abra o programa novamente.")
 try:
     from PIL import Image, ImageTk
-except Exception:
+except:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
     messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'Pillow' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
 # -------- CONFIGURAÇÕES BÁSICAS --------
-
+# Conexão com o BD
+try:
+    conn = psycopg2.connect(
+        host="db.gipxlyvlobazrwuhxzep.supabase.co",
+        database="postgres",
+        user="postgres",
+        password="S3nh4_DB@12",
+        port="5432"
+    )
+except:
+    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-CAMINHO_BD = os.getcwd() +"/BD_interno"
 ARQUIVO_MENU = "Menu.py"
 VERSION = "v 0.9.0"
 
@@ -37,22 +50,23 @@ PESSOA = []
 CARGO = []
 SENHA_ESPERADA = []
 
-with open(CAMINHO_BD + "/CadFun.csv", "r", newline="", encoding="utf-8") as arquivo:
-    leitor = csv.DictReader(arquivo)
-    for linha in leitor:
-        login.append(linha) 
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+cursor.execute("SELECT * FROM funcionarios")
+leitor = cursor.fetchall()
+for linha in leitor:
+    login.append(linha) 
 
 for i in range(len(login)):
-    # Adição dos CPFs e Emails para verificação de login
-    LOGIN_CPF.append(login[i]["CPF"].replace(".", "").replace("-", "").strip())
-    LOGIN_EMAIL.append(login[i]["Email"])
-    LOGIN_ID.append(login[i]["ID da empresa"].replace(".", "").replace("-", "").strip())
+    # Adição dos CPFs, IDs e Emails para verificação de login
+    LOGIN_CPF.append(login[i]["cpf"].replace(".", "").replace("-", "").strip())
+    LOGIN_EMAIL.append(login[i]["email"])
+    LOGIN_ID.append(login[i]["id_empresa"])
     # Captura dos nomes para saudação
-    PESSOA.append(login[i]["Nome"])
+    PESSOA.append(login[i]["nome"])
     # Captura dos cargos para uso posterior no menu.py
-    CARGO.append(login[i]["Cargo"])
+    CARGO.append(login[i]["cargo"])
     # Adição das senhas para verificação de login
-    SENHA_ESPERADA.append(login[i]["Senha"])
+    SENHA_ESPERADA.append(login[i]["senha"])
 
 # =======================================================
 # FUNÇÕES (nomes simples, em português)
@@ -122,15 +136,16 @@ def atualizar_fundo(janela: tk.Tk, lbl_fundo: tk.Label, img_base):
 
 # Log para conferir funcionários logados anteriormente
 def log_login(pessoa: str):
-    with open(CAMINHO_BD + "/log.txt", "r", encoding="utf-8") as log:
+    with open(os.getcwd() + "/Log.txt", "r", encoding="utf-8") as log:
         linhas = log.readlines()
     if len(linhas) > 100:
-        with open(CAMINHO_BD + "/log.txt", "w", encoding="utf-8") as log:
+        with open(os.getcwd() + "/Log.txt", "w", encoding="utf-8") as log:
             log.write(f"O funcionário {pessoa} acessou o sistema as {AGORA}\n")
     else:
-        with open(CAMINHO_BD + "/log.txt", "a", encoding="utf-8") as log:
+        with open(os.getcwd() + "/Log.txt", "a", encoding="utf-8") as log:
             log.write(f"O funcionário {pessoa} acessou o sistema as {AGORA}\n")
     return
+
 def abrir_menu(janela: tk.Tk, pessoa:str, cargo:str):
     """Fecha esta janela e abre o arquivo 'menu.py' (no mesmo diretório)."""
     import subprocess

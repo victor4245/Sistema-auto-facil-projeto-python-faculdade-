@@ -11,3 +11,4 @@ O funcionário Juliana Costa acessou o sistema as 20:22:34 05/05/2026
 O funcionário Juliana Costa acessou o sistema as 20:24:21 05/05/2026
 O funcionário Juliana Costa acessou o sistema as 20:26:47 05/05/2026
 O funcionário Administrador acessou o sistema as 21:16:55 05/05/2026
+O funcionário Administrador acessou o sistema as 19:44:15 07/05/2026

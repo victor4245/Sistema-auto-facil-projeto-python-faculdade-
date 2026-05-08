@@ -1,5 +1,5 @@
 # =========================================================
-# PesFro.py — Pesquisa / Consulta de Veículos (CSV)
+# PesFro.py — Pesquisa / Consulta de Veículos (BD)
 # =========================================================
 
 import tkinter as tk
@@ -8,16 +8,17 @@ import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 # -------- CONFIGURAÇÕES BÁSICAS --------
-CAMINHO_BD = os.getcwd() + "/BD_interno"
-
 # Conexão com o BD
-conn = psycopg2.connect(
-    host="db.gipxlyvlobazrwuhxzep.supabase.co",
-    database="postgres",
-    user="postgres",
-    password="S3nh4_DB@12",
-    port="5432"
-)
+try:
+    conn = psycopg2.connect(
+        host="db.gipxlyvlobazrwuhxzep.supabase.co",
+        database="postgres",
+        user="postgres",
+        password="S3nh4_DB@12",
+        port="5432"
+    )
+except:
+    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -291,7 +292,7 @@ def abrir_edicao(veiculo):
             cursor = conn.cursor()
 
             cursor.execute("""
-            UPDATE FROTA
+            UPDATE frota
             SET nome = %s,
                 marca = %s,
                 modelo = %s,
@@ -316,7 +317,6 @@ def abrir_edicao(veiculo):
 
         conn.commit()
 
-        conn.close()
         messagebox.showinfo("Sucesso", "Dados atualizados.")
         janela.destroy()
 

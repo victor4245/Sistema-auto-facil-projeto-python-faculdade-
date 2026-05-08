@@ -1,14 +1,25 @@
 # =========================================================
-# PesAgen.py — Pesquisa / Consulta de Reuniões/tests drives (CSV)
+# PesAgen.py — Pesquisa / Consulta de Reuniões/tests drives (BD)
 # =========================================================
 
 import tkinter as tk
 from tkinter import messagebox
-import csv
 import os
 from datetime import datetime
+import psycopg2
+from psycopg2.extras import RealDictCursor
 # -------- CONFIGURAÇÕES BÁSICAS --------
-CAMINHO_BD = os.getcwd() + "/BD_interno"
+# Conexão com o BD
+try:
+    conn = psycopg2.connect(
+        host="db.gipxlyvlobazrwuhxzep.supabase.co",
+        database="postgres",
+        user="postgres",
+        password="S3nh4_DB@12",
+        port="5432"
+    )
+except:
+    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%d/%m/%Y")
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -22,60 +33,32 @@ def ajusta_pagina(valor):
     PAGINA = valor
 
 # ----------------------------------------------------------
-# Lê TODAS as reuniões do CSV e retorna uma lista de dicts
+# Lê TODAS as reuniões do BD e retorna uma lista de dicts
 # ----------------------------------------------------------
 def ler_reun():
-    caminho = CAMINHO_BD + "/AgenReu.csv"
     reunioes = []
 
-    with open(caminho, "r", newline="", encoding="utf-8", errors='ignore') as arquivo:
-        leitor = csv.DictReader(arquivo)
-        for linha in leitor:
-            reunioes.append(linha)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("SELECT * FROM agenreu")
+
+    reunioes = cursor.fetchall()
 
     return reunioes
-
-# ----------------------------------------------------------
-# Salva TODOS as reuniões novamente no CSV (usado no Editar)
-# ----------------------------------------------------------
-def salvar_reun(reuniões):
-    if not reuniões:
-        return
-
-    caminho = CAMINHO_BD + "/AgenReu.csv"
-
-    with open(caminho, "w", newline="", encoding="utf-8", errors='ignore') as arquivo:
-        escritor = csv.DictWriter(arquivo, fieldnames=reuniões[0].keys())
-        escritor.writeheader()
-        escritor.writerows(reuniões)
         
 # ----------------------------------------------------------
-# Lê TODAS os tests drive do CSV e retorna uma lista de dicts
+# Lê TODAS os tests drive do BD e retorna uma lista de dicts
 # ----------------------------------------------------------
 def ler_TD():
-    caminho = CAMINHO_BD + "/AgenTD.csv"
     Td = []
 
-    with open(caminho, "r", newline="", encoding="utf-8", errors='ignore') as arquivo:
-        leitor = csv.DictReader(arquivo)
-        for linha in leitor:
-            Td.append(linha)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("SELECT * FROM agentd")
+
+    Td = cursor.fetchall()
 
     return Td
-
-# ----------------------------------------------------------
-# Salva TODOS os tests drive novamente no CSV (usado no Editar)
-# ----------------------------------------------------------
-def salvar_TD(TD):
-    if not TD:
-        return
-
-    caminho = CAMINHO_BD + "/AgendTD.csv"
-
-    with open(caminho, "w", newline="", encoding="utf-8", errors='ignore') as arquivo:
-        escritor = csv.DictWriter(arquivo, fieldnames=TD[0].keys())
-        escritor.writeheader()
-        escritor.writerows(TD)
 
 # ----------------------------------------------------------
 # Tela principal da pesquisa
@@ -86,11 +69,13 @@ def mostrar_formulario(parent):
         NOME2 = "Reunião"
         LISTA = ler_reun()
         cab = "Local"
+        cab2 = "local"
     elif PAGINA == 2:
         NOME = "Tests Drive"
         NOME2 = "Test Drive"
         LISTA = ler_TD()
         cab = "Veículo"
+        cab2 = "veiculo"
     # Limpa a área central
     for w in parent.winfo_children():
         w.destroy()
@@ -155,14 +140,34 @@ def mostrar_formulario(parent):
         lista.delete(0, tk.END)
         lista_filtrada.clear()
         
-        for f in range(len(filtro)):
-            filtro[f] = filtro[f].lower() # Transforma tudo em minusculo
-
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        if PAGINA == 1:
+            cursor.execute("""
+            SELECT *
+            FROM agenreu
+            WHERE
+                cliente ILIKE %s
+                OR data ILIKE %s
+            """, (
+                f"%{filtro[0]}%",
+                f"%{filtro[1]}%"
+            ))
+        elif PAGINA == 2:
+            cursor.execute("""
+            SELECT *
+            FROM agenreu
+            WHERE
+                cliente ILIKE %s
+                OR data ILIKE %s
+            """, (
+                f"%{filtro[0]}%",
+                f"%{filtro[1]}%"
+            ))
+        LISTA = cursor.fetchall()
         for c in LISTA:
-            if (filtro[0] in c["Cliente"] or filtro[1] in c["Data"]):
-                texto = f"   {c['Cliente']}  |  Data: {c['Data']}  |  {cab}: {c[cab]}"
-                lista.insert(tk.END, texto)
-                lista_filtrada.append(c)
+            texto = f"   {c['cliente']}  |  Data: {c['data']}  |  {cab}: {c[cab2]}"
+            lista.insert(tk.END, texto)
+            lista_filtrada.append(c)
 
     # Pesquisa dinâmica (a cada tecla)
     def ao_digitar(event):
@@ -192,7 +197,7 @@ def mostrar_formulario(parent):
         lista_filtrada.clear()
 
         for c in LISTA:          
-            texto = f"   {c['Cliente']}  |  Data: {c['Data']}  |  {cab}: {c[cab]}"
+            texto = f"   {c['cliente']}  |  Data: {c['data']}  |  {cab}: {c[cab2]}"
             lista.insert(tk.END, texto)
             lista_filtrada.append(c)
 
@@ -337,16 +342,55 @@ def abrir_edicao(agendamento, NOME):
             reus = ler_TD()
 
         for c in reus:
-            if c["Código"] == agendamento["Código"]:
-                for k in entradas:
-                    c[k] = entradas[k].get()
-        if datetime.strptime(c["Data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
+            for k in entradas:
+                c[k] = entradas[k].get()
+        if datetime.strptime(c["data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
             messagebox.showwarning("Data inválida", "A data do agendamento não pode ser anterior ao momento atual.")
             return
         if PAGINA == 1:
-            reus = salvar_reun(reus)
+            cursor = conn.cursor()
+
+            cursor.execute("""
+            UPDATE agenreu
+            SET cliente = %s,
+                horario = %s,
+                data = %s,
+                local = %s,
+                obs = %s
+            
+            WHERE codigo = %s
+            """, (
+                c['cliente'],
+                c['horario'],
+                c['data'],
+                c['local'],
+                c['obs'],
+                c["codigo"]
+            ))
+
+            conn.commit()
         elif PAGINA == 2:
-            reus = salvar_TD(reus)
+            cursor = conn.cursor()
+
+            cursor.execute("""
+            UPDATE agentd
+            SET cliente = %s,
+                horario = %s,
+                data = %s,
+                veiculo = %s,
+                obs = %s
+            
+            WHERE codigo = %s
+            """, (
+                c['cliente'],
+                c['horario'],
+                c['data'],
+                c['veiculo'],
+                c['obs'],
+                c["codigo"]
+            ))
+
+            conn.commit()
         
         messagebox.showinfo("Sucesso", "Dados atualizados.")
         janela.destroy()

@@ -1,5 +1,5 @@
 # =========================================================
-# PesqCli.py — Pesquisa / Consulta de Clientes (CSV)
+# PesqCli.py — Pesquisa / Consulta de Clientes (BD)
 # =========================================================
 
 import tkinter as tk
@@ -7,18 +7,18 @@ from tkinter import messagebox
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
-
 # -------- CONFIGURAÇÕES BÁSICAS --------
-CAMINHO_BD = os.getcwd() + "/BD_interno"
-
 # Conexão com o BD
-conn = psycopg2.connect(
-    host="db.gipxlyvlobazrwuhxzep.supabase.co",
-    database="postgres",
-    user="postgres",
-    password="S3nh4_DB@12",
-    port="5432"
-)
+try:
+    conn = psycopg2.connect(
+        host="db.gipxlyvlobazrwuhxzep.supabase.co",
+        database="postgres",
+        user="postgres",
+        password="S3nh4_DB@12",
+        port="5432"
+    )
+except:
+    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -113,8 +113,6 @@ def mostrar_formulario(parent):
     def atualizar_lista(filtro):
         lista.delete(0, tk.END)
         clientes_filtrados.clear()
-        for f in range(len(filtro)):
-            filtro[f] = filtro[f].lower() # Transforma tudo em minusculo
 
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
@@ -312,8 +310,6 @@ def abrir_edicao(cliente):
             ))
 
         conn.commit()
-
-        conn.close()
 
         messagebox.showinfo("Sucesso", "Dados atualizados.")
         janela.destroy()

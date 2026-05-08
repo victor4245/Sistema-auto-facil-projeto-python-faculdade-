@@ -9,17 +9,7 @@ import sys
 import tkinter as tk
 from tkinter import messagebox
 import importlib
-import subprocess
-try:
-    from PIL import Image, ImageTk
-except Exception:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
-    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'Pillow' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
-try:
-    import psycopg2
-except:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "psycopg2"])
-    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'psycopg2' teve que ser instalada para conectar ao banco de dados.\nPor favor abra o programa novamente.")
+from PIL import Image, ImageTk
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
@@ -62,10 +52,7 @@ def abrir_aba_nova(area_conteudo: tk.Frame, titulo:str):
 
     try:
         modulo = importlib.import_module(titulo)
-        if titulo == "Submenus.Admin":
-            modulo.mostrar_formulario(area_conteudo, cargo)
-        else:
-            modulo.mostrar_formulario(area_conteudo)
+        modulo.mostrar_formulario(area_conteudo)
     except Exception as e:
         messagebox.showerror("Erro", f"Falha ao abrir a tela de {titulo}:\n{e}")
 
@@ -225,13 +212,6 @@ def montar_menu(area_conteudo: tk.Frame):
         icone="\U0001F4CA",
         subitens=None,
         acao=lambda: abrir_aba_nova(area_conteudo, "Submenus.Dashboard")
-    )
-
-    criar_item_menu(
-        texto="ADM",
-        icone="\U0001F9F0",
-        subitens=None,
-        acao=lambda: abrir_aba_nova(area_conteudo, "Submenus.Admin")
     )
     
     criar_item_menu(

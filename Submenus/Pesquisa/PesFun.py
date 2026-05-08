@@ -1,13 +1,26 @@
 # =========================================================
-# PesFun.py — Pesquisa / Consulta de Funcionários (CSV)
+# PesFun.py — Pesquisa / Consulta de Funcionários (BD)
 # =========================================================
 
 import tkinter as tk
 from tkinter import messagebox
-import csv
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
 # -------- CONFIGURAÇÕES BÁSICAS --------
-CAMINHO_BD = os.getcwd() + "/BD_interno"
+# Conexão com o BD
+
+try:
+    conn = psycopg2.connect(
+        host="db.gipxlyvlobazrwuhxzep.supabase.co",
+        database="postgres",
+        user="postgres",
+        password="S3nh4_DB@12",
+        port="5432"
+    )
+except:
+    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -20,29 +33,15 @@ COR_FUNDO = "#0B1220"
 # Lê TODOS os Funcionários do CSV e retorna uma lista de dicts
 # ----------------------------------------------------------
 def ler_Funcionarios():
-    caminho = CAMINHO_BD + "/CadFun.csv"
     funcionarios = []
 
-    with open(caminho, "r", newline="", encoding="utf-8") as arquivo:
-        leitor = csv.DictReader(arquivo)
-        for linha in leitor:
-            funcionarios.append(linha)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    cursor.execute("SELECT * FROM funcionarios")
+
+    funcionarios = cursor.fetchall()
 
     return funcionarios
-
-# ----------------------------------------------------------
-# Salva TODOS os funcionários novamente no CSV (usado no Editar)
-# ----------------------------------------------------------
-def salvar_todos(funcionarios):
-    if not funcionarios:
-        return
-
-    caminho = CAMINHO_BD + "/CadFun.csv"
-
-    with open(caminho, "w", newline="", encoding="utf-8") as arquivo:
-        escritor = csv.DictWriter(arquivo, fieldnames=funcionarios[0].keys())
-        escritor.writeheader()
-        escritor.writerows(funcionarios)
 
 # ----------------------------------------------------------
 # Tela principal da pesquisa
@@ -117,19 +116,38 @@ def mostrar_formulario(parent):
     funcionarios_filtrados = []
 
     # ---------------- FUNÇÃO: atualizar resultados ----------------
-    def atualizar_lista(filtro=""):
+    def atualizar_lista(filtro):
         lista.delete(0, tk.END)
         funcionarios_filtrados.clear()
-        ID = []
-        for f in range(len(filtro)):
-            filtro[f] = filtro[f].lower() # Transforma tudo em minusculo
-
+        
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("""
+        SELECT *
+        FROM funcionarios
+        WHERE
+            nome ILIKE %s
+            OR cpf ILIKE %s
+            OR REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), '/', '') ILIKE %s
+            OR email ILIKE %s
+            OR telefone ILIKE %s
+            OR cargo ILIKE %s
+            OR id_empresa ILIKE %s
+        """, (
+            f"%{filtro[0]}%",
+            f"%{filtro[1]}%",
+            f"%{filtro[1]}%",
+            f"%{filtro[2]}%",
+            f"%{filtro[3]}%",
+            f"%{filtro[4]}%",
+            f"%{filtro[5]}%",
+        ))
+        
+        funcionarios = cursor.fetchall()
+        
         for c in funcionarios:
-            ID = c["ID da empresa"].replace(".", "").replace("-", "") # Remove pontos e traços do ID para facilitar a busca
-            if (filtro[0] in c["Nome"] or filtro[1] in c["CPF"] or filtro[2] in c["Email"] or filtro[3] in c["Telefone"] or filtro[4] in c["Cargo"] or filtro[5] in c["ID da empresa"] or filtro[5] in ID):
-                texto = f"   {c['Nome']}  |  ID da empresa: {c['ID da empresa']}  |  Cargo: {c['Cargo']}"
-                lista.insert(tk.END, texto)
-                funcionarios_filtrados.append(c)
+            texto = f"   {c['nome']}  |  ID da empresa: {c['id_empresa']}  |  Cargo: {c['cargo']}"
+            lista.insert(tk.END, texto)
+            funcionarios_filtrados.append(c)
 
     # Pesquisa dinâmica (a cada tecla)
     def ao_digitar(event):
@@ -156,7 +174,7 @@ def mostrar_formulario(parent):
         funcionarios_filtrados.clear()
 
         for c in funcionarios:          
-            texto = f"   {c['Nome']}  |  ID da empresa: {c['ID da empresa']}  |  Cargo: {c['Cargo']}"
+            texto = f"   {c['nome']}  |  ID da empresa: {c['id_empresa']}  |  Cargo: {c['cargo']}"
             lista.insert(tk.END, texto)
             funcionarios_filtrados.append(c)
 
@@ -269,11 +287,34 @@ def abrir_edicao(funcionario):
         funcionarios = ler_Funcionarios()
 
         for c in funcionarios:
-            if c["Carteira de Trabalho"] == funcionario["Carteira de Trabalho"]:
-                for k in entradas:
-                    c[k] = entradas[k].get()
+            for k in entradas:
+                c[k] = entradas[k].get()
+            cursor = conn.cursor()
 
-        salvar_todos(funcionarios)
+            cursor.execute("""
+            UPDATE funcionarios
+            SET nome = %s,
+                cpf = %s,
+                email = %s,
+                telefone = %s,
+                cargo = %s,
+                senha = %s,
+                obs = %s
+            
+            WHERE id_empresa = %s
+            """, (
+                c['nome'],
+                c['cpf'],
+                c['email'],
+                c['telefone'],
+                c['cargo'],
+                c['senha'],
+                c['obs'],
+                c['id_empresa']
+            ))
+
+        conn.commit()
+
         messagebox.showinfo("Sucesso", "Dados atualizados.")
         janela.destroy()
 
