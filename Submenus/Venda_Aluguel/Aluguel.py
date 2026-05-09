@@ -1,13 +1,21 @@
 # ========================================================
-# CadFun.py — Formulário de Funcionário
+# AgendaTD.py — Agendamento de Test Drive
 #
-# CadFun.mostrar_formulario(area_conteudo)
+# AgendaTD.mostrar_formulario(area_conteudo)
 # ========================================================
 
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import messagebox
+import subprocess
+import sys
+from datetime import datetime
 import psycopg2
 from psycopg2.extras import RealDictCursor
+try:
+    from tkcalendar import DateEntry
+except Exception:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "tkcalendar"])
+    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'tkcalendar' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
@@ -18,15 +26,14 @@ try:
         password="S3nh4_DB@12",
         port="5432"
     )
-    conn.autocommit = True
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
+AGORA = datetime.now().strftime("%d/%m/%Y")
 
 def limpar(parent: tk.Frame):
     """Remove tudo que estiver no parent (caso queira reutilizar)."""
     for w in parent.winfo_children():
         w.destroy()
-        
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
@@ -37,9 +44,7 @@ COR_FUNDO = "#0B1220"
 # --------------------------------------------------------
 # SALVA OS DADOS NO BD
 # --------------------------------------------------------
-def salvar(dados: dict, senha:tk.Entry, adsenha:tk.Toplevel):
-    dados["senha"] = senha.get().strip()
-    adsenha.destroy()
+def salvar(dados):
     # Verificação simples (iniciante)
     for data in dados:
         if dados[data] == "" and not dados["obs"]:
@@ -48,36 +53,32 @@ def salvar(dados: dict, senha:tk.Entry, adsenha:tk.Toplevel):
                 "Preencha todos os campos para salvar o cliente."
             )
             return
-    # Definição de senha para * caso o campo esteja vazio com redundancia de código por garantia
-    if dados["senha"] == "" or dados[senha] == "*":
-        dados["senha"] = "*"
+    if datetime.strptime(dados["Data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
         messagebox.showwarning(
-            "Campo de senha",
-            f"A senha não foi preenchida. Por padrão a senha foi definida como {dados['senha']}."
+            "Data inválida",
+            "A data do test drive não pode ser anterior ao momento atual."
         )
-    
+        return
+
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("""INSERT INTO funcionarios (nome,cpf,email,telefone,cargo,id_empresa,obs,senha)
-                       VALUES(%s,%s,%s,%s,%s,%s,%s,%s)
+        cursor.execute("""INSERT INTO agentd (cliente,horario,veiculo,data,obs)
+                       VALUES(%s,%s,%s,%s,%s)
                        """,(
-                        dados['nome'],
-                        dados['cpf'],
-                        dados['email'],
-                        dados['telefone'],
-                        dados['cargo'],
-                        dados['id_empresa'],
-                        dados['obs'],
-                        dados['senha']
+                        dados["cliente"],
+                        dados["horario"],
+                        dados["veiculo"],
+                        dados["data"],
+                        dados["obs"]
                        ))
         conn.commit()
-        messagebox.showinfo("Sucesso", "Funcionário cadastrado com sucesso!")
     except Exception as erro:
         messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
+    
 
 def mostrar_formulario(parent: tk.Frame):
     """
-    Constrói o formulário de Funcionário dentro do 'parent' (área central).
+    Constrói o formulário de Test Drive dentro do 'parent' (área central).
     """
 
     # Limpa qualquer conteúdo anterior
@@ -98,7 +99,7 @@ def mostrar_formulario(parent: tk.Frame):
     # Título
     tk.Label(
         caixa,
-        text="Cadastro de Funcionário",
+        text="Agendamento de Test Drive",
         font=("Segoe UI", 16, "bold"),
         bg=COR_FUNDO,
         fg=COR_TEXTO
@@ -115,12 +116,17 @@ def mostrar_formulario(parent: tk.Frame):
             font=("Segoe UI", 10, "bold"),
             bg=COR_FUNDO,
             fg=COR_TEXTO
-        ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6)
-        if rotulo == "Cargo":
-            entry = ttk.Combobox(caixa, values=[' ', 'Gerente', 'Vendedor',
-                                                'Mecânico', 'Assistente Administrativo', 'lavador'],width=largura, state="readonly")
-            entry.current(0)
-        else:    
+        ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6) 
+        if rotulo == "Data":
+            entry = DateEntry(
+                caixa,
+                width=largura,
+                background=COR_CAMPO,
+                foreground=COR_TEXTO,
+                borderwidth=2,
+                date_pattern='dd/mm/yyyy'  # Formato BR
+            )
+        else:
             entry = tk.Entry(
                 caixa,
                 width=largura,
@@ -130,22 +136,17 @@ def mostrar_formulario(parent: tk.Frame):
                 relief="flat"
             )
         entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
-        # rotuloBD somente para trabalhar melhor com o dicionário no futuro
+
         entradas[rotuloBD] = entry
 
     # Linha 1
-    add_linha("Nome", "nome", linha=1, col_inicio=0, largura=40)
-    add_linha("CPF", "cpf", linha=1, col_inicio=2, largura=24)
+    add_linha("Cliente", "cliente", linha=1, col_inicio=0, largura=40)
+    add_linha("Horário", "horario", linha=1, col_inicio=2, largura=24)
 
     # Linha 2
-    add_linha("E-mail", "email", linha=2, col_inicio=0, largura=40)
-    add_linha("Telefone", "telefone", linha=2, col_inicio=2, largura=24)
+    add_linha("Data", "data", linha=2, col_inicio=0, largura=21)
+    add_linha("Veículo", "veiculo", linha=2, col_inicio=2, largura=24)
 
-    # Linha 3
-    add_linha("Cargo", "cargo", linha=4, col_inicio=0, largura=24)
-
-    entradas["nome"].focus()
-    
     # Observações
     tk.Label(
         caixa,
@@ -153,22 +154,19 @@ def mostrar_formulario(parent: tk.Frame):
         font=("Segoe UI", 10, "bold"),
         bg=COR_FUNDO,
         fg=COR_TEXTO
-    ).grid(row=5, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
+    ).grid(row=3, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
 
     txt_obs = tk.Text(caixa, width=66, height=5, background=COR_CAMPO,foreground=COR_TEXTO2,insertbackground=COR_TEXTO2, relief="flat")
-    txt_obs.grid(row=6, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
+    txt_obs.grid(row=4, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
 
     # Botões
     botoes = tk.Frame(caixa, bg=COR_FUNDO)
-    botoes.grid(row=7, column=0, columnspan=4, pady=(16, 0))
+    botoes.grid(row=5, column=0, columnspan=4, pady=16)
 
     def on_salvar():
         dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}
-        dados["id_empresa"] = dados["cpf"].replace("-", "").replace(".", "") # O ID sera definido como CPF temporariamente servindo somente como um exemplo
-        dados["obs"] = txt_obs.get("1.0", "end-1c").strip()  
-        dados["senha"] = "*"
-        ad_senha(dados)
-
+        dados["obs"] = txt_obs.get("1.0", "end-1c").strip()
+        salvar(dados)
 
     def on_limpar():
         for ent in entradas.values():
@@ -181,7 +179,6 @@ def mostrar_formulario(parent: tk.Frame):
     tk.Button(
         botoes,
         text="Salvar",
-        font=("Segoe UI", 10, "bold"),
         bg="#2563EB",
         fg="white",
         activebackground="#1E40AF",
@@ -189,14 +186,13 @@ def mostrar_formulario(parent: tk.Frame):
         relief="flat",
         padx=14,
         pady=8,
-        command=on_salvar,
+        command=lambda:[on_salvar(), on_limpar()],
         cursor="hand2"
     ).pack(side="left", padx=6)
 
     tk.Button(
         botoes,
         text="Limpar",
-        font=("Segoe UI", 10, "bold"),
         bg="#6B7280",
         fg="white",
         activebackground="#4B5563",
@@ -211,7 +207,6 @@ def mostrar_formulario(parent: tk.Frame):
     tk.Button(
         botoes,
         text="Cancelar",
-        font=("Segoe UI", 10, "bold"),
         bg="#C90202",
         fg="white",
         activebackground="#8D0202",
@@ -226,17 +221,3 @@ def mostrar_formulario(parent: tk.Frame):
     # Ajuste de colunas
     for c in range(4):
         caixa.grid_columnconfigure(c, weight=0)
-# ----------------------------------------------------------
-# Tela de adição de senha de login de funcionário
-# ----------------------------------------------------------
-def ad_senha(dados: dict):
-    adsenha = tk.Toplevel()
-    adsenha.title("Adicionar senha de login do funcionário")
-    adsenha.grab_set()
-    cdados = dados
-    tk.Label(adsenha, text="Adicione a senha de login do funcionário").grid(row=0, column=0, columnspan=2, padx=(8, 2), pady=6)
-    tk.Label(adsenha, text="Senha:").grid(row=1, column=0, padx=(8, 2), pady=6, sticky="e")
-    senha = tk.Entry(adsenha, width=40)
-    senha.grid(row=1, column=1, padx=(5, 8), pady=6)
-    tk.Button(adsenha, text="Salvar", command=lambda:salvar(cdados, senha, adsenha)).grid(row=2, column=0, columnspan=2, pady=10)
-    

@@ -26,6 +26,7 @@ try:
         password="S3nh4_DB@12",
         port="5432"
     )
+    conn.autocommit = True
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%d/%m/%Y")
@@ -53,7 +54,7 @@ def salvar(dados):
                 "Preencha todos os campos para salvar o cliente."
             )
             return
-    if datetime.strptime(dados["Data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
+    if datetime.strptime(dados["data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
         messagebox.showwarning(
             "Data inválida",
             "A data da reunião não pode ser anterior ao momento atual."
@@ -73,6 +74,7 @@ def salvar(dados):
                         dados["obs"]
                        ))
         conn.commit()
+        messagebox.showinfo("Sucesso", "Reunião agendada com sucesso!")
     except Exception as erro:
         messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
     

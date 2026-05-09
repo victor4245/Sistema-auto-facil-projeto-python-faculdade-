@@ -204,3 +204,12 @@ v 0.9.0:
 - Atualizações nos comentários do código
 - Otimizações no código
 - Bugs menores corrigidos
+
+v 0.9.1:
+
+- Preparação para recebimento da aba Venda/Aluguel
+- Adicionado mensagem de conclusão de cadastro/agendamento
+- Novos tratamentos de acesso
+- Atualizações nos comentários do código
+- Otimizações no código
+- Bugs menores corrigidos

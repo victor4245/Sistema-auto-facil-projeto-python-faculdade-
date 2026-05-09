@@ -18,6 +18,7 @@ try:
         password="S3nh4_DB@12",
         port="5432"
     )
+    conn.autocommit = True
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 
@@ -64,6 +65,7 @@ def salvar(dados):
                         dados['obs']
                        ))
         conn.commit()
+        messagebox.showinfo("Sucesso", "Cliente cadastrado com sucesso!")
     except Exception as erro:
         messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
 

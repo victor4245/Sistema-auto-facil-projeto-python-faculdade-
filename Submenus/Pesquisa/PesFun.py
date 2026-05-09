@@ -19,6 +19,7 @@ try:
         password="S3nh4_DB@12",
         port="5432"
     )
+    conn.autocommit = True
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 

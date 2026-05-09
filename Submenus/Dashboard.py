@@ -3,7 +3,6 @@
 # =========================================================
 
 import tkinter as tk
-import os
 from datetime import datetime
 from tkinter import messagebox
 import psycopg2
@@ -97,6 +96,7 @@ def ler_reu():
 # Tela principal da pesquisa
 # ----------------------------------------------------------
 def mostrar_formulario(parent):
+
     # Limpa a área central
     for w in parent.winfo_children():
         w.destroy()
