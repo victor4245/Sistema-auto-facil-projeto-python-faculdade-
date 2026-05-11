@@ -13,7 +13,7 @@ from PIL import Image, ImageTk
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.9.2"
+VERSION = "v 0.9.3"
 ARQUIVO_MAIN = "Autofacil.py"
 PERMITIDOS = ["Administrador", "Gerente"]
 PERMITIDOS2 = ["Administrador", "Gerente", "Assistente administrativo", "Vendedor"]

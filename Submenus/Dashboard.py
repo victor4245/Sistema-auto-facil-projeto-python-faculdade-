@@ -20,8 +20,10 @@ try:
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%d/%m/%Y")
+MES = datetime.now().strftime("%m")
 PAGINA = 1
 NUMMAN = 0
+NUMVEN = 0
 
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -30,21 +32,27 @@ COR_CAMPO = "#1F2937"
 COR_FUNDO = "#0B1220"
 
 # ----------------------------------------------------------
-# Aumenta ou diminui a quantidade de pagina
+# Ajusta a pagina atual
 # ----------------------------------------------------------
 def ajusta_pagina(valor):
     global PAGINA
     PAGINA = valor
 # ----------------------------------------------------------
-# Lê TODOS os clientes do BD e retorna a quantidade
+# Lê TODOS os clientes do BD
 # ----------------------------------------------------------
 cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM clientes""")
 clientes = cursor.fetchall()
 NUMCLI = len(clientes)
+
+def ler_cli(cod):
+    cursor.execute("""SELECT * FROM clientes WHERE cpf_cnpj = %s""",(cod,))
+    cliente = cursor.fetchone()
+
+    return cliente
     
 # ----------------------------------------------------------
-# Lê TODOS os Veículos do BD e retorna a quantidade e a quantidade dos que precisam de manutenção
+# Lê TODOS os veículos do BD
 # ----------------------------------------------------------
 cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM frota""")
@@ -53,9 +61,14 @@ NUMVEIC = len(veiculos)
 for linha in veiculos:
     if "precisa de manutenção" in linha["obs"].lower():
         NUMMAN = NUMMAN + 1
+def ler_fro(cod):
+    cursor.execute("""SELECT * FROM frota WHERE codigo = %s""",(cod,))
+    frota = cursor.fetchone()
+
+    return frota
     
 # ----------------------------------------------------------
-# Lê TODOS os funcionários do BD e retorna a quantidade
+# Lê TODOS os funcionários do BD
 # ----------------------------------------------------------
 cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM funcionarios""")
@@ -63,12 +76,12 @@ funcionarios = cursor.fetchall()
 NUMFUNC = len(funcionarios)
     
 # ----------------------------------------------------------
-# Lê TODOS os test drives do BD e retorna uma lista de dicts
+# Lê TODOS os test drives do BD
 # ----------------------------------------------------------
 cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM agentd""")
 tests = cursor.fetchall()
-NUMTD = 0 + len(tests) - 1
+NUMTD = len(tests)
     
 def ler_test():
     test = []
@@ -78,12 +91,12 @@ def ler_test():
     return test
 
 # ----------------------------------------------------------
-# Lê TODOS as reuniões do BD e retorna uma lista de dicts
+# Lê TODOS as reuniões do BD
 # ----------------------------------------------------------
 cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM agenreu""")
 reunioes = cursor.fetchall()
-NUMREU = 0 + len(reunioes) - 1
+NUMREU = len(reunioes)
     
 def ler_reu():
     reun = []
@@ -92,6 +105,41 @@ def ler_reu():
 
     return reun
 
+# ----------------------------------------------------------
+# Lê TODOS as vendas do BD
+# ----------------------------------------------------------
+
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+cursor.execute("""SELECT * FROM venda""")
+vendas = cursor.fetchall()
+venda = []  
+for linha in vendas:
+    data = datetime.strptime(linha["data_venda"], "%d/%m/%Y")
+    if  data.month == int(MES):
+        venda.append(linha)
+    NUMVEN = len(venda)
+    
+def ler_vendas():
+    ven = []
+    for linha in vendas:
+        ven.append(linha)
+
+    return ven
+# ----------------------------------------------------------
+# Lê TODOS os aluguéis do BD
+# ----------------------------------------------------------
+
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+cursor.execute("""SELECT * FROM aluguel""")
+aluguel = cursor.fetchall()
+NUMALU = len(aluguel)
+    
+def ler_aluguel():
+    alu = []
+    for linha in aluguel:
+        alu.append(linha)
+
+    return alu
 # ----------------------------------------------------------
 # Tela principal da pesquisa
 # ----------------------------------------------------------
@@ -103,9 +151,15 @@ def mostrar_formulario(parent):
     if PAGINA == 1:
         COR_BOTAO = "#5C6883"
         COR_BOTAO2 = "#2563EB"
+        COR_BOTAO3 = "#2563EB"
     elif PAGINA == 2:
-        COR_BOTAO2 = "#5C6883"
         COR_BOTAO = "#2563EB"
+        COR_BOTAO2 = "#5C6883"
+        COR_BOTAO3 = "#2563EB"
+    elif PAGINA == 3:
+        COR_BOTAO = "#2563EB"
+        COR_BOTAO2 = "#2563EB"
+        COR_BOTAO3 = "#5C6883"
     # Container central
     container = tk.Frame(parent, bg=COR_FUNDO)
     container.pack(expand=True)
@@ -124,35 +178,25 @@ def mostrar_formulario(parent):
     # Botão de páginas
     caixaB = tk.Frame(container, bg=COR_FUNDO)
     caixaB.grid(padx=30, pady=10, column=0, row=3, columnspan=4)
-    tk.Button(
+    def crbt(texto, numero, back):
+        tk.Button(
         caixaB,
-        text="1",
+        text=texto,
         font=("Segoe UI", 12, "bold"),
-        bg=COR_BOTAO,
+        bg=back,
         fg="white",
         activebackground="#1E40AF",
         activeforeground="white",
         relief="flat",
         padx=14,
         pady=8,
-        command=lambda:[ajusta_pagina(1),mostrar_formulario(parent)],
+        command=lambda:[ajusta_pagina(numero),mostrar_formulario(parent)],
         cursor="hand2"
-    ).pack(side="left", padx=6)
-    tk.Button(
-        caixaB,
-        text="2",
-        font=("Segoe UI", 12, "bold"),
-        bg=COR_BOTAO2,
-        fg="white",
-        activebackground="#1E40AF",
-        activeforeground="white",
-        relief="flat",
-        padx=14,
-        pady=8,
-        command=lambda:[ajusta_pagina(2),mostrar_formulario(parent)],
-        cursor="hand2"
-    ).pack(side="left", padx=6)
-    
+        ).pack(side="left", padx=6)
+    crbt("1", 1, COR_BOTAO)
+    crbt("2", 2, COR_BOTAO2)
+    crbt("3", 3, COR_BOTAO3)
+
     # Criador de caixas
     def criador_caixas(caixa: str, coluna, linha):
         caixas = {}
@@ -188,7 +232,7 @@ def mostrar_formulario(parent):
     caixa3 = criador_caixas("caixa3", coluna=0, linha=2)
     caixa4 = criador_caixas("caixa4", coluna=1, linha=2)
     
-    if (PAGINA == 1):
+    if PAGINA == 1 :
         
         # ---------------- Caixa Cliente ----------------
         
@@ -212,12 +256,12 @@ def mostrar_formulario(parent):
         criador_info(f"{NUMMAN}", caixa4, tfont = 46)
         
         
-    elif(PAGINA == 2):
+    elif PAGINA == 2 :
 
         # ---------------- Caixa Veículos vendidos ----------------
         
-        criador_info("Veículos Vendidos/Meta(Anual)", caixa1, tfont = 18)
-        criador_info("200/500", caixa1, tfont = 46)
+        criador_info("Veículos Vendidos/Meta(Mensal)", caixa1, tfont = 18)
+        criador_info(f"{NUMVEN}/10", caixa1, tfont = 46)
         
         # ---------------- Caixa Faturamento ----------------
 
@@ -235,7 +279,7 @@ def mostrar_formulario(parent):
         controle = 0
         for c in tests:
             controle = controle + 1
-            if (AGORA in c["data"]):
+            if AGORA in c["data"]:
                 texto = f"Cliente: {c['cliente']}  |  Veículo: {c['veiculo']} | Horário: {c['horario']}"
                 if len(texto) > 60:
                     texto = f"Cliente: {c['cliente']}  |  Veículo: {c['veiculo']}" 
@@ -245,23 +289,25 @@ def mostrar_formulario(parent):
                 else:
                     lista3.insert(tk.END, texto)
                 TDconf = True
-            elif (controle == NUMTD and TDconf == False):
+            elif controle == NUMTD and TDconf == False:
                 texto = "NÃO HÁ TEST DRIVES AGENDADOS PARA HOJE"
                 lista3.insert(tk.END, texto)
+        if tests == []:
+            texto = "NÃO HÁ TEST DRIVES AGENDADOS PARA HOJE"
+            lista3.insert(tk.END, texto)
         
         # ---------------- Caixa reuniões do dia ----------------
         
         criador_info("Reuniões do dia", caixa4, tfont = 18)
         lista4 = criador_lista("lista4", caixa4)
-        
-        
+            
         # Atualiza a lista de Reuniões do dia automaticamente
         reuns = ler_reu()
         lista4.delete(0, tk.END)
         controle2 = 0
         for c in reuns:
             controle2 = controle2 + 1
-            if (AGORA in c["data"]):
+            if AGORA in c["data"]:
                 texto = f"Cliente: {c['cliente']}  |  Local: {c['local']} | Horário: {c['horario']}"
                 if len(texto) > 60:
                     texto = f"Cliente: {c['cliente']}  |  Local: {c['local']}" 
@@ -271,6 +317,72 @@ def mostrar_formulario(parent):
                 else:
                     lista4.insert(tk.END, texto)
                 Rconf = True
-            elif (controle2 == NUMREU and Rconf == False):
+            elif controle2 == NUMREU and Rconf == False:
                 texto = "NÃO HÁ REUNIÕES AGENDADAS PARA HOJE"
                 lista4.insert(tk.END, texto)
+        if reuns == []:
+            texto = "NÃO HÁ REUNIÕES AGENDADAS PARA HOJE"
+            lista4.insert(tk.END, texto)
+            
+    elif PAGINA == 3:
+        # ---------------- Caixa Vendas ----------------
+        
+        criador_info("Vendas do mês", caixa1, tfont = 18)
+        lista1 = criador_lista("lista1", caixa1)
+        
+        # Atualiza a lista de Vendas do mês automaticamente
+        vendas = ler_vendas()
+        lista1.delete(0, tk.END)
+        controle = 0
+        for v in vendas:
+            controle = controle + 1
+            data = datetime.strptime(v["data_venda"], "%d/%m/%Y")
+            if  data.month == int(MES):
+                
+                c = ler_cli(v["cod_cliente"])
+                f = ler_fro(v["cod_veiculo"])
+                texto = f"Cliente: {c['nome']}  |  Veículo: {f['nome']} | Data: {v['data_venda']}"
+                if len(texto) > 60:
+                    texto = f"Cliente: {c['nome']}  |  Veículo: {f['nome']}" 
+                    texto2 = f"Data: {v['data_venda']}"
+                    lista1.insert(tk.END, texto)
+                    lista1.insert(tk.END, texto2)
+                else:
+                    lista1.insert(tk.END, texto)
+                Vconf = True
+            elif controle == NUMVEN and Vconf == False:
+                texto = "NÃO HÁ VENDAS REALIZADAS ESSE MÊS"
+                lista1.insert(tk.END, texto)
+        if vendas == []:
+            texto = "NÃO HÁ VENDAS REALIZADAS ESSE MÊS"
+            lista1.insert(tk.END, texto)
+        # ---------------- Caixa Aluguel ----------------
+        
+        criador_info("Aluguéis do mês", caixa2, tfont = 18)
+        lista2 = criador_lista("lista2", caixa2)
+        
+        # Atualiza a lista de Aluguéis do mês automaticamente
+        aluguel = ler_aluguel()
+        lista2.delete(0, tk.END)
+        controle = 0
+        for a in aluguel:
+            controle = controle + 1
+            data = datetime.strptime(a["data_final"], "%d/%m/%Y")
+            if  data == int(MES):
+                c = ler_cli(a["cod_cliente"])
+                f = ler_fro(a["cod_veiculo"])
+                texto = f"Cliente: {c['nome']}  |  Veículo: {f['nome']} | Data final: {a['data_final']}"
+                if len(texto) > 60:
+                    texto = f"Cliente: {c['nome']}  |  Veículo: {f['nome']}" 
+                    texto2 = f"Data final: {a['data_final']}"
+                    lista1.insert(tk.END, texto)
+                    lista1.insert(tk.END, texto2)
+                else:
+                    lista1.insert(tk.END, texto)
+                Aconf = True
+            elif controle == NUMALU and Aconf == False:
+                texto = "NÃO HÁ ALUGUÉIS AGENDADOS PARA O MÊS"
+                lista2.insert(tk.END, texto)
+        if aluguel == []:
+            texto = "NÃO HÁ ALUGUÉIS AGENDADOS PARA O MÊS"
+            lista2.insert(tk.END, texto)
