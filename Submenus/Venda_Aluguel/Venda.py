@@ -1,7 +1,7 @@
 # ========================================================
-# AgendaTD.py — Agendamento de Test Drive
+# Venda.py — Venda de veículos
 #
-# AgendaTD.mostrar_formulario(area_conteudo)
+# Venda.mostrar_formulario(area_conteudo)
 # ========================================================
 
 import tkinter as tk
@@ -41,6 +41,26 @@ COR_TEXTO2 = "#000000"
 COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
+# -------- CAPTURA DE DADOS --------
+
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+# Captura de veículos disponíveis
+
+cursor.execute("""SELECT * FROM frota""")
+FROTA = cursor.fetchall()
+
+# Captura de clientes disponíveis
+
+cursor.execute("""SELECT * FROM clientes""")
+CLIENTES = cursor.fetchall()
+
+# Captura de vendedores
+
+VENDAS = ["Gerente", "Assistente administrativo", "Vendedor"]
+cursor.execute("""SELECT nome FROM funcionarios WHERE cargo = any(%s)""", (VENDAS,))
+VENDEDORES = cursor.fetchall()
+
 # --------------------------------------------------------
 # SALVA OS DADOS NO BD
 # --------------------------------------------------------
@@ -53,22 +73,16 @@ def salvar(dados):
                 "Preencha todos os campos para salvar o cliente."
             )
             return
-    if datetime.strptime(dados["Data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
-        messagebox.showwarning(
-            "Data inválida",
-            "A data do test drive não pode ser anterior ao momento atual."
-        )
-        return
 
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("""INSERT INTO agentd (cliente,horario,veiculo,data,obs)
+        cursor.execute("""INSERT INTO venda (cod_veiculo,data_venda,cod_cliente,vendedor,obs)
                        VALUES(%s,%s,%s,%s,%s)
                        """,(
-                        dados["cliente"],
-                        dados["horario"],
-                        dados["veiculo"],
-                        dados["data"],
+                        dados["cod_veiculo"],
+                        dados["data_venda"],
+                        dados["cod_cliente"],
+                        dados["vendedor"],
                         dados["obs"]
                        ))
         conn.commit()
@@ -78,7 +92,7 @@ def salvar(dados):
 
 def mostrar_formulario(parent: tk.Frame):
     """
-    Constrói o formulário de Test Drive dentro do 'parent' (área central).
+    Constrói o formulário de Venda de veículos dentro do 'parent' (área central).
     """
 
     # Limpa qualquer conteúdo anterior
@@ -99,7 +113,7 @@ def mostrar_formulario(parent: tk.Frame):
     # Título
     tk.Label(
         caixa,
-        text="Agendamento de Test Drive",
+        text="Venda de veículos",
         font=("Segoe UI", 16, "bold"),
         bg=COR_FUNDO,
         fg=COR_TEXTO
@@ -117,35 +131,25 @@ def mostrar_formulario(parent: tk.Frame):
             bg=COR_FUNDO,
             fg=COR_TEXTO
         ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6) 
-        if rotulo == "Data":
-            entry = DateEntry(
-                caixa,
-                width=largura,
-                background=COR_CAMPO,
-                foreground=COR_TEXTO,
-                borderwidth=2,
-                date_pattern='dd/mm/yyyy'  # Formato BR
-            )
-        else:
-            entry = tk.Entry(
-                caixa,
-                width=largura,
-                background=COR_CAMPO,
-                foreground=COR_TEXTO2,
-                insertbackground=COR_TEXTO2,
-                relief="flat"
-            )
+
+        entry = tk.Entry(
+            caixa,
+            width=largura,
+            background=COR_CAMPO,
+            foreground=COR_TEXTO2,
+            insertbackground=COR_TEXTO2,
+            relief="flat"
+        )
         entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
 
         entradas[rotuloBD] = entry
 
     # Linha 1
-    add_linha("Cliente", "cliente", linha=1, col_inicio=0, largura=40)
-    add_linha("Horário", "horario", linha=1, col_inicio=2, largura=24)
-
+    add_linha("Selecione o veículo", "cod_veiculo", linha=1, col_inicio=0, largura=24)
+    add_linha("Selecione o cliente", "cod_cliente", linha=1, col_inicio=2, largura=24)
+    
     # Linha 2
-    add_linha("Data", "data", linha=2, col_inicio=0, largura=21)
-    add_linha("Veículo", "veiculo", linha=2, col_inicio=2, largura=24)
+    add_linha("Selecione o vendedor", "vendedor", linha=2, col_inicio=0, largura=24)
 
     # Observações
     tk.Label(
@@ -165,6 +169,7 @@ def mostrar_formulario(parent: tk.Frame):
 
     def on_salvar():
         dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}
+        dados["data_venda"] = AGORA
         dados["obs"] = txt_obs.get("1.0", "end-1c").strip()
         salvar(dados)
 

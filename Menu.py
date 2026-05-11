@@ -13,10 +13,10 @@ from PIL import Image, ImageTk
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.9.1"
+VERSION = "v 0.9.2"
 ARQUIVO_MAIN = "Autofacil.py"
 PERMITIDOS = ["Administrador", "Gerente"]
-PERMITIDOS2 = ["Administrador", "Gerente", "Administrador", "Assistente administrativo", "Vendedor"]
+PERMITIDOS2 = ["Administrador", "Gerente", "Assistente administrativo", "Vendedor"]
 
 # -------------------- UTILITÁRIOS ---------------------------
 def maximizar_janela(janela: tk.Tk):

@@ -1,7 +1,7 @@
 # ========================================================
-# AgendaTD.py — Agendamento de Test Drive
+# Aluguel.py — Aluguel de veículos
 #
-# AgendaTD.mostrar_formulario(area_conteudo)
+# Aluguel.mostrar_formulario(area_conteudo)
 # ========================================================
 
 import tkinter as tk
@@ -41,6 +41,25 @@ COR_TEXTO2 = "#000000"
 COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
+# -------- CAPTURA DE DADOS --------
+
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+# Captura de veículos disponíveis
+
+cursor.execute("""SELECT * FROM frota""")
+FROTA = cursor.fetchall()
+
+# Captura de clientes disponíveis
+
+cursor.execute("""SELECT * FROM clientes""")
+CLIENTES = cursor.fetchall()
+
+# Captura de vendedores
+
+cursor.execute("""SELECT nome FROM funcionarios WHERE cargo ILIKE 'vendedor'""")
+VENDEDORES = cursor.fetchall()
+
 # --------------------------------------------------------
 # SALVA OS DADOS NO BD
 # --------------------------------------------------------
@@ -53,22 +72,29 @@ def salvar(dados):
                 "Preencha todos os campos para salvar o cliente."
             )
             return
-    if datetime.strptime(dados["Data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
+    if datetime.strptime(dados["data_inicio"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
         messagebox.showwarning(
             "Data inválida",
-            "A data do test drive não pode ser anterior ao momento atual."
+            "A data do aluguel não pode ser anterior ao momento atual."
+        )
+        return
+    if datetime.strptime(dados["data_final"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
+        messagebox.showwarning(
+            "Data inválida",
+            "A data de devolução não pode ser anterior ao momento atual."
         )
         return
 
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("""INSERT INTO agentd (cliente,horario,veiculo,data,obs)
-                       VALUES(%s,%s,%s,%s,%s)
+        cursor.execute("""INSERT INTO aluguel (cod_veiculo,data_inicio,data_final,cpf_cliente,vendedor,obs)
+                       VALUES(%s,%s,%s,%s,%s,%s)
                        """,(
-                        dados["cliente"],
-                        dados["horario"],
-                        dados["veiculo"],
-                        dados["data"],
+                        dados["cod_veiculo"],
+                        dados["data_inicio"],
+                        dados["data_final"],
+                        dados["cpf_cliente"],
+                        dados["vendedor"],
                         dados["obs"]
                        ))
         conn.commit()
@@ -78,7 +104,7 @@ def salvar(dados):
 
 def mostrar_formulario(parent: tk.Frame):
     """
-    Constrói o formulário de Test Drive dentro do 'parent' (área central).
+    Constrói o formulário de aluguel de veículos dentro do 'parent' (área central).
     """
 
     # Limpa qualquer conteúdo anterior
@@ -99,7 +125,7 @@ def mostrar_formulario(parent: tk.Frame):
     # Título
     tk.Label(
         caixa,
-        text="Agendamento de Test Drive",
+        text="Aluguel de veículos",
         font=("Segoe UI", 16, "bold"),
         bg=COR_FUNDO,
         fg=COR_TEXTO
@@ -117,7 +143,7 @@ def mostrar_formulario(parent: tk.Frame):
             bg=COR_FUNDO,
             fg=COR_TEXTO
         ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6) 
-        if rotulo == "Data":
+        if rotulo == "Data de Início" or rotulo == "Data de Finalização":
             entry = DateEntry(
                 caixa,
                 width=largura,
@@ -140,12 +166,15 @@ def mostrar_formulario(parent: tk.Frame):
         entradas[rotuloBD] = entry
 
     # Linha 1
-    add_linha("Cliente", "cliente", linha=1, col_inicio=0, largura=40)
-    add_linha("Horário", "horario", linha=1, col_inicio=2, largura=24)
+    add_linha("Selecione o veículo", "cod_veiculo", linha=1, col_inicio=0, largura=24)
+    add_linha("Data de Início", "data_inicio", linha=1, col_inicio=2, largura=24)
 
     # Linha 2
-    add_linha("Data", "data", linha=2, col_inicio=0, largura=21)
-    add_linha("Veículo", "veiculo", linha=2, col_inicio=2, largura=24)
+    add_linha("Data de Finalização", "data_final", linha=2, col_inicio=0, largura=24)
+    add_linha("Selecione o cliente", "cpf_cliente", linha=2, col_inicio=2, largura=24)
+    
+    # Linha 3
+    add_linha("Selecione o vendedor", "vendedor", linha=3, col_inicio=0, largura=24)
 
     # Observações
     tk.Label(

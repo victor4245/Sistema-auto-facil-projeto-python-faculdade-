@@ -295,6 +295,7 @@ def abrir_edicao(veiculo):
             cursor.execute("""
             UPDATE frota
             SET nome = %s,
+                placa = %s,
                 marca = %s,
                 modelo = %s,
                 motorizacao = %s,
@@ -303,9 +304,10 @@ def abrir_edicao(veiculo):
                 ano = %s,
                 obs = %s
             
-            WHERE placa = %s
+            WHERE codigo = %s
             """, (
                 c['nome'],
+                c["placa"],
                 c['marca'],
                 c['modelo'],
                 c['motorizacao'],
@@ -313,7 +315,7 @@ def abrir_edicao(veiculo):
                 c['cor'],
                 c['ano'],
                 c['obs'],
-                c["placa"]
+                c['codigo']
             ))
 
         conn.commit()

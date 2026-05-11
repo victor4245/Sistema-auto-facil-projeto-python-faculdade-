@@ -213,3 +213,11 @@ v 0.9.1:
 - Atualizações nos comentários do código
 - Otimizações no código
 - Bugs menores corrigidos
+
+v 0.9.2:
+
+- Mudança no BD da frota
+- Adicionada a possibilidade de troca da placa de um veículo ja cadatrado no BD
+- Preparação final para recebimento da aba Venda/Aluguel
+- Criação do BD de Venda e Aluguel
+- Bugs menores corrigidos
