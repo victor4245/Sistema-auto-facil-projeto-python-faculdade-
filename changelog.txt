@@ -227,3 +227,10 @@ v 0.9.3:
 - Atualizações na aba de dashboard 
 - Otimizações no código
 - Bugs menores corrigidos
+
+v 0.9.4:
+
+- Atualização no BD da frota
+- Aba de aluguel criada
+- Infomação de preço e quilometragem adicionada à aba de pesquisa e cadastro de veículos
+- Bugs menores corrigidos

@@ -49,8 +49,8 @@ def salvar(dados):
     
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("""INSERT INTO veiculos (nome,marca,modelo,motorizacao,condicao,placa,cor,ano,obs)
-                       VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        cursor.execute("""INSERT INTO veiculos (nome,marca,modelo,motorizacao,condicao,placa,cor,ano,quilometragem,preco,obs)
+                       VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                        """,(
                         dados['nome'],
                         dados['marca'],
@@ -60,6 +60,8 @@ def salvar(dados):
                         dados['placa'],
                         dados['cor'],
                         dados['ano'],
+                        dados['quilometragem'],
+                        dados['preco'],
                         dados['obs']
                        ))
         conn.commit()
@@ -149,6 +151,10 @@ def mostrar_formulario(parent: tk.Frame):
     # Linha 4
     add_linha("Cor", "cor", linha=4, col_inicio=0, largura=10)
     add_linha("Ano", "ano",linha=4, col_inicio=2, largura=6)
+    
+    # Linha 5
+    add_linha("Quilometragem", "quilometragem", linha=5, col_inicio=0, largura=12)
+    add_linha("Preço", "preco", linha=5, col_inicio=2, largura=12)
 
     # Observações
     tk.Label(
@@ -157,16 +163,16 @@ def mostrar_formulario(parent: tk.Frame):
         font=("Segoe UI", 10, "bold"),
         bg=COR_FUNDO,
         fg=COR_TEXTO
-    ).grid(row=5, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
+    ).grid(row=6, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
 
     txt_obs = tk.Text(caixa, width=66, height=5, background=COR_CAMPO,foreground=COR_TEXTO2,insertbackground=COR_TEXTO2, relief="flat")
-    txt_obs.grid(row=6, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
+    txt_obs.grid(row=7, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
     
     entradas["nome"].focus()
     
     # Botões
     botoes = tk.Frame(caixa, bg=COR_FUNDO)
-    botoes.grid(row=7, column=0, columnspan=4, pady=(16, 0))
+    botoes.grid(row=8, column=0, columnspan=4, pady=(16, 0))
 
     def on_salvar():
         dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}

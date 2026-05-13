@@ -146,7 +146,7 @@ def mostrar_formulario(parent):
 
         veiculos = cursor.fetchall()
         for c in veiculos:
-            texto = f"   {c['nome']}  |  Placa: {c['placa']}  |  Marca: {c['marca']}  |  Condição: {c['condicao']}"
+            texto = f"   {c['nome']}  |  Placa: {c['placa']}  |  Marca: {c['marca']}  |  Condição: {c['condicao']}  |  KM: {c['quilometragem']}  |  Preço: R${c['preco']}"
             lista.insert(tk.END, texto)
             veiculos_filtrados.append(c)
 
@@ -175,7 +175,7 @@ def mostrar_formulario(parent):
         veiculos_filtrados.clear()
 
         for c in veiculos:          
-            texto = f"   {c['nome']}  |  Placa: {c['placa']}  |  Marca: {c['marca']}  |  Condição: {c['condicao']}"
+            texto = f"   {c['nome']}  |  Placa: {c['placa']}  |  Marca: {c['marca']}  |  Condição: {c['condicao']}  |  KM: {c['quilometragem']}  |  Preço: {c['preco']}"
             lista.insert(tk.END, texto)
             veiculos_filtrados.append(c)
 
@@ -302,6 +302,8 @@ def abrir_edicao(veiculo):
                 condicao = %s,
                 cor = %s,
                 ano = %s,
+                quilometragem = %s,
+                preco = %s,
                 obs = %s
             
             WHERE codigo = %s
@@ -314,6 +316,8 @@ def abrir_edicao(veiculo):
                 c['condicao'],
                 c['cor'],
                 c['ano'],
+                c['quilometragem'],
+                c['preco'],
                 c['obs'],
                 c['codigo']
             ))
