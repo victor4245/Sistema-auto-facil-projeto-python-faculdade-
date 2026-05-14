@@ -6,20 +6,20 @@
 
 import tkinter as tk
 from tkinter import messagebox, ttk
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import mysql.connector
 from datetime import datetime
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
-    conn = psycopg2.connect(
-        host="db.gipxlyvlobazrwuhxzep.supabase.co",
-        database="postgres",
-        user="postgres",
-        password="S3nh4_DB@12",
-        port="5432"
+    conn = mysql.connector.connect(
+        host="sql10.freesqldatabase.com",
+        user="sql10826915",
+        password="1lL7crlwDf",
+        database="sql10826915",
+        port=3306
     )
     conn.autocommit = True
+    cursor = conn.cursor(dictionary=True)
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 
@@ -47,7 +47,6 @@ def salvar(dados):
     aluguel = (dados['preco'] * 0.0025) - (idade * 3)
     dados['preco_aluguel'] = round(aluguel)
     try:
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""INSERT INTO veiculos (nome,marca,modelo,motorizacao,condicao,placa,cor,ano,quilometragem,preco,preco_aluguel,obs)
                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                        """,(
@@ -181,6 +180,7 @@ def mostrar_formulario(parent: tk.Frame):
     def on_salvar():
         dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}
         dados["obs"] = txt_obs.get("1.0", "end-1c").strip()
+        on_limpar()
         salvar(dados)
 
     def on_limpar():

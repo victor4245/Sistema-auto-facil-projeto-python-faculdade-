@@ -13,3 +13,6 @@ O funcionário Juliana Costa acessou o sistema as 20:26:47 05/05/2026
 O funcionário Administrador acessou o sistema as 21:16:55 05/05/2026
 O funcionário Administrador acessou o sistema as 19:44:15 07/05/2026
 O funcionário Leonardo Reis acessou o sistema as 20:47:25 08/05/2026
+O funcionário Administrador acessou o sistema as 19:42:45 14/05/2026
+O funcionário Administrador acessou o sistema as 20:05:00 14/05/2026
+O funcionário Administrador acessou o sistema as 20:13:21 14/05/2026

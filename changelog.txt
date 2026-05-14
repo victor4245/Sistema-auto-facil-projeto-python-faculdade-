@@ -245,3 +245,12 @@ v 0.9.5:
 - Mudanças na UI/UX
 - Otimizações no código
 - Bugs menores corrigidos
+
+v 0.9.6:
+
+- BD externo trocado de postgresql para mysql
+- Dados do BD corrigidos
+- Adicionado melhor tratamento de erros
+- Mudanças na UX
+- Otimizações no código
+- Bugs menores corrigidos

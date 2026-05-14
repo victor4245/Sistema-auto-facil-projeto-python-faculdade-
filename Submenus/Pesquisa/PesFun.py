@@ -4,21 +4,21 @@
 
 import tkinter as tk
 from tkinter import messagebox
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import mysql.connector
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 
 try:
-    conn = psycopg2.connect(
-        host="db.gipxlyvlobazrwuhxzep.supabase.co",
-        database="postgres",
-        user="postgres",
-        password="S3nh4_DB@12",
-        port="5432"
+    conn = mysql.connector.connect(
+        host="sql10.freesqldatabase.com",
+        user="sql10826915",
+        password="1lL7crlwDf",
+        database="sql10826915",
+        port=3306
     )
     conn.autocommit = True
+    cursor = conn.cursor(dictionary=True)
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 
@@ -34,8 +34,6 @@ COR_FUNDO = "#0B1220"
 # ----------------------------------------------------------
 def ler_Funcionarios():
     funcionarios = []
-
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("SELECT * FROM funcionarios")
 
@@ -120,7 +118,6 @@ def mostrar_formulario(parent):
         lista.delete(0, tk.END)
         funcionarios_filtrados.clear()
         
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
         SELECT *
         FROM funcionarios
@@ -289,8 +286,6 @@ def abrir_edicao(funcionario):
         for c in funcionarios:
             for k in entradas:
                 c[k] = entradas[k].get()
-            cursor = conn.cursor()
-
             cursor.execute("""
             UPDATE funcionarios
             SET nome = %s,
@@ -300,7 +295,6 @@ def abrir_edicao(funcionario):
                 cargo = %s,
                 senha = %s,
                 obs = %s
-            
             WHERE id_empresa = %s
             """, (
                 c['nome'],

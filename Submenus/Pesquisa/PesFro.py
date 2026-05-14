@@ -4,19 +4,19 @@
 
 import tkinter as tk
 from tkinter import messagebox
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import mysql.connector
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
-    conn = psycopg2.connect(
-        host="db.gipxlyvlobazrwuhxzep.supabase.co",
-        database="postgres",
-        user="postgres",
-        password="S3nh4_DB@12",
-        port="5432"
+    conn = mysql.connector.connect(
+        host="sql10.freesqldatabase.com",
+        user="sql10826915",
+        password="1lL7crlwDf",
+        database="sql10826915",
+        port=3306
     )
     conn.autocommit = True
+    cursor = conn.cursor(dictionary=True)
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 
@@ -32,8 +32,6 @@ COR_FUNDO = "#0B1220"
 # ----------------------------------------------------------
 def ler_veiculos():
     veiculos = []
-
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("SELECT * FROM frota")
 
@@ -123,7 +121,6 @@ def mostrar_formulario(parent):
         
         for f in range(len(filtro)):
             filtro[f] = filtro[f].lower() # Transforma tudo em minusculo
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
         SELECT *
         FROM frota
@@ -287,7 +284,6 @@ def abrir_edicao(veiculo):
         for c in veiculos:
             for k in entradas:
                 c[k] = entradas[k].get()
-            cursor = conn.cursor()
 
             cursor.execute("""
             UPDATE frota
@@ -303,7 +299,6 @@ def abrir_edicao(veiculo):
                 preco = %s,
                 preco_aluguel = %s
                 obs = %s
-            
             WHERE codigo = %s
             """, (
                 c['nome'],

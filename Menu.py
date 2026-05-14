@@ -13,7 +13,7 @@ from PIL import Image, ImageTk
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.9.5"
+VERSION = "v 0.9.6"
 ARQUIVO_MAIN = "Autofacil.py"
 PERMITIDOS = ["Administrador", "Gerente"]
 PERMITIDOS2 = ["Administrador", "Gerente", "Assistente administrativo", "Vendedor"]
@@ -55,7 +55,7 @@ def abrir_aba_nova(area_conteudo: tk.Frame, titulo:str, nome:str):
         modulo = importlib.import_module(titulo)
         modulo.mostrar_formulario(area_conteudo)
     except Exception as e:
-        messagebox.showerror("Erro", f"Falha ao abrir a tela de {titulo}:\n{e}")
+        messagebox.showerror("Erro", f"Falha ao abrir a tela de {nome}:\n{e}")
 
 def sair(raiz:tk.Tk):
     # Mensagem de confirmação

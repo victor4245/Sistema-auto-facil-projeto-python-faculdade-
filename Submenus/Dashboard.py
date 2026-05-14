@@ -5,18 +5,19 @@
 import tkinter as tk
 from datetime import datetime
 from tkinter import messagebox
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import mysql.connector
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
-    conn = psycopg2.connect(
-        host="db.gipxlyvlobazrwuhxzep.supabase.co",
-        database="postgres",
-        user="postgres",
-        password="S3nh4_DB@12",
-        port="5432"
+    conn = mysql.connector.connect(
+        host="sql10.freesqldatabase.com",
+        user="sql10826915",
+        password="1lL7crlwDf",
+        database="sql10826915",
+        port=3306
     )
+    conn.autocommit = True
+    cursor = conn.cursor(dictionary=True)
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%d/%m/%Y")
@@ -40,7 +41,6 @@ def ajusta_pagina(valor):
 # ----------------------------------------------------------
 # Lê TODOS os clientes do BD
 # ----------------------------------------------------------
-cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM clientes""")
 clientes = cursor.fetchall()
 NUMCLI = len(clientes)
@@ -54,7 +54,6 @@ def ler_cli(cod):
 # ----------------------------------------------------------
 # Lê TODOS os veículos do BD
 # ----------------------------------------------------------
-cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM frota""")
 veiculos = cursor.fetchall()
 NUMVEIC = len(veiculos)
@@ -70,7 +69,6 @@ def ler_fro(cod):
 # ----------------------------------------------------------
 # Lê TODOS os funcionários do BD
 # ----------------------------------------------------------
-cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM funcionarios""")
 funcionarios = cursor.fetchall()
 NUMFUNC = len(funcionarios)
@@ -78,7 +76,6 @@ NUMFUNC = len(funcionarios)
 # ----------------------------------------------------------
 # Lê TODOS os test drives do BD
 # ----------------------------------------------------------
-cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM agentd""")
 tests = cursor.fetchall()
 NUMTD = len(tests)
@@ -93,7 +90,6 @@ def ler_test():
 # ----------------------------------------------------------
 # Lê TODOS as reuniões do BD
 # ----------------------------------------------------------
-cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM agenreu""")
 reunioes = cursor.fetchall()
 NUMREU = len(reunioes)
@@ -108,8 +104,6 @@ def ler_reu():
 # ----------------------------------------------------------
 # Lê TODOS as vendas do BD
 # ----------------------------------------------------------
-
-cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM venda""")
 vendas = cursor.fetchall()
 venda = []  
@@ -128,8 +122,6 @@ def ler_vendas():
 # ----------------------------------------------------------
 # Lê TODOS os aluguéis do BD
 # ----------------------------------------------------------
-
-cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("""SELECT * FROM aluguel""")
 aluguel = cursor.fetchall()
 NUMALU = len(aluguel)

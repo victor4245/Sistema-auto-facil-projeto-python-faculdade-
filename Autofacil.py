@@ -13,11 +13,10 @@ from tkinter import messagebox
 from datetime import datetime
 import subprocess
 try:
-    import psycopg2
-    from psycopg2.extras import RealDictCursor
+    import mysql.connector
 except:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "psycopg2"])
-    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'psycopg2' teve que ser instalada para conectar ao banco de dados.\nPor favor abra o programa novamente.")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "mysql-connector-python"])
+    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'mysql-connector-python' teve que ser instalada para conectar ao banco de dados.\nPor favor abra o programa novamente.")
 try:
     from PIL import Image, ImageTk
 except:
@@ -31,19 +30,21 @@ except Exception:
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
-    conn = psycopg2.connect(
-        host="db.gipxlyvlobazrwuhxzep.supabase.co",
-        database="postgres",
-        user="postgres",
-        password="S3nh4_DB@12",
-        port="5432"
+    conn = mysql.connector.connect(
+        host="sql10.freesqldatabase.com",
+        user="sql10826915",
+        password="1lL7crlwDf",
+        database="sql10826915",
+        port=3306
     )
+    conn.autocommit = True
+    cursor = conn.cursor(dictionary=True)
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.9.5"
+VERSION = "v 0.9.6"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 
@@ -55,7 +56,6 @@ PESSOA = []
 CARGO = []
 SENHA_ESPERADA = []
 
-cursor = conn.cursor(cursor_factory=RealDictCursor)
 cursor.execute("SELECT * FROM funcionarios")
 leitor = cursor.fetchall()
 for linha in leitor:

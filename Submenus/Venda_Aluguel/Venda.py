@@ -7,19 +7,19 @@
 import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import mysql.connector
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
-    conn = psycopg2.connect(
-        host="db.gipxlyvlobazrwuhxzep.supabase.co",
-        database="postgres",
-        user="postgres",
-        password="S3nh4_DB@12",
-        port="5432"
+    conn = mysql.connector.connect(
+        host="sql10.freesqldatabase.com",
+        user="sql10826915",
+        password="1lL7crlwDf",
+        database="sql10826915",
+        port=3306
     )
     conn.autocommit = True
+    cursor = conn.cursor(dictionary=True)
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%d/%m/%Y")
@@ -34,7 +34,6 @@ COR_FUNDO = "#0B1220"
 
 # -------- CAPTURA DE DADOS --------
 
-cursor = conn.cursor(cursor_factory=RealDictCursor)
 
 # Captura de veículos disponíveis
 
@@ -48,8 +47,8 @@ CLIENTES = cursor.fetchall()
 
 # Captura de vendedores
 
-VENDAS = ["gerente", "assistente administrativo", "vendedor"]
-cursor.execute("""SELECT nome FROM funcionarios WHERE cargo = any(%s)""", (VENDAS,))
+VENDAS = ["Gerente", "Assistente administrativo", "Vendedor"]
+cursor.execute("""SELECT nome FROM funcionarios WHERE cargo IN (%s, %s, %s)""", (VENDAS))
 VENDEDORES = cursor.fetchall()
 
 # --------------------------------------------------------
@@ -72,10 +71,9 @@ def salvar(dados, indice):
     nomv = VENDEDORES[vend]
     dados['cod_veiculo'] = codv['codigo']
     dados['cpf_cliente'] = codc['cpf_cnpj']
-    dados['vendendor'] = nomv['nome']
+    dados['vendedor'] = nomv['nome']
     
     try:
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""INSERT INTO venda (cod_veiculo,data_venda,cod_cliente,vendedor,obs)
                        VALUES(%s,%s,%s,%s,%s)
                        """,(
@@ -186,6 +184,15 @@ def mostrar_formulario(parent: tk.Frame):
     botoes.grid(row=7, column=0, columnspan=4, pady=16)
 
     def on_salvar():
+        if not entradas["nome_veiculo"].curselection():
+            messagebox.showwarning("Aviso", "Selecione um veículo.")
+            return
+        elif not entradas["cliente"].curselection():
+            messagebox.showwarning("Aviso", "Selecione um cliente.")
+            return
+        elif not entradas["vendedor"].curselection():
+            messagebox.showwarning("Aviso", "Selecione um vendedor.")
+            return
         indice = {"veiculo": entradas["nome_veiculo"].curselection()[0], "cliente": entradas["nome_cliente"].curselection()[0], "vendedor": entradas["vendedor"].curselection()[0]}
         dados = {}
         for campo, entrada in entradas.items():     
