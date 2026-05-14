@@ -13,7 +13,7 @@ from PIL import Image, ImageTk
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.9.4"
+VERSION = "v 0.9.5"
 ARQUIVO_MAIN = "Autofacil.py"
 PERMITIDOS = ["Administrador", "Gerente"]
 PERMITIDOS2 = ["Administrador", "Gerente", "Assistente administrativo", "Vendedor"]
@@ -48,7 +48,7 @@ def limpar_area(area: tk.Frame):
 def abrir_aba_nova(area_conteudo: tk.Frame, titulo:str, nome:str):
     limpar_area(area_conteudo)
     # Controle de acesso simples baseado no cargo do usuário
-    if nome == "Dashboard" and not cargo in PERMITIDOS or (nome == "Cadastro" or nome == "Venda/Aluguel" or nome == "Agendamento") and not cargo in PERMITIDOS2:
+    if nome in ["Dashboard", "Funcionarios"] and not cargo in PERMITIDOS or nome in ["Cadastro", "Venda/Aluguel", "Agendamento"] and not cargo in PERMITIDOS2:
         messagebox.showwarning("Acesso Negado", "Você não tem permissão para acessar esta função.")
         return
     try:
@@ -82,6 +82,7 @@ def criar_janela_principal() -> tk.Tk:
     raiz = tk.Tk()
     raiz.title("Sistema de Gerenciamento de Autos")
     raiz.minsize(900, 580)
+    raiz.iconbitmap(CAMINHO_IMAGENS + "/LogoA.ico")
 
     # Abre maximizada
     maximizar_janela(raiz)
@@ -183,7 +184,7 @@ def montar_menu(area_conteudo: tk.Frame):
         acoes_subitens={
             "Cliente": lambda: abrir_aba_nova(area_conteudo, "Submenus.Cadastro.CadCli", "Cadastro"),
             "Veículo": lambda: abrir_aba_nova(area_conteudo, "Submenus.Cadastro.CadFro", "Cadastro"),
-            "Funcionário": lambda: abrir_aba_nova(area_conteudo, "Submenus.Cadastro.CadFun", "Cadastro")
+            "Funcionário": lambda: abrir_aba_nova(area_conteudo, "Submenus.Cadastro.CadFun", "Funcionarios")
         }
     )
     criar_item_menu(
@@ -192,7 +193,7 @@ def montar_menu(area_conteudo: tk.Frame):
         subitens=["Cliente", "Funcionário", "Frota", "Test Drive/Reunião"],
         acoes_subitens={
             "Cliente": lambda: abrir_aba_nova(area_conteudo, "Submenus.Pesquisa.PesCli", "Pesquisa"),
-            "Funcionário": lambda: abrir_aba_nova(area_conteudo, "Submenus.Pesquisa.PesFun", "Pesquisa"),
+            "Funcionário": lambda: abrir_aba_nova(area_conteudo, "Submenus.Pesquisa.PesFun", "Funcionarios"),
             "Frota": lambda: abrir_aba_nova(area_conteudo, "Submenus.Pesquisa.PesFro", "Pesquisa"),
             "Test Drive/Reunião": lambda: abrir_aba_nova(area_conteudo, "Submenus.Pesquisa.PesAgen", "Pesquisa")
         }
@@ -211,10 +212,11 @@ def montar_menu(area_conteudo: tk.Frame):
     criar_item_menu(
         texto="Venda/Aluguel",
         icone="\U0001F699",
-        subitens=["Venda", "Aluguel"],
+        subitens=["Venda", "Aluguel", "Devolução"],
         acoes_subitens={
             "Venda": lambda: abrir_aba_nova(area_conteudo, "Submenus.Venda_Aluguel.Venda", "Venda/Aluguel"),
-            "Aluguel": lambda: abrir_aba_nova(area_conteudo, "Submenus.Venda_Aluguel.Aluguel", "Venda/Aluguel")
+            "Aluguel": lambda: abrir_aba_nova(area_conteudo, "Submenus.Venda_Aluguel.Aluguel", "Venda/Aluguel"),
+            "Devolução": lambda: abrir_aba_nova(area_conteudo, "Submenus.Venda_Aluguel.Devolucao", "Venda/Aluguel")
         }
     )
 

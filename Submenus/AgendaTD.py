@@ -6,16 +6,10 @@
 
 import tkinter as tk
 from tkinter import messagebox
-import subprocess
-import sys
 from datetime import datetime
 import psycopg2
 from psycopg2.extras import RealDictCursor
-try:
-    from tkcalendar import DateEntry
-except Exception:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "tkcalendar"])
-    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'tkcalendar' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
+from tkcalendar import DateEntry
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
@@ -31,10 +25,6 @@ except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%d/%m/%Y")
 
-def limpar(parent: tk.Frame):
-    """Remove tudo que estiver no parent (caso queira reutilizar)."""
-    for w in parent.winfo_children():
-        w.destroy()
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
@@ -77,7 +67,10 @@ def salvar(dados):
     except Exception as erro:
         messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
     
-
+def limpar(parent: tk.Frame):
+    """Remove tudo que estiver no parent (caso queira reutilizar)."""
+    for w in parent.winfo_children():
+        w.destroy()
 def mostrar_formulario(parent: tk.Frame):
     """
     Constrói o formulário de Test Drive dentro do 'parent' (área central).

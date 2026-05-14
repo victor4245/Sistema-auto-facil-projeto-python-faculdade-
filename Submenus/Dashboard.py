@@ -338,7 +338,6 @@ def mostrar_formulario(parent):
             controle = controle + 1
             data = datetime.strptime(v["data_venda"], "%d/%m/%Y")
             if  data.month == int(MES):
-                
                 c = ler_cli(v["cod_cliente"])
                 f = ler_fro(v["cod_veiculo"])
                 texto = f"Cliente: {c['nome']}  |  Veículo: {f['nome']} | Data: {v['data_venda']}"
@@ -368,17 +367,17 @@ def mostrar_formulario(parent):
         for a in aluguel:
             controle = controle + 1
             data = datetime.strptime(a["data_final"], "%d/%m/%Y")
-            if  data == int(MES):
-                c = ler_cli(a["cod_cliente"])
+            if  data.month == int(MES):
+                c = ler_cli(a["cpf_cliente"])
                 f = ler_fro(a["cod_veiculo"])
                 texto = f"Cliente: {c['nome']}  |  Veículo: {f['nome']} | Data final: {a['data_final']}"
                 if len(texto) > 60:
                     texto = f"Cliente: {c['nome']}  |  Veículo: {f['nome']}" 
                     texto2 = f"Data final: {a['data_final']}"
-                    lista1.insert(tk.END, texto)
-                    lista1.insert(tk.END, texto2)
+                    lista2.insert(tk.END, texto)
+                    lista2.insert(tk.END, texto2)
                 else:
-                    lista1.insert(tk.END, texto)
+                    lista2.insert(tk.END, texto)
                 Aconf = True
             elif controle == NUMALU and Aconf == False:
                 texto = "NÃO HÁ ALUGUÉIS AGENDADOS PARA O MÊS"

@@ -22,11 +22,6 @@ try:
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 
-def limpar(parent: tk.Frame):
-    """Remove tudo que estiver no parent (caso queira reutilizar)."""
-    for w in parent.winfo_children():
-        w.destroy()
-        
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
@@ -75,6 +70,10 @@ def salvar(dados: dict, senha:tk.Entry, adsenha:tk.Toplevel):
     except Exception as erro:
         messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
 
+def limpar(parent: tk.Frame):
+    """Remove tudo que estiver no parent (caso queira reutilizar)."""
+    for w in parent.winfo_children():
+        w.destroy()
 def mostrar_formulario(parent: tk.Frame):
     """
     Constrói o formulário de Funcionário dentro do 'parent' (área central).

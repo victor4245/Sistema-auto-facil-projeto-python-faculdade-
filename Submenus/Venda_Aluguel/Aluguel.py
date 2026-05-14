@@ -5,17 +5,11 @@
 # ========================================================
 
 import tkinter as tk
-from tkinter import messagebox, ttk
-import subprocess
-import sys
+from tkinter import messagebox
 from datetime import datetime
 import psycopg2
 from psycopg2.extras import RealDictCursor
-try:
-    from tkcalendar import DateEntry
-except Exception:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "tkcalendar"])
-    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'tkcalendar' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
+from tkcalendar import DateEntry
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
@@ -31,10 +25,6 @@ except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%d/%m/%Y")
 
-def limpar(parent: tk.Frame):
-    """Remove tudo que estiver no parent (caso queira reutilizar)."""
-    for w in parent.winfo_children():
-        w.destroy()
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
@@ -56,7 +46,6 @@ FROTA = cursor.fetchall()
 cursor.execute("""SELECT * FROM clientes""")
 CLIENTES = cursor.fetchall()
 
-
 # Captura de vendedores
 
 VENDAS = ["gerente", "assistente administrativo", "vendedor"]
@@ -77,13 +66,19 @@ def salvar(dados, indice):
     if datetime.strptime(dados["data_inicio"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
         messagebox.showwarning(
             "Data inválida",
-            "A data do aluguel não pode ser anterior ao momento atual."
+            "A data de inicio do aluguel não pode ser anterior ao momento atual."
         )
         return
-    if datetime.strptime(dados["data_final"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
+    elif datetime.strptime(dados["data_final"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
         messagebox.showwarning(
             "Data inválida",
             "A data de devolução não pode ser anterior ao momento atual."
+        )
+        return
+    elif datetime.strptime(dados["data_final"], "%d/%m/%Y") < datetime.strptime(dados["data_inicio"], "%d/%m/%Y"):
+        messagebox.showwarning(
+            "Data inválida",
+            "A data de devolução não pode ser anterior a data de inicio do aluguel."
         )
         return
     cod_veic = indice['veiculo']
@@ -113,17 +108,20 @@ def salvar(dados, indice):
             UPDATE frota
             SET 
                 obs = %s
-            
             WHERE codigo = %s
             """, (
                 dados['obs2'],
                 dados['cod_veiculo']
             ))
+        conn.commit()
         messagebox.showinfo("Sucesso", "Aluguel cadastrado com sucesso!")
     except Exception as erro:
         messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
-    
-
+        
+def limpar(parent: tk.Frame):
+    """Remove tudo que estiver no parent (caso queira reutilizar)."""
+    for w in parent.winfo_children():
+        w.destroy()    
 def mostrar_formulario(parent: tk.Frame):
     """
     Constrói o formulário de aluguel de veículos dentro do 'parent' (área central).
@@ -183,13 +181,13 @@ def mostrar_formulario(parent: tk.Frame):
         entradas[rotuloBD] = entry
 
     # Linha 1
-    add_linha("Selecione o veículo", "nome_veiculo", linha=1, col_inicio=0, largura=24)
+    add_linha("Selecione o veículo", "nome_veiculo", linha=1, col_inicio=0)
     entradas['nome_veiculo'].delete(0, tk.END)
     for c in FROTA:
-        texto = f"Veículo: {c['nome']}  |  Preço: {c['preco']}  |  Quilometragem: {c['quilometragem']}"
+        texto = f"Veículo: {c['nome']}  |  Preço(dia): R${c['preco_aluguel']}  |  Quilometragem: {c['quilometragem']}"
         entradas['nome_veiculo'].insert(tk.END, texto)
 
-    add_linha("Selecione o cliente", "nome_cliente", linha=1, col_inicio=2, largura=24)
+    add_linha("Selecione o cliente", "nome_cliente", linha=1, col_inicio=2)
     entradas['nome_cliente'].delete(0, tk.END)
     for c in CLIENTES:
         texto = f"Cliente: {c['nome']}  |  CPF/CNPJ: {c['cpf_cnpj']}"
@@ -200,7 +198,7 @@ def mostrar_formulario(parent: tk.Frame):
     add_linha("Data de Finalização", "data_final", linha=3, col_inicio=0, largura=24)
     
     # Linha 3
-    add_linha("Selecione o vendedor", "vendedor", linha=5, col_inicio=0, largura=24)
+    add_linha("Selecione o vendedor", "vendedor", linha=5, col_inicio=0)
     entradas['vendedor'].delete(0, tk.END)
     for c in VENDEDORES:
         texto = f"Nome: {c['nome']}"
@@ -245,7 +243,7 @@ def mostrar_formulario(parent: tk.Frame):
 
     tk.Button(
         botoes,
-        text="Salvar",
+        text="Alugar",
         bg="#2563EB",
         fg="white",
         activebackground="#1E40AF",

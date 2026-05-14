@@ -231,6 +231,17 @@ v 0.9.3:
 v 0.9.4:
 
 - Atualização no BD da frota
-- Aba de aluguel criada
+- Criação da aba de aluguel
 - Infomação de preço e quilometragem adicionada à aba de pesquisa e cadastro de veículos
+- Bugs menores corrigidos
+
+v 0.9.5:
+
+- Calculo do preço do aluguel adicionado
+- Atualização no BD da frota
+- Atualização nos tratamentos de acesso
+- Icone novo adicionado na barra da janela
+- Criação da aba de venda e devolução de aluguéis
+- Mudanças na UI/UX
+- Otimizações no código
 - Bugs menores corrigidos

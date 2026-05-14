@@ -4,7 +4,6 @@
 
 import tkinter as tk
 from tkinter import messagebox
-import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 # -------- CONFIGURAÇÕES BÁSICAS --------

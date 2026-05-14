@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from datetime import datetime
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
@@ -22,11 +23,7 @@ try:
 except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 
-def limpar(parent: tk.Frame):
-    """Remove tudo que estiver no parent (caso queira reutilizar)."""
-    for w in parent.winfo_children():
-        w.destroy()
-        
+AGORA = datetime.now().strftime("%Y")  
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
@@ -46,11 +43,13 @@ def salvar(dados):
                 "Preencha todos os campos para salvar o cliente."
             )
             return
-    
+    idade = datetime.strptime(dados['ano'], "%Y") - AGORA
+    aluguel = (dados['preco'] * 0.0025) - (idade * 3)
+    dados['preco_aluguel'] = round(aluguel)
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("""INSERT INTO veiculos (nome,marca,modelo,motorizacao,condicao,placa,cor,ano,quilometragem,preco,obs)
-                       VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        cursor.execute("""INSERT INTO veiculos (nome,marca,modelo,motorizacao,condicao,placa,cor,ano,quilometragem,preco,preco_aluguel,obs)
+                       VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                        """,(
                         dados['nome'],
                         dados['marca'],
@@ -62,6 +61,7 @@ def salvar(dados):
                         dados['ano'],
                         dados['quilometragem'],
                         dados['preco'],
+                        dados['preco_aluguel'],
                         dados['obs']
                        ))
         conn.commit()
@@ -69,6 +69,10 @@ def salvar(dados):
     except Exception as erro:
         messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
 
+def limpar(parent: tk.Frame):
+    """Remove tudo que estiver no parent (caso queira reutilizar)."""
+    for w in parent.winfo_children():
+        w.destroy()
 def mostrar_formulario(parent: tk.Frame):
     """
     Constrói o formulário de Veículo dentro do 'parent' (área central).

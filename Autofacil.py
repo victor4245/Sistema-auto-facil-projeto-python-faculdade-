@@ -23,6 +23,11 @@ try:
 except:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
     messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'Pillow' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
+try:
+    from tkcalendar import DateEntry
+except Exception:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "tkcalendar"])
+    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'tkcalendar' teve que ser instalada para uso de calendário.\nPor favor abra o programa novamente.")
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
@@ -38,7 +43,7 @@ except:
 AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.9.4"
+VERSION = "v 0.9.5"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 
@@ -212,6 +217,7 @@ def criar_janela():
     raiz = tk.Tk()
     raiz.title("SysCar - Sistema de Gerenciamento de Autos")
     raiz.minsize(980, 600)
+    raiz.iconbitmap(CAMINHO_IMAGENS + "/LogoA.ico")
 
     # Não aplicamos cor de fundo na janela raiz para não cobrir o centro.
     # Somente cabeçalho e rodapé terão cor.

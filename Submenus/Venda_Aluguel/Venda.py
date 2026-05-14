@@ -6,16 +6,9 @@
 
 import tkinter as tk
 from tkinter import messagebox
-import subprocess
-import sys
 from datetime import datetime
 import psycopg2
 from psycopg2.extras import RealDictCursor
-try:
-    from tkcalendar import DateEntry
-except Exception:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "tkcalendar"])
-    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'tkcalendar' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
@@ -31,10 +24,7 @@ except:
     messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
 AGORA = datetime.now().strftime("%d/%m/%Y")
 
-def limpar(parent: tk.Frame):
-    """Remove tudo que estiver no parent (caso queira reutilizar)."""
-    for w in parent.winfo_children():
-        w.destroy()
+
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
@@ -58,14 +48,14 @@ CLIENTES = cursor.fetchall()
 
 # Captura de vendedores
 
-VENDAS = ["Gerente", "Assistente administrativo", "Vendedor"]
+VENDAS = ["gerente", "assistente administrativo", "vendedor"]
 cursor.execute("""SELECT nome FROM funcionarios WHERE cargo = any(%s)""", (VENDAS,))
 VENDEDORES = cursor.fetchall()
 
 # --------------------------------------------------------
 # SALVA OS DADOS NO BD
 # --------------------------------------------------------
-def salvar(dados):
+def salvar(dados, indice):
     # Verificação simples (iniciante)
     for data in dados:
         if dados[data] == "" and not dados["obs"]:
@@ -74,7 +64,16 @@ def salvar(dados):
                 "Preencha todos os campos para salvar o cliente."
             )
             return
-
+    cod_veic = indice['veiculo']
+    cpf_cliente = indice['cliente']
+    vend = indice['vendedor']
+    codv = FROTA[cod_veic]
+    codc = CLIENTES[cpf_cliente]
+    nomv = VENDEDORES[vend]
+    dados['cod_veiculo'] = codv['codigo']
+    dados['cpf_cliente'] = codc['cpf_cnpj']
+    dados['vendendor'] = nomv['nome']
+    
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""INSERT INTO venda (cod_veiculo,data_venda,cod_cliente,vendedor,obs)
@@ -87,10 +86,21 @@ def salvar(dados):
                         dados["obs"]
                        ))
         conn.commit()
+        cursor.execute("""
+            DELETE FROM frota
+            WHERE codigo = %s
+            """, (
+                dados['cod_veiculo']
+            ))
+        conn.commit()
+        messagebox.showinfo("Sucesso", "Venda realizada com sucesso!")
     except Exception as erro:
         messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
     
-
+def limpar(parent: tk.Frame):
+    """Remove tudo que estiver no parent (caso queira reutilizar)."""
+    for w in parent.winfo_children():
+        w.destroy()
 def mostrar_formulario(parent: tk.Frame):
     """
     Constrói o formulário de Venda de veículos dentro do 'parent' (área central).
@@ -104,7 +114,7 @@ def mostrar_formulario(parent: tk.Frame):
     container.pack(fill="both", expand=True)
     
     # Um container redundante para melhor controle
-    container2 = tk.Frame(container, bg=COR_FUNDO, width=700, height=500)
+    container2 = tk.Frame(container, bg=COR_FUNDO, width=730, height=580)
     container2.pack(expand=True)
     container2.pack_propagate(False)
 
@@ -123,7 +133,7 @@ def mostrar_formulario(parent: tk.Frame):
     # ------- CAMPOS -------
     entradas = {}
 
-    def add_linha(rotulo, rotuloBD, linha, col_inicio, largura=40):
+    def add_linha(rotulo, rotuloBD, linha, col_inicio):
         """Cria um par Label + Entry numa posição da grade."""
         tk.Label(
             caixa,
@@ -133,24 +143,31 @@ def mostrar_formulario(parent: tk.Frame):
             fg=COR_TEXTO
         ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6) 
 
-        entry = tk.Entry(
-            caixa,
-            width=largura,
-            background=COR_CAMPO,
-            foreground=COR_TEXTO2,
-            insertbackground=COR_TEXTO2,
-            relief="flat"
-        )
-        entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
+        entry = tk.Listbox(caixa, width=58, height=5,bg=COR_CAMPO, fg=COR_TEXTO2, borderwidth=0, highlightthickness=0, relief="flat", justify='left', exportselection=False)
+        
+        entry.grid(row=linha+1, column=col_inicio, sticky="w", padx=(0, 10), pady=6)
 
         entradas[rotuloBD] = entry
 
     # Linha 1
-    add_linha("Selecione o veículo", "cod_veiculo", linha=1, col_inicio=0, largura=24)
-    add_linha("Selecione o cliente", "cod_cliente", linha=1, col_inicio=2, largura=24)
+    add_linha("Selecione o veículo", "nome_veiculo", linha=1, col_inicio=0)
+    entradas['nome_veiculo'].delete(0, tk.END)
+    for c in FROTA:
+        texto = f"Veículo: {c['nome']}  |  Preço: R${c['preco']}  |  Quilometragem: {c['quilometragem']}"
+        entradas['nome_veiculo'].insert(tk.END, texto)
+
+    add_linha("Selecione o cliente", "nome_cliente", linha=1, col_inicio=2)
+    entradas['nome_cliente'].delete(0, tk.END)
+    for c in CLIENTES:
+        texto = f"Cliente: {c['nome']}  |  CPF/CNPJ: {c['cpf_cnpj']}"
+        entradas['nome_cliente'].insert(tk.END, texto)
     
     # Linha 2
-    add_linha("Selecione o vendedor", "vendedor", linha=2, col_inicio=0, largura=24)
+    add_linha("Selecione o vendedor", "vendedor", linha=3, col_inicio=0)
+    entradas['vendedor'].delete(0, tk.END)
+    for c in VENDEDORES:
+        texto = f"Nome: {c['nome']}"
+        entradas['vendedor'].insert(tk.END, texto)
 
     # Observações
     tk.Label(
@@ -159,20 +176,27 @@ def mostrar_formulario(parent: tk.Frame):
         font=("Segoe UI", 10, "bold"),
         bg=COR_FUNDO,
         fg=COR_TEXTO
-    ).grid(row=3, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
+    ).grid(row=5, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
 
     txt_obs = tk.Text(caixa, width=66, height=5, background=COR_CAMPO,foreground=COR_TEXTO2,insertbackground=COR_TEXTO2, relief="flat")
-    txt_obs.grid(row=4, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
+    txt_obs.grid(row=6, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
 
     # Botões
     botoes = tk.Frame(caixa, bg=COR_FUNDO)
-    botoes.grid(row=5, column=0, columnspan=4, pady=16)
+    botoes.grid(row=7, column=0, columnspan=4, pady=16)
 
     def on_salvar():
-        dados = {add_linha: entrada.get().strip() for add_linha, entrada in entradas.items()}
-        dados["data_venda"] = AGORA
+        indice = {"veiculo": entradas["nome_veiculo"].curselection()[0], "cliente": entradas["nome_cliente"].curselection()[0], "vendedor": entradas["vendedor"].curselection()[0]}
+        dados = {}
+        for campo, entrada in entradas.items():     
+            if isinstance(entrada, tk.Listbox):
+                selecao = entrada.curselection()
+                dados[campo] = entrada.get(selecao[0])
+            else:
+                dados[campo] = entrada.get().strip()
+        dados["data_venda"] = str(AGORA)
         dados["obs"] = txt_obs.get("1.0", "end-1c").strip()
-        salvar(dados)
+        salvar(dados, indice)
 
     def on_limpar():
         for ent in entradas.values():
@@ -184,7 +208,7 @@ def mostrar_formulario(parent: tk.Frame):
 
     tk.Button(
         botoes,
-        text="Salvar",
+        text="Vender",
         bg="#2563EB",
         fg="white",
         activebackground="#1E40AF",

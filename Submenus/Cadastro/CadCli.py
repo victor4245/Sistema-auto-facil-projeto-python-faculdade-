@@ -29,10 +29,7 @@ COR_TEXTO2 = "#000000"
 COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
-def limpar(parent: tk.Frame):
-    """Remove tudo que estiver no parent (caso queira reutilizar)."""
-    for w in parent.winfo_children():
-        w.destroy()
+
 # --------------------------------------------------------
 # SALVA OS DADOS NO BD
 # --------------------------------------------------------
@@ -69,6 +66,10 @@ def salvar(dados):
     except Exception as erro:
         messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
 
+def limpar(parent: tk.Frame):
+    """Remove tudo que estiver no parent (caso queira reutilizar)."""
+    for w in parent.winfo_children():
+        w.destroy()
 def mostrar_formulario(parent: tk.Frame):
     """
     Constrói o formulário de Cliente dentro do 'parent' (área central).

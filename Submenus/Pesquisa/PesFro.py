@@ -4,7 +4,6 @@
 
 import tkinter as tk
 from tkinter import messagebox
-import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 # -------- CONFIGURAÇÕES BÁSICAS --------
@@ -108,9 +107,7 @@ def mostrar_formulario(parent):
     add_linha("Cor", linha=3, col_inicio=2, largura=10, index=5)
 
     # Linha 4
-    
     add_linha("Ano", linha=4, col_inicio=0, largura=6, index=6)
-
     
     # ---------------- LISTBOX (RESULTADOS) ----------------
     lista = tk.Listbox(caixa, width=90, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
@@ -304,6 +301,7 @@ def abrir_edicao(veiculo):
                 ano = %s,
                 quilometragem = %s,
                 preco = %s,
+                preco_aluguel = %s
                 obs = %s
             
             WHERE codigo = %s
@@ -318,6 +316,7 @@ def abrir_edicao(veiculo):
                 c['ano'],
                 c['quilometragem'],
                 c['preco'],
+                c['preco_aluguel'],
                 c['obs'],
                 c['codigo']
             ))
