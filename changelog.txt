@@ -254,3 +254,11 @@ v 0.9.6:
 - Mudanças na UX
 - Otimizações no código
 - Bugs menores corrigidos
+
+v 0.9.7:
+
+- Log de logins movido para o BD externo
+- Senhas agora são criptografadas em hash no BD externo
+- Alterado local dos arquivos das abas de agendamento
+- Mudanças na UI/UX
+- Bugs menores corrigidos

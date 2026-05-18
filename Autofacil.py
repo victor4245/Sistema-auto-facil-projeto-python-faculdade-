@@ -12,6 +12,7 @@ import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
 import subprocess
+import hashlib
 try:
     import mysql.connector
 except:
@@ -44,7 +45,7 @@ except:
 AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.9.6"
+VERSION = "v 0.9.7"
 
 # --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
 
@@ -141,14 +142,9 @@ def atualizar_fundo(janela: tk.Tk, lbl_fundo: tk.Label, img_base):
 
 # Log para conferir funcionários logados anteriormente
 def log_login(pessoa: str):
-    with open(os.getcwd() + "/Log.txt", "r", encoding="utf-8") as log:
-        linhas = log.readlines()
-    if len(linhas) > 100:
-        with open(os.getcwd() + "/Log.txt", "w", encoding="utf-8") as log:
-            log.write(f"O funcionário {pessoa} acessou o sistema as {AGORA}\n")
-    else:
-        with open(os.getcwd() + "/Log.txt", "a", encoding="utf-8") as log:
-            log.write(f"O funcionário {pessoa} acessou o sistema as {AGORA}\n")
+    texto = f"O usuário {pessoa} logou às {AGORA}"
+    cursor.execute("""INSERT INTO log_login (texto) VALUES (%s)""", (texto,))
+    conn.commit()
     return
 
 def abrir_menu(janela: tk.Tk, pessoa:str, cargo:str):
@@ -182,7 +178,7 @@ def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
     i = 0
     while (i < len(LOGIN_EMAIL)):
         if login == LOGIN_EMAIL[i] or login == LOGIN_CPF[i] or login == LOGIN_ID[i]:
-            if senha == SENHA_ESPERADA[i]:
+            if hashlib.sha256(senha.encode()).hexdigest() == SENHA_ESPERADA[i]:
                 login2 = True
                 pessoa = PESSOA[i]
                 cargo = CARGO[i]

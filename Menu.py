@@ -13,7 +13,7 @@ from PIL import Image, ImageTk
 
 # -------- CONFIGURAÇÕES BÁSICAS --------
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 0.9.6"
+VERSION = "v 0.9.7"
 ARQUIVO_MAIN = "Autofacil.py"
 PERMITIDOS = ["Administrador", "Gerente"]
 PERMITIDOS2 = ["Administrador", "Gerente", "Assistente administrativo", "Vendedor"]
@@ -204,8 +204,8 @@ def montar_menu(area_conteudo: tk.Frame):
         icone="\U0001F4C6",
         subitens=["Test Drive", "Reunião"],
         acoes_subitens={
-            "Test Drive": lambda: abrir_aba_nova(area_conteudo, "Submenus.AgendaTD", "Agendamento"),
-            "Reunião": lambda: abrir_aba_nova(area_conteudo, "Submenus.AgendaReu", "Agendamento")
+            "Test Drive": lambda: abrir_aba_nova(area_conteudo, "Submenus.Agendamento.AgendaTD", "Agendamento"),
+            "Reunião": lambda: abrir_aba_nova(area_conteudo, "Submenus.Agendamento.AgendaReu", "Agendamento")
         }
     )
     

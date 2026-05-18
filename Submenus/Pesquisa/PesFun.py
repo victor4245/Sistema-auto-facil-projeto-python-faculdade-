@@ -5,7 +5,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import mysql.connector
-
+import hashlib
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 
@@ -269,6 +269,8 @@ def abrir_edicao(funcionario):
     entradas = {}
 
     def campo(texto, linha, valor=""):
+        if texto == "senha":
+            return
         tk.Label(janela, text=texto).grid(row=linha, column=0, padx=(8, 2), pady=6, sticky="e")
         e = tk.Entry(janela, width=40)
         e.grid(row=linha, column=1, padx=(5, 8), pady=6)
@@ -276,16 +278,38 @@ def abrir_edicao(funcionario):
         entradas[texto] = e
 
     linha = 0
+    def Tsenha(texto, linha, valor=""):
+        janela2 = tk.Toplevel()
+        janela2.title("Editar Senha")
+        janela2.grab_set()
+        entrada = {}
+        tk.Label(janela2, text=texto).grid(row=linha, column=0, padx=(8, 2), pady=6, sticky="e")
+        e = tk.Entry(janela2, width=40)
+        e.grid(row=linha, column=1, padx=(5, 8), pady=6)
+        e.insert(0, valor)
+        def salvar2(janela2):
+            entrada['senha'] = hashlib.sha256(e.get().strip().encode()).hexdigest()
+            janela2.destroy()
+        tk.Button(janela2, text="Salvar", command=lambda:salvar2(janela2)).grid(row=linha+1, column=0, columnspan=2, pady=10)
+        janela2.wait_window()
+        return entrada['senha']
+        
     for k in funcionario:
-        campo(k, linha, funcionario[k])
-        linha += 1
-
+        if k != "senha":
+            campo(k, linha, funcionario[k])
+            linha += 1
+        elif k == "senha":
+            tk.Button(janela, text="Trocar senha", command=lambda:entradas.update({"senha": Tsenha(k, linha, funcionario[k])})).grid(row=linha, column=0, columnspan=2, pady=10)
+    linha += 1
     def salvar():
         funcionarios = ler_Funcionarios()
 
         for c in funcionarios:
             for k in entradas:
-                c[k] = entradas[k].get()
+                if k != "senha":
+                    c[k] = entradas[k].get()
+                else:
+                    c[k] = entradas[k]
             cursor.execute("""
             UPDATE funcionarios
             SET nome = %s,

@@ -7,6 +7,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import mysql.connector
+import hashlib
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
@@ -33,7 +34,7 @@ COR_FUNDO = "#0B1220"
 # SALVA OS DADOS NO BD
 # --------------------------------------------------------
 def salvar(dados: dict, senha:tk.Entry, adsenha:tk.Toplevel):
-    dados["senha"] = senha.get().strip()
+    dados["senha"] = hashlib.sha256(senha.get().strip().encode()).hexdigest()
     adsenha.destroy()
     # Verificação simples (iniciante)
     for data in dados:
