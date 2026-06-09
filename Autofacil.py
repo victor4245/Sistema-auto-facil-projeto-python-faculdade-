@@ -57,7 +57,7 @@ except Exception as e:
 AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 1.0.0"
+VERSION = "1.0.1"
 
 # --------- CAPTURA DE LOGINS, SENHAS E NOMES DE FUNCIONÁRIOS ------------
 
@@ -189,6 +189,7 @@ def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
         return
     # Validação de Login e senha
     i = 0
+    print(hashlib.sha256(senha.encode()).hexdigest())
     while (i < len(LOGIN_EMAIL)):
         if login == LOGIN_EMAIL[i] or login == LOGIN_CPF[i] or login == LOGIN_ID[i]:
             if hashlib.sha256(senha.encode()).hexdigest() == SENHA_ESPERADA[i]:

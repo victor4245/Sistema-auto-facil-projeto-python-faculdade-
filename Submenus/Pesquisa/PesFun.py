@@ -282,7 +282,6 @@ def abrir_edicao(funcionario):
     linha += 1
     def salvar():
         c = funcionario
-        entradas["senha"] = funcionario["senha"]
         for k in entradas:
             if k != "senha":
                 c[k] = entradas[k].get()

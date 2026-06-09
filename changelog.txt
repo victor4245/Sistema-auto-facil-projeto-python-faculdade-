@@ -282,3 +282,8 @@ v 1.0.0:
 - Erros de ortográfica corrigidos
 - Otimizações no código
 - Diversos bugs graves corrigidos
+
+v 1.0.1:
+
+- Otimizações no código
+- Bugs menores corrigidos

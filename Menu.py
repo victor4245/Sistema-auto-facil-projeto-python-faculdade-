@@ -28,7 +28,7 @@ except Exception as e:
     messagebox.showerror("Erro de Conexão", f"Não foi possível conectar ao banco de dados\n erro: {e}")
     
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
-VERSION = "v 1.0.0"
+VERSION = "v 1.0.1"
 ARQUIVO_MAIN = "Autofacil.py"
 PERMITIDOS = ["Administrador", "Gerente", "Assistente administrativo"]
 PERMITIDOS2 = ["Administrador", "Gerente", "Assistente administrativo", "Vendedor"]

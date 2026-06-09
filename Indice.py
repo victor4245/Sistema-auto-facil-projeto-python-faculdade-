@@ -54,7 +54,7 @@ def mostrar_formulario(parent: tk.Frame):
         fg=COR_TEXTO
     ).grid(row=0, column=0, columnspan=4, pady=(0, 10))
 
-    def criar_item_menu(texto: str, icone: str, subitens=None, acao=None, acoes_subitens=None):
+    def criar_item_menu(texto: str, icone: str, subitens=None, acao=None):
         """Cria um item de menu."""
         item = tk.Frame(caixa, bg="#0B1220")
         item.grid()
@@ -64,11 +64,11 @@ def mostrar_formulario(parent: tk.Frame):
             text=f"{icone} {texto}",
             font=("Segoe UI Emoji", 11, "bold"),
             bg="#093255", fg="#FFFFFF",
+            command=lambda: acao(),
             activebackground="#1F2937", activeforeground="#FFFFFF",
             relief="flat", width=30, pady=10, cursor="hand2", justify="center"
         )
         btn.grid(padx=12, pady=6)
-        btn.configure(command=lambda: acao())
         
     criar_item_menu(
         texto="Cadastro de cliente",

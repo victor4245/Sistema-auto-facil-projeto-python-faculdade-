@@ -342,9 +342,9 @@ def mostrar_formulario(parent):
             if  data.month == int(MES):
                 c = ler_cli(v["cod_cliente"])
                 f = ler_fro(v["cod_veiculo"])
-                texto = f"Cliente: {c['nome']}  |  Veículo: {f['nome']} | Data: {v['data_venda']}"
+                texto = f"Cliente: {c['nome']}  |  Veículo: {v['nome_veiculo']} | Data: {v['data_venda']}"
                 if len(texto) > 60:
-                    texto = f"Cliente: {c['nome']}  |  Veículo: {f['nome']}" 
+                    texto = f"Cliente: {c['nome']}  |  Veículo: {v['nome_veiculo']}" 
                     texto2 = f"Data: {v['data_venda']}"
                     lista1.insert(tk.END, texto)
                     lista1.insert(tk.END, texto2)
