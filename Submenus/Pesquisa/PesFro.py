@@ -1,24 +1,12 @@
 # =========================================================
-# PesFro.py — Pesquisa / Consulta de Veículos (BD)
+# PesFro.py — Consulta de Veículos (BD)
 # =========================================================
 
+import importlib
 import tkinter as tk
 from tkinter import messagebox
-import mysql.connector
-# -------- CONFIGURAÇÕES BÁSICAS --------
-# Conexão com o BD
-try:
-    conn = mysql.connector.connect(
-        host="sql10.freesqldatabase.com",
-        user="sql10826915",
-        password="1lL7crlwDf",
-        database="sql10826915",
-        port=3306
-    )
-    conn.autocommit = True
-    cursor = conn.cursor(dictionary=True)
-except:
-    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
+from Menu import conn, cursor
+from . import Verificacao
 
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -28,18 +16,24 @@ COR_CAMPO = "#FFFFFF"
 COR_FUNDO = "#0B1220"
 
 # ----------------------------------------------------------
-# Lê TODOS os Veículos do BD e retorna uma lista de dicts
+# Lê todos os Veículos do BD e retorna uma lista de dicts
 # ----------------------------------------------------------
 def ler_veiculos():
     veiculos = []
-
     cursor.execute("SELECT * FROM frota")
-
     veiculos = cursor.fetchall()
-
     return veiculos
 
-
+def abrir_indice(area_conteudo: tk.Frame):
+    for w in area_conteudo.winfo_children():
+        w.destroy()
+    # Abre o Indice.py e mostra o índice na tela
+    try:
+        modulo = importlib.import_module("Indice")
+        modulo.mostrar_formulario(area_conteudo)
+    except Exception as e:
+        messagebox.showerror("Erro", f"Falha ao abrir a tela de Índice:\n{e}")
+        
 # ----------------------------------------------------------
 # Tela principal da pesquisa
 # ----------------------------------------------------------
@@ -52,7 +46,7 @@ def mostrar_formulario(parent):
     container = tk.Frame(parent, bg="#1F2937")
     container.pack(fill="both", expand=True)
     
-    # Um container redundante para melhor controle
+    # Um container auxiliar para melhor controle
     container2 = tk.Frame(container, bg=COR_FUNDO, width=700, height=500)
     container2.pack(expand=True)
     container2.pack_propagate(False)
@@ -119,28 +113,30 @@ def mostrar_formulario(parent):
         lista.delete(0, tk.END)
         veiculos_filtrados.clear()
         
-        for f in range(len(filtro)):
-            filtro[f] = filtro[f].lower() # Transforma tudo em minusculo
         cursor.execute("""
         SELECT *
         FROM frota
         WHERE
-            nome ILIKE %s
-            OR placa ILIKE %s
-            OR marca ILIKE %s
-            OR modelo ILIKE %s
-            OR motorizacao ILIKE %s
+            nome LIKE %s
+            OR marca LIKE %s
+            OR modelo LIKE %s
+            OR motorizacao LIKE %s
+            OR condicao LIKE %s
+            OR cor LIKE %s
+            OR ano LIKE %s
         """, (
             f"%{filtro[0]}%",
             f"%{filtro[1]}%",
             f"%{filtro[2]}%",
             f"%{filtro[3]}%",
-            f"%{filtro[4]}%"
+            f"%{filtro[4]}%",
+            f"%{filtro[5]}%",
+            f"%{filtro[6]}%"
         ))
 
         veiculos = cursor.fetchall()
         for c in veiculos:
-            texto = f"   {c['nome']}  |  Placa: {c['placa']}  |  Marca: {c['marca']}  |  Condição: {c['condicao']}  |  KM: {c['quilometragem']}  |  Preço: R${c['preco']}"
+            texto = f"   {c['marca']} {c['nome']}  |  Placa: {c['placa']}  |  Condição: {c['condicao']}  |  KM: {c['quilometragem']}  |  Preço: R$ {c['preco']}"
             lista.insert(tk.END, texto)
             veiculos_filtrados.append(c)
 
@@ -169,7 +165,7 @@ def mostrar_formulario(parent):
         veiculos_filtrados.clear()
 
         for c in veiculos:          
-            texto = f"   {c['nome']}  |  Placa: {c['placa']}  |  Marca: {c['marca']}  |  Condição: {c['condicao']}  |  KM: {c['quilometragem']}  |  Preço: {c['preco']}"
+            texto = f"   {c['marca']} {c['nome']}  |  Placa: {c['placa']}  |  Condição: {c['condicao']}  |  KM: {c['quilometragem']}  |  Preço: R$ {c['preco']}"
             lista.insert(tk.END, texto)
             veiculos_filtrados.append(c)
 
@@ -178,11 +174,6 @@ def mostrar_formulario(parent):
         for i in range(len(entrada_pesq)):
             entrada_pesq[i].delete(0, tk.END)
         lista.delete(0, tk.END)
-
-    # -------- NOVA CONSULTA --------
-    def nova_consulta():
-        limpar()
-        entrada_pesq[0].focus()
 
     # -------- EDITAR --------
     def editar():
@@ -197,67 +188,55 @@ def mostrar_formulario(parent):
 
     # -------- FECHAR --------
     def fechar():
-        for w in parent.winfo_children():
-            w.destroy()
+        abrir_indice(parent)
 
     tk.Button(botoes,
-              text="Editar", 
-              font=("Segoe UI", 10, "bold"),
-              width=10, 
-              command=editar,
-              bg="#6B7280",  
-              fg="white", 
-              relief="flat",
-              padx=14,
-              pady=8,
-              cursor="hand2").pack(side="left", padx=4)
-    tk.Button(botoes,
-              text="Nova Consulta", 
-              font=("Segoe UI", 10, "bold"),
-              width=10, 
-              command=nova_consulta,
-              bg="#6B7280",  
-              fg="white", 
-              relief="flat",
-              padx=14,
-              pady=8,
-              cursor="hand2").pack(side="left", padx=4)
+        text="Editar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=editar,
+        bg="#6B7280",  
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
     tk.Button(botoes, 
-              text="Listagem", 
-              font=("Segoe UI", 10, "bold"),
-              width=10, 
-              command=listar_todos,
-              bg="#2563EB", 
-              fg="white", 
-              relief="flat",
-              padx=14,
-              pady=8,
-              cursor="hand2").pack(side="left", padx=4)
+        text="Listagem", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=listar_todos,
+        bg="#2563EB", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
     tk.Button(botoes, 
-              text="Limpar", 
-              font=("Segoe UI", 10, "bold"),
-              width=10, 
-              command=limpar, 
-              bg="#C90202", 
-              fg="white", 
-              relief="flat",
-              padx=14,
-              pady=8,
-              cursor="hand2").pack(side="left", padx=4)
+        text="Limpar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=limpar, 
+        bg="#C90202", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
     tk.Button(botoes, 
-              text="Fechar", 
-              font=("Segoe UI", 10, "bold"),
-              width=10, 
-              command=fechar,
-              bg="#C90202",  
-              fg="white", 
-              relief="flat",
-              padx=14,
-              pady=8,
-              cursor="hand2").pack(side="left", padx=4)
+        text="Fechar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=fechar,
+        bg="#C90202",  
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
 
 # ----------------------------------------------------------
-# Tela de EDIÇÃO da frota
+# Tela de edição da frota
 # ----------------------------------------------------------
 def abrir_edicao(veiculo):
     janela = tk.Toplevel()
@@ -265,26 +244,26 @@ def abrir_edicao(veiculo):
     janela.grab_set()
 
     entradas = {}
-
+    tk.Label(janela, text="Dados do Veículo", font=("Segoe UI", 11, "bold")).grid(row=0, column=0, columnspan=2, padx=(8, 2), pady=6)
     def campo(texto, linha, valor=""):
-        tk.Label(janela, text=texto).grid(row=linha, column=0, padx=(8, 2), pady=6, sticky="e")
+        tk.Label(janela, text=texto, font=("Segoe UI", 8, "bold")).grid(row=linha, column=0, padx=(8, 2), pady=6, sticky="w")
         e = tk.Entry(janela, width=40)
         e.grid(row=linha, column=1, padx=(5, 8), pady=6)
         e.insert(0, valor)
         entradas[texto] = e
 
-    linha = 0
+    linha = 1
     for k in veiculo:
         campo(k, linha, veiculo[k])
         linha += 1
 
     def salvar():
-        veiculos = ler_veiculos()
-
-        for c in veiculos:
-            for k in entradas:
-                c[k] = entradas[k].get()
-
+        c = veiculo
+        for k in entradas:
+            c[k] = entradas[k].get()
+        try:
+            c['preco'] = c['preco'].replace(",", ".")
+            c['preco_aluguel'] = c['preco_aluguel'].replace(",", ".")
             cursor.execute("""
             UPDATE frota
             SET nome = %s,
@@ -297,7 +276,7 @@ def abrir_edicao(veiculo):
                 ano = %s,
                 quilometragem = %s,
                 preco = %s,
-                preco_aluguel = %s
+                preco_aluguel = %s,
                 obs = %s
             WHERE codigo = %s
             """, (
@@ -315,10 +294,54 @@ def abrir_edicao(veiculo):
                 c['obs'],
                 c['codigo']
             ))
+            conn.commit()
+            messagebox.showinfo("Sucesso", "Dados atualizados.")
+            janela.destroy()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível atualizar os dados\n erro: {e}")
+            return
+        
+    def excluir():
+        c = veiculo
+        resposta = messagebox.askyesno("Confirmação", f"Tem certeza que deseja excluir o veículo: {c['nome']}?")
+        if resposta:
+            janela2 = tk.Toplevel()
+            janela2.title("Insira o login e senha para excluir")
+            janela2.grab_set()
+            def fechar():
+                janela2.destroy()
+            def logar(login, senha):
+                if not login or not senha:
+                    messagebox.showerror("Erro", "Preencha ambos os campos.")
+                    return
+                login_ok = Verificacao.verificar_login(login, senha)
+                if login_ok:
+                    try:
+                        cursor.execute("""
+                        DELETE FROM frota
+                        WHERE codigo = %s
+                        """, (
+                            c["codigo"],))
+                        conn.commit()
+                        messagebox.showinfo("Sucesso", "Veículo excluído com sucesso!")
+                        janela.destroy()
+                    except Exception as e:
+                        messagebox.showerror("Erro", f"Não foi possível excluir o veículo\n erro: {e}")
+                        return
+                else:
+                    messagebox.showerror("Erro", "Login ou senha incorretos ou não possui permissão para excluir veículos.")
+                    return
+            def campo(texto, linha):
+                tk.Label(janela2, text=texto, font=("Segoe UI", 8, "bold")).grid(row=linha, column=0, padx=(8, 2), pady=6, sticky="w")
+                e = tk.Entry(janela2, width=40)
+                e.grid(row=linha, column=1, padx=(5, 8), pady=6)
+                entradas[texto] = e
+            campo("Login", 1)
+            campo("Senha", 2)
+            tk.Button(janela2, text="ENTRAR", command=lambda: logar(entradas["Login"].get(), entradas["Senha"].get())).grid(row=3, column=0, columnspan=2, pady=(20, 10), padx=(0, 110))
+            tk.Button(janela2, text="CANCELAR", command=fechar).grid(row=3, column=1, columnspan=2, pady=(20, 10), padx=(30, 0))
+        else: 
+            return
 
-        conn.commit()
-
-        messagebox.showinfo("Sucesso", "Dados atualizados.")
-        janela.destroy()
-
-    tk.Button(janela, text="Salvar", command=salvar).grid(row=linha, column=0, columnspan=2, pady=10)
+    tk.Button(janela, text="Excluir", command=excluir).grid(row=linha, column=0, columnspan=2, pady=(20, 10), padx=(0, 110))
+    tk.Button(janela, text="Salvar", command=salvar).grid(row=linha, column=1, columnspan=2, pady=(20, 10), padx=(30, 0))

@@ -1,26 +1,14 @@
 # =========================================================
-# PesAgen.py — Pesquisa / Consulta de Reuniões/tests drives (BD)
+# PesAgen.py — Consulta de Reuniões/Tests Drives (BD)
 # =========================================================
 
+import importlib
 import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
-import mysql.connector
-# -------- CONFIGURAÇÕES BÁSICAS --------
-# Conexão com o BD
-try:
-    conn = mysql.connector.connect(
-        host="sql10.freesqldatabase.com",
-        user="sql10826915",
-        password="1lL7crlwDf",
-        database="sql10826915",
-        port=3306
-    )
-    conn.autocommit = True
-    cursor = conn.cursor(dictionary=True)
-except:
-    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
-AGORA = datetime.now().strftime("%d/%m/%Y")
+from Menu import conn, cursor
+from . import Verificacao
+
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
 COR_TEXTO = "#FFFFFF"
@@ -33,29 +21,33 @@ def ajusta_pagina(valor):
     PAGINA = valor
 
 # ----------------------------------------------------------
-# Lê TODAS as reuniões do BD e retorna uma lista de dicts
+# Lê todas as reuniões do BD e retorna uma lista de dicts
 # ----------------------------------------------------------
 def ler_reun():
     reunioes = []
-
     cursor.execute("SELECT * FROM agenreu")
-
     reunioes = cursor.fetchall()
-
     return reunioes
         
 # ----------------------------------------------------------
-# Lê TODAS os tests drive do BD e retorna uma lista de dicts
+# Lê todas os tests drive do BD e retorna uma lista de dicts
 # ----------------------------------------------------------
 def ler_TD():
     Td = []
-
     cursor.execute("SELECT * FROM agentd")
-
     Td = cursor.fetchall()
-
     return Td
 
+def abrir_indice(area_conteudo: tk.Frame):
+    for w in area_conteudo.winfo_children():
+        w.destroy()
+    # Abre o Indice.py e mostra o índice na tela
+    try:
+        modulo = importlib.import_module("Indice")
+        modulo.mostrar_formulario(area_conteudo)
+    except Exception as e:
+        messagebox.showerror("Erro", f"Falha ao abrir a tela de Índice:\n{e}")
+        
 # ----------------------------------------------------------
 # Tela principal da pesquisa
 # ----------------------------------------------------------
@@ -65,13 +57,13 @@ def mostrar_formulario(parent):
         NOME2 = "Reunião"
         LISTA = ler_reun()
         cab = "Local"
-        cab2 = "local"
+        cab2 = 'local'
     elif PAGINA == 2:
         NOME = "Tests Drive"
         NOME2 = "Test Drive"
         LISTA = ler_TD()
         cab = "Veículo"
-        cab2 = "veiculo"
+        cab2 = 'veiculo'
     # Limpa a área central
     for w in parent.winfo_children():
         w.destroy()
@@ -80,7 +72,7 @@ def mostrar_formulario(parent):
     container = tk.Frame(parent, bg="#1F2937")
     container.pack(fill="both", expand=True)
     
-    # Um container redundante para melhor controle
+    # Um container auxiliar para melhor controle
     container2 = tk.Frame(container, bg=COR_FUNDO, width=700, height=500)
     container2.pack(expand=True)
     container2.pack_propagate(False)
@@ -124,7 +116,6 @@ def mostrar_formulario(parent):
     add_linha("Cliente", linha=1, col_inicio=0, largura=24, index=0)
     add_linha("Data", linha=1, col_inicio=2, largura=24, index=1)
 
-    
     # ---------------- LISTBOX (RESULTADOS) ----------------
     lista = tk.Listbox(caixa, width=90, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
     lista.grid(row=2, column=0, columnspan=4, padx=10, pady=10)
@@ -141,8 +132,8 @@ def mostrar_formulario(parent):
             SELECT *
             FROM agenreu
             WHERE
-                cliente ILIKE %s
-                OR data ILIKE %s
+                cliente LIKE %s
+                OR data LIKE %s
             """, (
                 f"%{filtro[0]}%",
                 f"%{filtro[1]}%"
@@ -150,10 +141,10 @@ def mostrar_formulario(parent):
         elif PAGINA == 2:
             cursor.execute("""
             SELECT *
-            FROM agenreu
+            FROM agentd
             WHERE
-                cliente ILIKE %s
-                OR data ILIKE %s
+                cliente LIKE %s
+                OR data LIKE %s
             """, (
                 f"%{filtro[0]}%",
                 f"%{filtro[1]}%"
@@ -202,15 +193,10 @@ def mostrar_formulario(parent):
             entrada_pesq[i].delete(0, tk.END)
         lista.delete(0, tk.END)
 
-    # -------- NOVA CONSULTA --------
-    def nova_consulta():
-        limpar()
-        entrada_pesq[0].focus()
-
     # -------- EDITAR --------
     def editar():
         if not lista.curselection():
-            messagebox.showwarning("Atenção", "Selecione um veículo.")
+            messagebox.showwarning("Atenção", f"Selecione um(a) {NOME2}.")
             return
 
         indice = lista.curselection()[0]
@@ -220,64 +206,52 @@ def mostrar_formulario(parent):
 
     # -------- FECHAR --------
     def fechar():
-        for w in parent.winfo_children():
-            w.destroy()
+        abrir_indice(parent)
 
     tk.Button(botoes,
-              text="Editar", 
-              font=("Segoe UI", 10, "bold"),
-              width=10, 
-              command=editar,
-              bg="#6B7280",  
-              fg="white", 
-              relief="flat",
-              padx=14,
-              pady=8,
-              cursor="hand2").pack(side="left", padx=4)
-    tk.Button(botoes,
-              text="Nova Consulta", 
-              font=("Segoe UI", 10, "bold"),
-              width=10, 
-              command=nova_consulta,
-              bg="#6B7280",  
-              fg="white", 
-              relief="flat",
-              padx=14,
-              pady=8,
-              cursor="hand2").pack(side="left", padx=4)
+        text="Editar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=editar,
+        bg="#6B7280",  
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
     tk.Button(botoes, 
-              text="Listagem", 
-              font=("Segoe UI", 10, "bold"),
-              width=10, 
-              command=listar_todos,
-              bg="#2563EB", 
-              fg="white", 
-              relief="flat",
-              padx=14,
-              pady=8,
-              cursor="hand2").pack(side="left", padx=4)
+        text="Listagem", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=listar_todos,
+        bg="#2563EB", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
     tk.Button(botoes, 
-              text="Limpar", 
-              font=("Segoe UI", 10, "bold"),
-              width=10, 
-              command=limpar, 
-              bg="#C90202", 
-              fg="white", 
-              relief="flat",
-              padx=14,
-              pady=8,
-              cursor="hand2").pack(side="left", padx=4)
+        text="Limpar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=limpar, 
+        bg="#C90202", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
     tk.Button(botoes, 
-              text="Fechar", 
-              font=("Segoe UI", 10, "bold"),
-              width=10, 
-              command=fechar,
-              bg="#C90202",  
-              fg="white", 
-              relief="flat",
-              padx=14,
-              pady=8,
-              cursor="hand2").pack(side="left", padx=4)
+        text="Fechar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=fechar,
+        bg="#C90202",  
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
     tk.Button(
         botoes2,
         text="Reuniões",
@@ -290,8 +264,7 @@ def mostrar_formulario(parent):
         padx=14,
         pady=8,
         command=lambda:[ajusta_pagina(1),mostrar_formulario(parent)],
-        cursor="hand2"
-    ).pack(side="left", padx=6)
+        cursor="hand2").pack(side="left", padx=6)
     tk.Button(
         botoes2,
         text="Test Drives",
@@ -304,11 +277,10 @@ def mostrar_formulario(parent):
         padx=14,
         pady=8,
         command=lambda:[ajusta_pagina(2),mostrar_formulario(parent)],
-        cursor="hand2"
-    ).pack(side="left", padx=6)
+        cursor="hand2").pack(side="left", padx=6)
 
 # ----------------------------------------------------------
-# Tela de EDIÇÃO de agendamento
+# Tela de edição de agendamento
 # ----------------------------------------------------------
 def abrir_edicao(agendamento, NOME):
     
@@ -317,76 +289,161 @@ def abrir_edicao(agendamento, NOME):
     janela.grab_set()
 
     entradas = {}
-
+    tk.Label(janela, text=f"Dados {NOME}", font=("Segoe UI", 11, "bold")).grid(row=0, column=0, columnspan=2, padx=(8, 2), pady=6)
     def campo(texto, linha, valor=""):
-        tk.Label(janela, text=texto).grid(row=linha, column=0, padx=(8, 2), pady=6, sticky="e")
+        tk.Label(janela, text=texto, font=("Segoe UI", 8, "bold")).grid(row=linha, column=0, padx=(8, 2), pady=6, sticky="w")
         e = tk.Entry(janela, width=40)
         e.grid(row=linha, column=1, padx=(5, 8), pady=6)
         e.insert(0, valor)
         entradas[texto] = e
 
-    linha = 0
+    linha = 1
     for k in agendamento:
         campo(k, linha, agendamento[k])
         linha += 1
 
     def salvar():
-        if PAGINA == 1:
-            reus = ler_reun()
-        elif PAGINA == 2:
-            reus = ler_TD()
-
-        for c in reus:
-            for k in entradas:
-                c[k] = entradas[k].get()
+        c = agendamento
+        for k in entradas:
+            c[k] = entradas[k].get()
+        AGORA = datetime.now().strftime("%d/%m/%Y")
         if datetime.strptime(c["data"], "%d/%m/%Y") < datetime.strptime(AGORA, "%d/%m/%Y"):
             messagebox.showwarning("Data inválida", "A data do agendamento não pode ser anterior ao momento atual.")
             return
         if PAGINA == 1:
+            try:
+                cursor.execute("""
+                UPDATE agenreu
+                SET cliente = %s,
+                    horario = %s,
+                    data = %s,
+                    local = %s,
+                    obs = %s
+                WHERE codigo = %s
+                """, (
+                    c['cliente'],
+                    c['horario'],
+                    c['data'],
+                    c['local'],
+                    c['obs'],
+                    c["codigo"]
+                ))
 
-            cursor.execute("""
-            UPDATE agenreu
-            SET cliente = %s,
-                horario = %s,
-                data = %s,
-                local = %s,
-                obs = %s
-            
-            WHERE codigo = %s
-            """, (
-                c['cliente'],
-                c['horario'],
-                c['data'],
-                c['local'],
-                c['obs'],
-                c["codigo"]
-            ))
-
-            conn.commit()
+                conn.commit()
+                messagebox.showinfo("Sucesso", "Dados atualizados.")
+                janela.destroy()
+            except Exception as e:
+                messagebox.showerror("Erro", f"Ocorreu um erro ao tentar atualizar os dados.\n Erro: {e}")
+                return
         elif PAGINA == 2:
+            try:
+                cursor.execute("""
+                UPDATE agentd
+                SET cliente = %s,
+                    horario = %s,
+                    data = %s,
+                    veiculo = %s,
+                    obs = %s
+                WHERE codigo = %s
+                """, (
+                    c['cliente'],
+                    c['horario'],
+                    c['data'],
+                    c['veiculo'],
+                    c['obs'],
+                    c["codigo"]
+                ))
 
-            cursor.execute("""
-            UPDATE agentd
-            SET cliente = %s,
-                horario = %s,
-                data = %s,
-                veiculo = %s,
-                obs = %s
+                conn.commit()
+                messagebox.showinfo("Sucesso", "Dados atualizados.")
+                janela.destroy()
+            except Exception as e:
+                messagebox.showerror("Erro", f"Ocorreu um erro ao tentar atualizar os dados.\n Erro: {e}")
+                return
             
-            WHERE codigo = %s
-            """, (
-                c['cliente'],
-                c['horario'],
-                c['data'],
-                c['veiculo'],
-                c['obs'],
-                c["codigo"]
-            ))
-
-            conn.commit()
-        
-        messagebox.showinfo("Sucesso", "Dados atualizados.")
-        janela.destroy()
-
-    tk.Button(janela, text="Salvar", command=salvar).grid(row=linha, column=0, columnspan=2, pady=10)
+    def excluir():
+        if PAGINA == 1:
+            c = agendamento
+            resposta = messagebox.askyesno("Confirmação", f"Tem certeza que deseja excluir a reunião com o cliente: {c['cliente']}?")
+            if resposta:
+                janela2 = tk.Toplevel()
+                janela2.title("Insira o login e senha para excluir")
+                janela2.grab_set()
+                def fechar():
+                    janela2.destroy()
+                def logar(login, senha):
+                    if not login or not senha:
+                        messagebox.showerror("Erro", "Preencha ambos os campos.")
+                        return
+                    login_ok = Verificacao.verificar_login(login, senha)
+                    if login_ok == True:
+                        try:
+                            cursor.execute("""
+                            DELETE FROM agenreu
+                            WHERE codigo = %s
+                            """, (
+                                c["codigo"],))
+                            conn.commit()
+                            messagebox.showinfo("Sucesso", "Reunião excluída com sucesso!")
+                            janela.destroy()
+                        except Exception as e:
+                            messagebox.showerror("Erro", f"Não foi possível excluir a reunião\n erro: {e}")
+                            return
+                    else:
+                        messagebox.showerror("Erro", "Login ou senha incorretos ou não possui permissão para excluir clientes.")
+                        return
+                def campo(texto, linha):
+                    tk.Label(janela2, text=texto, font=("Segoe UI", 8, "bold")).grid(row=linha, column=0, padx=(8, 2), pady=6, sticky="w")
+                    e = tk.Entry(janela2, width=40)
+                    e.grid(row=linha, column=1, padx=(5, 8), pady=6)
+                    entradas[texto] = e
+                campo("Login", 1)
+                campo("Senha", 2)
+                tk.Button(janela2, text="ENTRAR", command=lambda: logar(entradas["Login"].get(), entradas["Senha"].get())).grid(row=3, column=0, columnspan=2, pady=(20, 10), padx=(0, 110))
+                tk.Button(janela2, text="CANCELAR", command=fechar).grid(row=3, column=1, columnspan=2, pady=(20, 10), padx=(30, 0))        
+            else: 
+                return
+        if PAGINA == 2:
+            c = agendamento
+            resposta = messagebox.askyesno("Confirmação", f"Tem certeza que deseja excluir o test drive com o cliente: {c['cliente']}?")
+            if resposta:
+                janela2 = tk.Toplevel()
+                janela2.title("Insira o login e senha para excluir")
+                janela2.grab_set()
+                def fechar():
+                    janela2.destroy()
+                def logar(login, senha):
+                    if not login or not senha:
+                        messagebox.showerror("Erro", "Preencha ambos os campos.")
+                        return
+                    login_ok = Verificacao.verificar_login(login, senha)
+                    if login_ok == True:
+                        try:
+                            cursor.execute("""
+                            DELETE FROM agentd
+                            WHERE codigo = %s
+                            """, (
+                            c["codigo"],))
+                            conn.commit()
+                            messagebox.showinfo("Sucesso", "Test Drive excluído com sucesso!")
+                            janela.destroy()
+                        except Exception as e:
+                            messagebox.showerror("Erro", f"Não foi possível excluir o test drive\n erro: {e}")
+                            return
+                    else:
+                        messagebox.showerror("Erro", "Login ou senha incorretos ou não possui permissão para excluir clientes.")
+                        return
+                def campo(texto, linha):
+                    tk.Label(janela2, text=texto, font=("Segoe UI", 8, "bold")).grid(row=linha, column=0, padx=(8, 2), pady=6, sticky="w")
+                    e = tk.Entry(janela2, width=40)
+                    e.grid(row=linha, column=1, padx=(5, 8), pady=6)
+                    entradas[texto] = e
+                campo("Login", 1)
+                campo("Senha", 2)
+                tk.Button(janela2, text="ENTRAR", command=lambda: logar(entradas["Login"].get(), entradas["Senha"].get())).grid(row=3, column=0, columnspan=2, pady=(20, 10), padx=(0, 110))
+                tk.Button(janela2, text="CANCELAR", command=fechar).grid(row=3, column=1, columnspan=2, pady=(20, 10), padx=(30, 0))        
+            else: 
+                return
+    tk.Button(janela, text="Excluir", command=excluir).grid(row=linha, column=0, columnspan=2, pady=(20, 10), padx=(0, 110))
+    tk.Button(janela, text="Salvar", command=salvar).grid(row=linha, column=1, columnspan=2, pady=(20, 10), padx=(30, 0))
     

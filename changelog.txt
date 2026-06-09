@@ -8,7 +8,7 @@ v 0.1.0:
 
 v 0.2.0:
 
-- Adiconada aba de pesquisa de funcionários, clientes e frota
+- Adicionada aba de pesquisa de funcionários, clientes e frota
 - Erros de digitação e comentários corrigidos
 - Melhorias na UI/UX
 - Criação de log de login dos usuários
@@ -26,7 +26,7 @@ v 0.3.0:
 - Banco de dados local adicionado
 - Implementada a pesquisa de clientes
 - Atualizações nos comentários do código
-- Mudança no nome dos aquivos da frota
+- Mudança no nome dos arquivos da frota
 - Bugs menores corrigidos
 
 v 0.3.1:
@@ -90,7 +90,7 @@ v 0.4.2:
 v 0.4.3:
 
 - Criação da aba de agendamentos de test drive
-- Preparação para recebimento da aba de dashboard
+- Preparação para recebimento da aba de Dashboard
 - Criação do banco de dados de agendamentos de test drives
 - Atualizações nos comentários do código
 - Bugs menores corrigidos
@@ -98,8 +98,8 @@ v 0.4.3:
 v 0.4.4:
 
 - Melhorias na UI/UX
-- Expansão da aba dashboard
-- Criação dos botões de seleção de página na aba dashboard
+- Expansão da aba Dashboard
+- Criação dos botões de seleção de página na aba Dashboard
 - Bugs menores corrigidos
 
 v 0.5.0:
@@ -122,7 +122,7 @@ v 0.6.0:
 
 v 0.6.1:
 
-- Expansão da aba dashboard
+- Expansão da aba Dashboard
 - Melhorias na UI/UX
 - Controle de linhas do log adicionado
 - Otimizações no código
@@ -131,8 +131,8 @@ v 0.6.1:
 v 0.7.0:
 
 - Atualizações nos comentários do código
-- Expansão da aba dashboard
-- Criação das abas de agendamento de reunião, pesquisa de reunião/tests drives
+- Expansão da aba Dashboard
+- Criação das abas de agendamento de reunião, pesquisa de reunião/test drives
 - Criação do banco de dados de agendamentos de Reunião
 - Melhorias na UI/UX
 - Adicionado tratamento de erros caso alguma biblioteca não esteja instalada
@@ -151,7 +151,7 @@ v 0.7.2:
 
 - Erros no changelog corrigidos
 - Atualização dos exemplos no BD local 
-- Mudança dos botões de página do dashboard
+- Mudança dos botões de página do Dashboard
 - Bugs menores corrigidos
 
 v 0.7.3:
@@ -165,7 +165,7 @@ v 0.7.3:
 v 0.7.4:
 
 - Mudança no salvamento do log
-- Alterado acesso para aba dashboard
+- Alterado acesso para aba Dashboard
 - Mudanças na UI/UX
 - Mudança no changelog
 - Otimizações no código
@@ -186,7 +186,7 @@ v 0.8.0:
 - Atualizações nos comentários do código
 - Mudança na primary key usada na edição de um agendamento
 - Adicionada possibilidade de pesquisa com CPF/CNPJ usando a formatação comum
-- Trocado campo de carteira de trabalho do funcionário para ID da empresa que sera implementado no futuro
+- Trocado o campo de carteira de trabalho do funcionário para ID da empresa que será implementado no futuro
 - Automatizada verificação de carros em manutenção
 - Mudanças na UI/UX
 - Otimizações no código
@@ -217,14 +217,14 @@ v 0.9.1:
 v 0.9.2:
 
 - Mudança no BD da frota
-- Adicionada a possibilidade de troca da placa de um veículo ja cadatrado no BD
+- Adicionada a possibilidade de troca da placa de um veículo ja cadastrado no BD
 - Preparação final para recebimento da aba Venda/Aluguel
 - Criação do BD de Venda e Aluguel
 - Bugs menores corrigidos
 
 v 0.9.3:
 
-- Atualizações na aba de dashboard 
+- Atualizações na aba de Dashboard 
 - Otimizações no código
 - Bugs menores corrigidos
 
@@ -232,7 +232,7 @@ v 0.9.4:
 
 - Atualização no BD da frota
 - Criação da aba de aluguel
-- Infomação de preço e quilometragem adicionada à aba de pesquisa e cadastro de veículos
+- Informação de preço e quilometragem adicionada à aba de pesquisa e cadastro de veículos
 - Bugs menores corrigidos
 
 v 0.9.5:
@@ -248,7 +248,7 @@ v 0.9.5:
 
 v 0.9.6:
 
-- BD externo trocado de postgresql para mysql
+- BD externo trocado de postgreSQL para mySQL
 - Dados do BD corrigidos
 - Adicionado melhor tratamento de erros
 - Mudanças na UX
@@ -262,3 +262,23 @@ v 0.9.7:
 - Alterado local dos arquivos das abas de agendamento
 - Mudanças na UI/UX
 - Bugs menores corrigidos
+
+
+v 1.0.0:
+
+- Alteração nas abas de venda/aluguel de veículos
+- Painel de índice adicionado ao menu principal
+- Mudanças na UI/UX
+- Função atribuída ao botão "Fechar"
+- Alterações na aba de Dashboard
+- Atualizações nos comentários do código
+- Melhorias e adições nos tratamentos de erros
+- Mudança no cadastro de veículos
+- Mudanças no BD externo
+- Pesquisa no BD melhorada
+- Imagens renomeadas para se encaixarem no padrão de nomeação
+- Verificação contra adição de dados únicos repetidos no BD adicionada
+- Adicionada a possibilidade para alguns cargos de exclusão de cadastros/agendamentos na aba de pesquisas
+- Erros de ortográfica corrigidos
+- Otimizações no código
+- Diversos bugs graves corrigidos

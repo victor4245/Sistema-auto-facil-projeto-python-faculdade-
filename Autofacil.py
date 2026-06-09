@@ -13,41 +13,53 @@ from tkinter import messagebox
 from datetime import datetime
 import subprocess
 import hashlib
+# Variável de controle
+sem_biblioteca = False
+
+# Importação de bibliotecas, com instalação automática caso faltem
 try:
     import mysql.connector
-except:
+except Exception:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "mysql-connector-python"])
-    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'mysql-connector-python' teve que ser instalada para conectar ao banco de dados.\nPor favor abra o programa novamente.")
+    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'mysql-connector-python' teve que ser instalada para conectar ao banco de dados.\nPor favor, abra o programa novamente.")
+    sem_biblioteca = True
 try:
     from PIL import Image, ImageTk
-except:
+except Exception:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
-    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'Pillow' teve que ser instalada para exibir a imagem de fundo.\nPor favor abra o programa novamente.")
+    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'Pillow' teve que ser instalada para exibir a imagem de fundo.\nPor favor, abra o programa novamente.")
+    sem_biblioteca = True
 try:
     from tkcalendar import DateEntry
 except Exception:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "tkcalendar"])
-    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'tkcalendar' teve que ser instalada para uso de calendário.\nPor favor abra o programa novamente.")
+    messagebox.showwarning("Ocorreu um Erro", "A biblioteca 'tkcalendar' teve que ser instalada para uso de calendário.\nPor favor, abra o programa novamente.")
+    sem_biblioteca = True
+
+# Fecha o programa caso alguma biblioteca tenha sido instalada, para evitar erros de importação
+if sem_biblioteca == True:
+    sys.exit()
 # -------- CONFIGURAÇÕES BÁSICAS --------
 # Conexão com o BD
 try:
     conn = mysql.connector.connect(
         host="sql10.freesqldatabase.com",
-        user="sql10826915",
-        password="1lL7crlwDf",
-        database="sql10826915",
+        user="sql10829783",
+        password="1LQCBWpLZR",
+        database="sql10829783",
         port=3306
     )
     conn.autocommit = True
     cursor = conn.cursor(dictionary=True)
-except:
-    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
+except Exception as e:
+    messagebox.showerror("Erro de Conexão", f"Não foi possível conectar ao banco de dados\n erro: {e}")
+    
 AGORA = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
 CAMINHO_IMAGENS = os.getcwd() + "/Imagens"
 ARQUIVO_MENU = "Menu.py"
-VERSION = "v 0.9.7"
+VERSION = "v 1.0.0"
 
-# --------- CAPTURA DE EMAIL, SENHA E NOME DE FUNCIONÁRIOS ------------
+# --------- CAPTURA DE LOGINS, SENHAS E NOMES DE FUNCIONÁRIOS ------------
 
 login = []
 LOGIN_EMAIL = []
@@ -69,13 +81,14 @@ for i in range(len(login)):
     LOGIN_ID.append(login[i]["id_empresa"])
     # Captura dos nomes para saudação
     PESSOA.append(login[i]["nome"])
-    # Captura dos cargos para uso posterior no menu.py
+    # Captura dos cargos para uso posterior no Menu.py
     CARGO.append(login[i]["cargo"])
     # Adição das senhas para verificação de login
     SENHA_ESPERADA.append(login[i]["senha"])
+    
 
 # =======================================================
-# FUNÇÕES (nomes simples, em português)
+# FUNÇÕES 
 # =======================================================
 def maximizar_janela(janela: tk.Tk):
     """Tenta abrir a janela já maximizada. Usa estratégias que funcionam em Windows e Linux."""
@@ -148,19 +161,20 @@ def log_login(pessoa: str):
     return
 
 def abrir_menu(janela: tk.Tk, pessoa:str, cargo:str):
-    """Fecha esta janela e abre o arquivo 'menu.py' (no mesmo diretório)."""
+    """Fecha esta janela e abre o arquivo 'Menu.py' (no mesmo diretório)."""
     import subprocess
     base_dir = os.path.dirname(os.path.abspath(__file__))
     caminho_menu = os.path.join(base_dir, ARQUIVO_MENU)
     if not os.path.exists(caminho_menu):
-        messagebox.showerror("menu.py não encontrado",f"Coloque o arquivo '{ARQUIVO_MENU}' no mesmo diretório deste script:\n{base_dir}")
+        messagebox.showerror("arquivo Menu.py não encontrado",f"Coloque o arquivo '{ARQUIVO_MENU}' no mesmo diretório deste script:\n{base_dir}")
         return
-    # Abrindo o arquivo menu.py e passando o nome da pessoa que esta logando para ser usado na mensagem de boas vindas juntamento do cargo para controle de acesso a algumas abas do menu
+    # Abrindo o arquivo Menu.py e passando o nome da pessoa que está logando para ser usado na mensagem de boas-vindas juntamente do cargo para controle de acesso a algumas abas do menu
     try:
         subprocess.Popen([sys.executable, caminho_menu, pessoa, cargo])
         janela.destroy()
     except Exception as e:
         messagebox.showerror("Erro ao abrir o menu",f"Não foi possível abrir '{ARQUIVO_MENU}':\n{e}")
+        return
 def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
     """Ação do botão Acessar (e tecla Enter):
     - Verifica se os campos estão preenchidos
@@ -173,7 +187,6 @@ def ao_acessar(campo_login: tk.Entry, campo_senha: tk.Entry, janela: tk.Tk):
     if not login or not senha:
         messagebox.showwarning("Campos obrigatórios", "Informe login e senha.")
         return
-    
     # Validação de Login e senha
     i = 0
     while (i < len(LOGIN_EMAIL)):
@@ -215,19 +228,16 @@ def criar_janela():
     raiz.minsize(980, 600)
     raiz.iconbitmap(CAMINHO_IMAGENS + "/LogoA.ico")
 
-    # Não aplicamos cor de fundo na janela raiz para não cobrir o centro.
-    # Somente cabeçalho e rodapé terão cor.
-
     # Maximiza a janela após criar
     raiz.after(50, lambda: maximizar_janela(raiz))
 
     # ------- FUNDO (ocupa toda a janela e fica por trás) -------
     lbl_fundo = tk.Label(raiz, bd=0, highlightthickness=0)
     lbl_fundo.place(x=0, y=0, relwidth=1, relheight=1)
-    lbl_fundo.lower()  # envia o fundo para trás
+    lbl_fundo.lower()  # Envia o fundo para trás
 
     # Carrega a imagem local do fundo
-    imagem_base = carregar_imagem(CAMINHO_IMAGENS + "/musta.jpg")
+    imagem_base = carregar_imagem(CAMINHO_IMAGENS + "/Fundo.jpg")
 
     # Atualiza o fundo inicialmente
     raiz.after(100, lambda: atualizar_fundo(raiz, lbl_fundo, imagem_base))
@@ -279,7 +289,7 @@ def criar_janela():
     lbl_versao.grid(row=0, column=0, sticky="sw", pady=(30, 0))
     # Tratamento de erro caso a biblioteca pillow não esteja instalada
     try:
-        img_logo = Image.open(CAMINHO_IMAGENS + "/carro.png").convert("RGBA")
+        img_logo = Image.open(CAMINHO_IMAGENS + "/Carro.png").convert("RGBA")
         img_logo = img_logo.resize((220, 180))
         img_logo = ImageTk.PhotoImage(img_logo)
         lbl_logo = tk.Label(
@@ -287,7 +297,7 @@ def criar_janela():
             bg="#0B1220",
             image = img_logo)
         lbl_logo.grid(row=0, column=2, sticky="e")
-    except:
+    except Exception:
         messagebox.showwarning("Ocorreu um erro", "Biblioteca pillow faltando. Fechando o programa")
         raiz.destroy()
 
@@ -359,9 +369,18 @@ def criar_janela():
         cursor="hand2"
     )
     btn_sair.grid(row=3, column=1, sticky="es", padx=(0, 20), pady=(25, 0))
-
+    def ao_entrar():
+        if entrada_login.get() == "":
+            messagebox.showwarning("Campo vazio", "Informe o login para continuar.")
+            return
+        elif not entrada_senha.get() == "" and not entrada_login.get() == "":
+            ao_acessar(entrada_login, entrada_senha, raiz)
+        elif not entrada_login.get() == "":
+            entrada_senha.focus()
+            return
+        
     # ENTER aciona acessar
-    raiz.bind("<Return>", lambda e: ao_acessar(entrada_login, entrada_senha, raiz))
+    raiz.bind("<Return>", lambda e: ao_entrar())
 
     # Inicia a janela
     raiz.mainloop()

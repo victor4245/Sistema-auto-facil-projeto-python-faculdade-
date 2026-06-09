@@ -7,23 +7,8 @@
 import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
-import mysql.connector
-# -------- CONFIGURAÇÕES BÁSICAS --------
-# Conexão com o BD
-try:
-    conn = mysql.connector.connect(
-        host="sql10.freesqldatabase.com",
-        user="sql10826915",
-        password="1lL7crlwDf",
-        database="sql10826915",
-        port=3306
-    )
-    conn.autocommit = True
-    cursor = conn.cursor(dictionary=True)
-except:
-    messagebox.showerror("Erro de Conexão", "Não foi possível conectar ao banco de dados\n Verifique sua conexão com a internet")
-AGORA = datetime.now().strftime("%d/%m/%Y")
-
+from Menu import conn, cursor
+import importlib
 
 # -------- CONFIGURAÇÕES BÁSICAS DE UI --------
 
@@ -34,84 +19,85 @@ COR_FUNDO = "#0B1220"
 
 # -------- CAPTURA DE DADOS --------
 
-
 # Captura de veículos disponíveis
-
-cursor.execute("""SELECT * FROM frota""")
-FROTA = cursor.fetchall()
+def frota():
+    cursor.execute("""SELECT * FROM frota WHERE obs != 'Alugado'""")
+    return cursor.fetchall()
 
 # Captura de clientes disponíveis
-
-cursor.execute("""SELECT * FROM clientes""")
-CLIENTES = cursor.fetchall()
+def clientes():
+    cursor.execute("""SELECT * FROM clientes""")
+    return cursor.fetchall()
 
 # Captura de vendedores
-
-VENDAS = ["Gerente", "Assistente administrativo", "Vendedor"]
-cursor.execute("""SELECT nome FROM funcionarios WHERE cargo IN (%s, %s, %s)""", (VENDAS))
-VENDEDORES = cursor.fetchall()
+def vendedores():
+    VENDAS = ["Gerente", "Assistente administrativo", "Vendedor"]
+    cursor.execute("""SELECT * FROM funcionarios WHERE cargo IN (%s, %s, %s)""", tuple(VENDAS))
+    return cursor.fetchall()
 
 # --------------------------------------------------------
 # SALVA OS DADOS NO BD
 # --------------------------------------------------------
-def salvar(dados, indice):
-    # Verificação simples (iniciante)
-    for data in dados:
-        if dados[data] == "" and not dados["obs"]:
-            messagebox.showwarning(
-                "Campos obrigatórios faltando",
-                "Preencha todos os campos para salvar o cliente."
-            )
-            return
-    cod_veic = indice['veiculo']
-    cpf_cliente = indice['cliente']
-    vend = indice['vendedor']
-    codv = FROTA[cod_veic]
-    codc = CLIENTES[cpf_cliente]
-    nomv = VENDEDORES[vend]
-    dados['cod_veiculo'] = codv['codigo']
-    dados['cpf_cliente'] = codc['cpf_cnpj']
-    dados['vendedor'] = nomv['nome']
-    
+def salvar(cliente, veiculo, funcionario, pagamento, parent):  
+    AGORA = datetime.now().strftime("%d/%m/%Y")
+    conn.autocommit = False
     try:
-        cursor.execute("""INSERT INTO venda (cod_veiculo,data_venda,cod_cliente,vendedor,obs)
-                       VALUES(%s,%s,%s,%s,%s)
+        cursor.execute("""INSERT INTO venda (nome_veiculo,cod_veiculo,data_venda,nome_cliente,cod_cliente,vendedor,pagamento,valor)
+                       VALUES(%s,%s,%s,%s,%s,%s,%s,%s)
                        """,(
-                        dados["cod_veiculo"],
-                        dados["data_venda"],
-                        dados["cod_cliente"],
-                        dados["vendedor"],
-                        dados["obs"]
+                        veiculo["nome"],
+                        int(veiculo["codigo"]),
+                        str(AGORA),
+                        cliente["nome"],
+                        cliente["cpf_cnpj"],
+                        funcionario["nome"],
+                        pagamento,
+                        veiculo["preco"]
                        ))
-        conn.commit()
         cursor.execute("""
             DELETE FROM frota
             WHERE codigo = %s
             """, (
-                dados['cod_veiculo']
+                int(veiculo["codigo"]),
             ))
         conn.commit()
         messagebox.showinfo("Sucesso", "Venda realizada com sucesso!")
+        mostrar_formulario(parent)
     except Exception as erro:
-        messagebox.showerror("Erro", "O seguinte erro aconteceu: " + str(erro))
+        conn.rollback()
+        messagebox.showerror("Erro", f"O seguinte erro aconteceu: {erro}")
+        return
+    finally:
+        conn.autocommit = True
     
-def limpar(parent: tk.Frame):
+def limpartela(parent: tk.Frame):
     """Remove tudo que estiver no parent (caso queira reutilizar)."""
     for w in parent.winfo_children():
+        w.destroy()        
+        
+def abrir_indice(area_conteudo: tk.Frame):
+    for w in area_conteudo.winfo_children():
         w.destroy()
+    # Abre o Indice.py e mostra o índice na tela
+    try:
+        modulo = importlib.import_module("Indice")
+        modulo.mostrar_formulario(area_conteudo)
+    except Exception as e:
+        messagebox.showerror("Erro", f"Falha ao abrir a tela de Índice:\n{e}")
+        
 def mostrar_formulario(parent: tk.Frame):
-    """
-    Constrói o formulário de Venda de veículos dentro do 'parent' (área central).
-    """
+    """Constrói o formulário de Venda de veículos dentro do 'parent' (área central) página de clientes."""
 
     # Limpa qualquer conteúdo anterior
-    limpar(parent)
-
+    limpartela(parent)
+    
+    CLIENTES = clientes()
+    
     # Um container centralizado
     container = tk.Frame(parent, bg="#1F2937")
     container.pack(fill="both", expand=True)
     
-    # Um container redundante para melhor controle
+    # Um container auxiliar para melhor controle
     container2 = tk.Frame(container, bg=COR_FUNDO, width=730, height=580)
     container2.pack(expand=True)
     container2.pack_propagate(False)
@@ -119,7 +105,7 @@ def mostrar_formulario(parent: tk.Frame):
     caixa = tk.Frame(container2, bg=COR_FUNDO)
     caixa.pack(expand=True)
 
-    # Título
+    # ---------------- TÍTULO ----------------
     tk.Label(
         caixa,
         text="Venda de veículos",
@@ -128,10 +114,18 @@ def mostrar_formulario(parent: tk.Frame):
         fg=COR_TEXTO
     ).grid(row=0, column=0, columnspan=4, pady=(0, 10))
 
-    # ------- CAMPOS -------
-    entradas = {}
+    # ---------------- TÍTULO2 ----------------
+    tk.Label(
+        caixa,
+        text="Selecione o cliente",
+        font=("Segoe UI", 16, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(row=1, column=0, columnspan=4, pady=15)
 
-    def add_linha(rotulo, rotuloBD, linha, col_inicio):
+    # ---------------- ENTRADAS ----------------
+    entrada_pesq = [None] * 4
+    def add_linha(rotulo, linha, col_inicio, largura=40, index=0):
         """Cria um par Label + Entry numa posição da grade."""
         tk.Label(
             caixa,
@@ -139,111 +133,118 @@ def mostrar_formulario(parent: tk.Frame):
             font=("Segoe UI", 10, "bold"),
             bg=COR_FUNDO,
             fg=COR_TEXTO
-        ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6) 
+        ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6)
 
-        entry = tk.Listbox(caixa, width=58, height=5,bg=COR_CAMPO, fg=COR_TEXTO2, borderwidth=0, highlightthickness=0, relief="flat", justify='left', exportselection=False)
+        entry = tk.Entry(
+                caixa,
+                width=largura,
+                background=COR_CAMPO,
+                foreground=COR_TEXTO2,
+                insertbackground=COR_TEXTO2,
+                relief="flat"
+            )
+        entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
+        entrada_pesq[index] = entry
         
-        entry.grid(row=linha+1, column=col_inicio, sticky="w", padx=(0, 10), pady=6)
-
-        entradas[rotuloBD] = entry
-
     # Linha 1
-    add_linha("Selecione o veículo", "nome_veiculo", linha=1, col_inicio=0)
-    entradas['nome_veiculo'].delete(0, tk.END)
-    for c in FROTA:
-        texto = f"Veículo: {c['nome']}  |  Preço: R${c['preco']}  |  Quilometragem: {c['quilometragem']}"
-        entradas['nome_veiculo'].insert(tk.END, texto)
+    add_linha("Nome", linha=2, col_inicio=0, largura=40, index=0)
+    add_linha("CPF/CNPJ", linha=2, col_inicio=2, largura=24, index=1)
 
-    add_linha("Selecione o cliente", "nome_cliente", linha=1, col_inicio=2)
-    entradas['nome_cliente'].delete(0, tk.END)
-    for c in CLIENTES:
-        texto = f"Cliente: {c['nome']}  |  CPF/CNPJ: {c['cpf_cnpj']}"
-        entradas['nome_cliente'].insert(tk.END, texto)
-    
     # Linha 2
-    add_linha("Selecione o vendedor", "vendedor", linha=3, col_inicio=0)
-    entradas['vendedor'].delete(0, tk.END)
-    for c in VENDEDORES:
-        texto = f"Nome: {c['nome']}"
-        entradas['vendedor'].insert(tk.END, texto)
+    add_linha("E-mail", linha=3, col_inicio=0, largura=40, index=2)
+    add_linha("Telefone", linha=3, col_inicio=2, largura=24, index=3)
+    
 
-    # Observações
-    tk.Label(
-        caixa,
-        text="Observações",
-        font=("Segoe UI", 10, "bold"),
-        bg=COR_FUNDO,
-        fg=COR_TEXTO
-    ).grid(row=5, column=0, columnspan=4, sticky="", padx=(8, 8), pady=6)
+    # ---------------- LISTBOX (RESULTADOS) ----------------
+    lista = tk.Listbox(caixa, width=90, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
+    lista.grid(row=4, column=0, columnspan=4, padx=10, pady=10)
 
-    txt_obs = tk.Text(caixa, width=66, height=5, background=COR_CAMPO,foreground=COR_TEXTO2,insertbackground=COR_TEXTO2, relief="flat")
-    txt_obs.grid(row=6, column=0, columnspan=4, sticky="", padx=(10, 10), pady=6)
+    clientes_filtrados = []
 
-    # Botões
+    # ---------------- FUNÇÃO: atualizar resultados ----------------
+    def atualizar_lista(filtro):
+        lista.delete(0, tk.END)
+        clientes_filtrados.clear()
+
+        cursor.execute("""
+        SELECT *
+        FROM clientes
+        WHERE
+            nome LIKE %s
+            OR cpf_cnpj LIKE %s
+            OR REPLACE(REPLACE(REPLACE(cpf_cnpj, '.', ''), '-', ''), '/', '') LIKE %s
+            OR email LIKE %s
+            OR telefone LIKE %s
+        """, (
+            f"%{filtro[0]}%",
+            f"%{filtro[1]}%",
+            f"%{filtro[1]}%",
+            f"%{filtro[2]}%",
+            f"%{filtro[3]}%"
+        ))
+
+        clientes = cursor.fetchall()
+        
+        for c in clientes:
+            texto = f"   {c['nome']}  |  Telefone: {c['telefone']}  |  E-mail: {c['email']}"
+            lista.insert(tk.END, texto)
+            clientes_filtrados.append(c)
+
+    # Pesquisa dinâmica (a cada tecla)
+    def ao_digitar(event):
+        valores = [''] * 4
+        for i in range(len(entrada_pesq)):
+            valores[i] = (entrada_pesq[i].get().strip())
+        for i in range(len(valores)):
+            if valores[i] == '':
+                valores[i] = '*'
+        atualizar_lista(valores)
+       
+    for i in range(len(entrada_pesq)):
+        entrada_pesq[i].bind("<KeyRelease>", ao_digitar)
+
+    # ---------------- BOTÕES ----------------
     botoes = tk.Frame(caixa, bg=COR_FUNDO)
-    botoes.grid(row=7, column=0, columnspan=4, pady=16)
+    botoes.grid(row=5, column=0, columnspan=4, pady=15)
 
-    def on_salvar():
-        if not entradas["nome_veiculo"].curselection():
-            messagebox.showwarning("Aviso", "Selecione um veículo.")
-            return
-        elif not entradas["cliente"].curselection():
-            messagebox.showwarning("Aviso", "Selecione um cliente.")
-            return
-        elif not entradas["vendedor"].curselection():
-            messagebox.showwarning("Aviso", "Selecione um vendedor.")
-            return
-        indice = {"veiculo": entradas["nome_veiculo"].curselection()[0], "cliente": entradas["nome_cliente"].curselection()[0], "vendedor": entradas["vendedor"].curselection()[0]}
-        dados = {}
-        for campo, entrada in entradas.items():     
-            if isinstance(entrada, tk.Listbox):
-                selecao = entrada.curselection()
-                dados[campo] = entrada.get(selecao[0])
-            else:
-                dados[campo] = entrada.get().strip()
-        dados["data_venda"] = str(AGORA)
-        dados["obs"] = txt_obs.get("1.0", "end-1c").strip()
-        salvar(dados, indice)
+    # -------- LISTAGEM COMPLETA --------
+    def listar_todos():
+        for i in range(len(entrada_pesq)):
+            entrada_pesq[i].delete(0, tk.END)
+        lista.delete(0, tk.END)
+        clientes_filtrados.clear()
 
-    def on_limpar():
-        for ent in entradas.values():
-            ent.delete(0, "end")
-        txt_obs.delete("1.0", "end-1c")
+        for c in CLIENTES:          
+            texto = f"   {c['nome']}  |  Telefone: {c['telefone']}  |  E-mail: {c['email']}"
+            lista.insert(tk.END, texto)
+            clientes_filtrados.append(c)
 
-    def on_cancelar():
-        limpar(parent)
+    # -------- LIMPAR --------
+    def limpar():
+        for i in range(len(entrada_pesq)):
+            entrada_pesq[i].delete(0, tk.END)
+        lista.delete(0, tk.END)
+
+    # -------- NOVA CONSULTA --------
+    def nova_consulta():
+        limpar()
+        entrada_pesq[0].focus()
+        
+    # -------- FECHAR --------
+    def fechar():
+        abrir_indice(parent)
+    
+    # -------- AVANÇAR --------
+    def avancar():
+        if not lista.curselection():
+            messagebox.showwarning("Nenhum cliente selecionado", "Por favor, selecione um cliente para prosseguir.")
+            return
+        selecionar_fro(clientes_filtrados[lista.curselection()[0]], parent)
 
     tk.Button(
         botoes,
-        text="Vender",
-        bg="#2563EB",
-        fg="white",
-        activebackground="#1E40AF",
-        activeforeground="white",
-        relief="flat",
-        padx=14,
-        pady=8,
-        command=lambda:[on_salvar(), on_limpar()],
-        cursor="hand2"
-    ).pack(side="left", padx=6)
-
-    tk.Button(
-        botoes,
-        text="Limpar",
-        bg="#6B7280",
-        fg="white",
-        activebackground="#4B5563",
-        activeforeground="white",
-        relief="flat",
-        padx=14,
-        pady=8,
-        command=on_limpar,
-        cursor="hand2"
-    ).pack(side="left", padx=6)
-
-    tk.Button(
-        botoes,
-        text="Cancelar",
+        text="Fechar",
+        font=("Segoe UI", 10, "bold"),
         bg="#C90202",
         fg="white",
         activebackground="#8D0202",
@@ -251,10 +252,581 @@ def mostrar_formulario(parent: tk.Frame):
         relief="flat",
         padx=14,
         pady=8,
-        command=on_cancelar,
-        cursor="hand2"
-    ).pack(side="left", padx=6)
+        command=fechar,
+        cursor="hand2").pack(side="left", padx=6)
+    tk.Button(botoes,
+        text="Nova Consulta", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=nova_consulta,
+        bg="#6B7280",  
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    tk.Button(botoes, 
+        text="Listagem", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=listar_todos,
+        bg="#6B7280", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    tk.Button(botoes, 
+        text="Avançar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=avancar,
+        bg="#2563EB", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+        
+def selecionar_fro(cliente, parent):
+    """Reconstrói o formulário de Venda de veículos dentro do 'parent' (área central) página de veículos."""
 
-    # Ajuste de colunas
-    for c in range(4):
-        caixa.grid_columnconfigure(c, weight=0)
+    # Limpa qualquer conteúdo anterior
+    limpartela(parent)
+    
+    FROTA = frota()
+
+    # Um container centralizado
+    container = tk.Frame(parent, bg="#1F2937")
+    container.pack(fill="both", expand=True)
+    
+    # Um container auxiliar para melhor controle
+    container2 = tk.Frame(container, bg=COR_FUNDO, width=730, height=580)
+    container2.pack(expand=True)
+    container2.pack_propagate(False)
+
+    caixa = tk.Frame(container2, bg=COR_FUNDO)
+    caixa.pack(expand=True)
+
+    # ---------------- TÍTULO ----------------
+    tk.Label(
+        caixa,
+        text="Venda de veículos",
+        font=("Segoe UI", 16, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(row=0, column=0, columnspan=4, pady=(0, 10))
+    
+    # ---------------- TÍTULO2 ----------------
+    tk.Label(
+        caixa,
+        text="Selecione o veículo",
+        font=("Segoe UI", 16, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(row=1, column=0, columnspan=4, pady=15)
+
+    # ---------------- ENTRADAS ----------------
+    entrada_pesq = [None] * 7
+    def add_linha(rotulo, linha, col_inicio, largura=40, index=0):
+        """Cria um par Label + Entry numa posição da grade."""
+        tk.Label(
+            caixa,
+            text=rotulo,
+            font=("Segoe UI", 10, "bold"),
+            bg=COR_FUNDO,
+            fg=COR_TEXTO
+        ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6)
+
+        entry = tk.Entry(
+                caixa,
+                width=largura,
+                background=COR_CAMPO,
+                foreground=COR_TEXTO2,
+                insertbackground=COR_TEXTO2,
+                relief="flat"
+            )
+        entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
+        entrada_pesq[index] = entry
+        
+    # Linha 1
+    add_linha("Nome", linha=2, col_inicio=0, largura=24, index=0)
+    add_linha("Marca", linha=2, col_inicio=2, largura=24, index=1)
+
+    # Linha 2
+    add_linha("Modelo", linha=3, col_inicio=0, largura=24, index=2)
+    add_linha("Motorização", linha=3, col_inicio=2, largura=21, index=3)
+
+    # Linha 3
+    add_linha("Condição", linha=4, col_inicio=0, largura=10, index=4)
+    add_linha("Cor", linha=4, col_inicio=2, largura=10, index=5)
+
+    # Linha 4
+    add_linha("Ano", linha=5, col_inicio=0, largura=6, index=6)
+    
+    # ---------------- LISTBOX (RESULTADOS) ----------------
+    lista = tk.Listbox(caixa, width=90, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
+    lista.grid(row=6, column=0, columnspan=4, padx=10, pady=10)
+
+    veiculos_filtrados = []
+
+    # ---------------- FUNÇÃO: atualizar resultados ----------------
+    def atualizar_lista(filtro):
+        lista.delete(0, tk.END)
+        veiculos_filtrados.clear()
+        cursor.execute("""
+        SELECT *
+        FROM frota
+        WHERE
+            obs != 'Alugado' AND
+            (nome LIKE %s
+            OR placa LIKE %s
+            OR marca LIKE %s
+            OR modelo LIKE %s
+            OR motorizacao LIKE %s)
+        """, (
+            f"%{filtro[0]}%",
+            f"%{filtro[1]}%",
+            f"%{filtro[2]}%",
+            f"%{filtro[3]}%",
+            f"%{filtro[4]}%"
+        ))
+
+        veiculos = cursor.fetchall()
+        for c in veiculos:
+            texto = f"   {c['marca']} {c['nome']}  |  Placa: {c['placa']}  |  Condição: {c['condicao']}  |  KM: {c['quilometragem']}  |  Preço: {c['preco']}"
+            lista.insert(tk.END, texto)
+            veiculos_filtrados.append(c)
+
+    # Pesquisa dinâmica (a cada tecla)
+    def ao_digitar(event):
+        valores = [''] * 7
+        for i in range(len(entrada_pesq)):
+            valores[i] = (entrada_pesq[i].get().strip())
+        for i in range(len(valores)):
+            if valores[i] == '':
+                valores[i] = '*'
+        atualizar_lista(valores)
+       
+    for i in range(len(entrada_pesq)):
+        entrada_pesq[i].bind("<KeyRelease>", ao_digitar)
+
+    # ---------------- BOTÕES ----------------
+    botoes = tk.Frame(caixa, bg=COR_FUNDO)
+    botoes.grid(row=7, column=0, columnspan=4, pady=15)
+
+    # -------- LISTAGEM COMPLETA --------
+    def listar_todos():
+        for i in range(len(entrada_pesq)):
+            entrada_pesq[i].delete(0, tk.END)
+        lista.delete(0, tk.END)
+        veiculos_filtrados.clear()
+
+        for c in FROTA:          
+            texto = f"   {c['marca']} {c['nome']}  |  Placa: {c['placa']}  |  Condição: {c['condicao']}  |  KM: {c['quilometragem']}  |  Preço: {c['preco']}"
+            lista.insert(tk.END, texto)
+            veiculos_filtrados.append(c)
+
+    # -------- LIMPAR --------
+    def limpar():
+        for i in range(len(entrada_pesq)):
+            entrada_pesq[i].delete(0, tk.END)
+        lista.delete(0, tk.END)
+
+    # -------- NOVA CONSULTA --------
+    def nova_consulta():
+        limpar()
+        entrada_pesq[0].focus()
+    
+    # -------- AVANÇAR --------
+    def avancar():
+        if not lista.curselection():
+            messagebox.showwarning("Nenhum veículo selecionado", "Por favor, selecione um veículo para prosseguir.")
+            return
+        selecionar_fun(cliente, veiculos_filtrados[lista.curselection()[0]], parent)
+
+    tk.Button(botoes, 
+        text="Voltar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=lambda: mostrar_formulario(parent), 
+        bg="#C90202", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    tk.Button(botoes,
+        text="Nova Consulta", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=nova_consulta,
+        bg="#6B7280",  
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    tk.Button(botoes, 
+        text="Listagem", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=listar_todos,
+        bg="#6B7280", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    tk.Button(botoes, 
+        text="Avançar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=avancar,
+        bg="#2563EB", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    
+def selecionar_fun(cliente, veiculo, parent):
+    """Reconstrói o formulário de Venda de veículos dentro do 'parent' (área central) página de vendedores."""
+    
+    # Limpa qualquer conteúdo anterior
+    
+    limpartela(parent)
+    
+    VENDEDORES = vendedores()
+
+    # Um container centralizado
+    container = tk.Frame(parent, bg="#1F2937")
+    container.pack(fill="both", expand=True)
+    
+    # Um container auxiliar para melhor controle
+    container2 = tk.Frame(container, bg=COR_FUNDO, width=730, height=580)
+    container2.pack(expand=True)
+    container2.pack_propagate(False)
+
+    caixa = tk.Frame(container2, bg=COR_FUNDO)
+    caixa.pack(expand=True)
+
+    # ---------------- TÍTULO ----------------
+    tk.Label(
+        caixa,
+        text="Venda de veículos",
+        font=("Segoe UI", 16, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(row=0, column=0, columnspan=4, pady=(0, 10))
+    
+    # ---------------- TÍTULO2 ----------------
+    tk.Label(
+        caixa,
+        text="Selecione o vendedor",
+        font=("Segoe UI", 16, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(row=1, column=0, columnspan=4, pady=15)
+
+    # ---------------- ENTRADAS ----------------
+    entrada_pesq = [None] * 6
+    def add_linha(rotulo, linha, col_inicio, largura=40, index=0):
+        """Cria um par Label + Entry numa posição da grade."""
+        tk.Label(
+            caixa,
+            text=rotulo,
+            font=("Segoe UI", 10, "bold"),
+            bg=COR_FUNDO,
+            fg=COR_TEXTO
+        ).grid(row=linha, column=col_inicio, sticky="w", padx=(4, 8), pady=6)
+
+        entry = tk.Entry(
+                caixa,
+                width=largura,
+                background=COR_CAMPO,
+                foreground=COR_TEXTO2,
+                insertbackground=COR_TEXTO2,
+                relief="flat"
+            )
+        entry.grid(row=linha, column=col_inicio + 1, sticky="w", padx=(0, 10), pady=6)
+        entrada_pesq[index] = entry
+        
+        # Linha 1
+    add_linha("Nome", linha=2, col_inicio=0, largura=40, index=0)
+    add_linha("CPF", linha=2, col_inicio=2, largura=24, index=1)
+
+    # Linha 2
+    add_linha("E-mail", linha=3, col_inicio=0, largura=40, index=2)
+    add_linha("Telefone", linha=3, col_inicio=2, largura=24, index=3)
+
+    # Linha 3
+    add_linha("Cargo", linha=4, col_inicio=0, largura=24, index=4)
+    add_linha("ID da empresa", linha=4, col_inicio=2, largura=24, index=5)
+    
+
+    # ---------------- LISTBOX (RESULTADOS) ----------------
+    lista = tk.Listbox(caixa, width=90, height=10, bg=COR_CAMPO, fg="black", borderwidth=0, highlightthickness=0)
+    lista.grid(row=5, column=0, columnspan=4, padx=10, pady=10)
+
+    funcionarios_filtrados = []
+
+    # ---------------- FUNÇÃO: atualizar resultados ----------------
+    def atualizar_lista(filtro):
+        lista.delete(0, tk.END)
+        funcionarios_filtrados.clear()
+        
+        cursor.execute("""
+        SELECT *
+        FROM funcionarios
+        WHERE
+            nome LIKE %s
+            OR cpf LIKE %s
+            OR REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), '/', '') LIKE %s
+            OR email LIKE %s
+            OR telefone LIKE %s
+            OR cargo LIKE %s
+            OR id_empresa LIKE %s
+        """, (
+            f"%{filtro[0]}%",
+            f"%{filtro[1]}%",
+            f"%{filtro[1]}%",
+            f"%{filtro[2]}%",
+            f"%{filtro[3]}%",
+            f"%{filtro[4]}%",
+            f"%{filtro[5]}%",
+        ))
+        
+        funcionarios = cursor.fetchall()
+        
+        for c in funcionarios:
+            texto = f"   {c['nome']}  |  ID da empresa: {c['id_empresa']}  |  Cargo: {c['cargo']}"
+            lista.insert(tk.END, texto)
+            funcionarios_filtrados.append(c)
+
+    # Pesquisa dinâmica (a cada tecla)
+    def ao_digitar(event):
+        valores = [''] * 6
+        for i in range(len(entrada_pesq)):
+            valores[i] = (entrada_pesq[i].get().strip())
+        for i in range(len(valores)):
+            if valores[i] == '':
+                valores[i] = '*'
+        atualizar_lista(valores)
+       
+    for i in range(len(entrada_pesq)):
+        entrada_pesq[i].bind("<KeyRelease>", ao_digitar)
+
+    # ---------------- BOTÕES ----------------
+    botoes = tk.Frame(caixa, bg=COR_FUNDO)
+    botoes.grid(row=6, column=0, columnspan=4, pady=15)
+
+    # -------- LISTAGEM COMPLETA --------
+    def listar_todos():
+        for i in range(len(entrada_pesq)):
+            entrada_pesq[i].delete(0, tk.END)
+        lista.delete(0, tk.END)
+        funcionarios_filtrados.clear()
+
+        for c in VENDEDORES:          
+            texto = f"   {c['nome']}  |  ID da empresa: {c['id_empresa']}  |  Cargo: {c['cargo']}"
+            lista.insert(tk.END, texto)
+            funcionarios_filtrados.append(c)
+
+    # -------- LIMPAR --------
+    def limpar():
+        for i in range(len(entrada_pesq)):
+            entrada_pesq[i].delete(0, tk.END)
+        lista.delete(0, tk.END)
+
+    # -------- NOVA CONSULTA --------
+    def nova_consulta():
+        limpar()
+        entrada_pesq[0].focus()
+    
+    # -------- AVANÇAR --------
+    def avancar():
+        if not lista.curselection():
+            messagebox.showwarning("Nenhum vendedor selecionado", "Por favor, selecione um vendedor para prosseguir.")
+            return
+        pagamento(cliente, veiculo, funcionarios_filtrados[lista.curselection()[0]], parent)
+
+    tk.Button(botoes, 
+        text="Voltar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=lambda: selecionar_fro(cliente, parent), 
+        bg="#C90202", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    tk.Button(botoes,
+        text="Nova Consulta", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=nova_consulta,
+        bg="#6B7280",  
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    tk.Button(botoes, 
+        text="Listagem", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=listar_todos,
+        bg="#6B7280", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    tk.Button(botoes, 
+        text="Avançar", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=avancar,
+        bg="#2563EB", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    
+def pagamento(cliente, veiculo, vendedor, parent):
+
+    """Reconstrói o formulário de Venda de veículos dentro do 'parent' (área central) página de pagamentos."""
+
+    # Limpa qualquer conteúdo anterior
+    limpartela(parent)
+
+    # Um container centralizado
+    container = tk.Frame(parent, bg="#1F2937")
+    container.pack(fill="both", expand=True)
+    
+    # Um container auxiliar para melhor controle
+    container2 = tk.Frame(container, bg=COR_FUNDO, width=730, height=580)
+    container2.pack(expand=True)
+    container2.pack_propagate(False)
+
+    caixa = tk.Frame(container2, bg=COR_FUNDO)
+    caixa.pack(expand=True)
+
+    # ---------------- TÍTULO ----------------
+    tk.Label(
+        caixa,
+        text="Venda de veículos",
+        font=("Segoe UI", 16, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(row=0, column=0, columnspan=4, pady=(0, 10))
+    
+    # ---------------- TÍTULO2 ----------------
+    tk.Label(
+        caixa,
+        text="Informações de pagamento",
+        font=("Segoe UI", 16, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(row=1, column=0, columnspan=4, pady=(0, 10))
+    tk.Label(
+        caixa,
+        text="Selecione o tipo de pagamento",
+        font=("Segoe UI", 16, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(row=2, column=0, columnspan=4, pady=(0, 10))
+    # ---------------- BOTÕES ----------------
+    botoes = tk.Frame(caixa, bg=COR_FUNDO)
+    botoes.grid(row=3, column=0, columnspan=4, pady=15)
+    
+    # Funcionando de forma simplificada somente para exemplificação
+    tk.Button(botoes,
+        text="À vista", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=lambda: finalizar(cliente, veiculo, vendedor, "À vista", parent),
+        bg="#2563EB",  
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+    tk.Button(botoes, 
+        text="Parcelado", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=lambda: finalizar(cliente, veiculo, vendedor, "Parcelado", parent),
+        bg="#2563EB", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
+
+def finalizar(cliente, veiculo, vendedor, pagamento, parent):
+    """Reconstrói o formulário de Venda de veículos dentro do 'parent' (área central) página de resumo."""
+    
+    # Limpa qualquer conteúdo anterior
+    limpartela(parent)
+
+    # Um container centralizado
+    container = tk.Frame(parent, bg="#1F2937")
+    container.pack(fill="both", expand=True)
+    
+    # Um container auxiliar para melhor controle
+    container2 = tk.Frame(container, bg=COR_FUNDO, width=730, height=580)
+    container2.pack(expand=True)
+    container2.pack_propagate(False)
+
+    caixa = tk.Frame(container2, bg=COR_FUNDO)
+    caixa.pack(expand=True)
+
+    # ---------------- TÍTULO ----------------
+    tk.Label(
+        caixa,
+        text="Venda de veículos",
+        font=("Segoe UI", 16, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(row=0, column=0, columnspan=4, pady=(0, 10))
+    
+    # ---------------- TÍTULO2 ----------------
+    tk.Label(
+        caixa,
+        text="Resumo da venda",
+        font=("Segoe UI", 16, "bold"),
+        bg=COR_FUNDO,
+        fg=COR_TEXTO
+    ).grid(row=1, column=0, columnspan=4, pady=(0, 10))
+    def add_linha(rotulo, linha):
+        """Cria um par Label + Entry numa posição da grade."""
+        tk.Label(
+            caixa,
+            text=rotulo,
+            font=("Segoe UI", 10, "bold"),
+            bg=COR_FUNDO,
+            fg=COR_TEXTO
+        ).grid(row=linha, column=0, sticky="w", padx=(4, 8), pady=6)
+    add_linha(f"Cliente: {cliente['nome']} - {cliente['cpf_cnpj']}", linha=2)
+    add_linha(f"Veículo: {veiculo['marca']} - {veiculo['nome']} - {veiculo['modelo']}", linha=3)
+    add_linha(f"Vendedor: {vendedor['nome']}", linha=4)
+    add_linha(f"Pagamento: {pagamento}", linha=5)
+    
+    botoes = tk.Frame(caixa, bg=COR_FUNDO)
+    botoes.grid(row=6, column=0, columnspan=4, pady=15)
+
+    tk.Button(botoes, 
+        text="Salvar venda", 
+        font=("Segoe UI", 10, "bold"),
+        width=10, 
+        command=lambda: salvar(cliente, veiculo, vendedor, pagamento, parent),
+        bg="#2563EB", 
+        fg="white", 
+        relief="flat",
+        padx=14,
+        pady=8,
+        cursor="hand2").pack(side="left", padx=4)
